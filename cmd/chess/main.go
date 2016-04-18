@@ -1,7 +1,18 @@
 package main
 
-import "log"
+import (
+	"fmt"
+	"io/ioutil"
+
+	"github.com/bign8/chess"
+)
 
 func main() {
-	log.Print("Play an awesome game of chess!!!")
+	version, err := ioutil.ReadFile("VERSION")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Chess %s", version)
+	game := chess.New()
+	fmt.Printf("%s\n", game)
 }
