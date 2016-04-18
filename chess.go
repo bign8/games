@@ -1,6 +1,9 @@
 package chess
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // State is an internal representation of a chess game.
 // - FEN notation: https://en.wikipedia.org/wiki/FEN
@@ -16,14 +19,18 @@ type State struct {
 	count     uint32 // max of 4294967295 (limited by type)
 }
 
-var chrLookup = map[rune]rune{
+var chrLookup = map[uint8]rune{
 	'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
 	'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔',
 }
 
-var numLookup = map[rune]int{
+var numLookup = map[uint8]int{
 	'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
 }
+
+const top = "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗\n"
+const sep = "\n╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣\n"
+const bot = "\n╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝\n  A   B   C   D   E   F   G   H"
 
 // New begins a brand new game
 func New() *State {
@@ -40,7 +47,8 @@ func New() *State {
 // String is to implement the fmt.Stringer interface
 func (s State) String() string {
 	// top of board
-	out := "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗\n"
+	out := ""
+	rows := make([]string, 8)
 
 	// Parse the game board
 	for i, cursor, scanner := 0, 0, 0; i < 64; i++ {
@@ -48,7 +56,7 @@ func (s State) String() string {
 		// Print Player Character
 		out += "║ "
 		if cursor == i {
-			in := rune(s.board[scanner])
+			in := s.board[scanner]
 			if chr, ok := chrLookup[in]; ok {
 				out += string(chr)
 				cursor++
@@ -63,19 +71,15 @@ func (s State) String() string {
 
 		// Print horizontal row separator
 		if i%8 == 7 {
-			out += fmt.Sprintf(" ║  %d\n", 8-i/8) // TODO: fix this
-			if i < 63 {
-				out += "╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣\n"
-			}
+			out += fmt.Sprintf(" ║  %d", 8-i/8) // TODO: fix this
+			rows[i/8] = out
+			out = ""
 		} else {
 			out += " "
 		}
 	}
 
-	// Bottom of board
-	out += "╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝\n"
-	out += "  A   B   C   D   E   F   G   H"
-	return out
+	return top + strings.Join(rows, sep) + bot
 }
 
 // Bytes generats a minimal transmission of this data in []byte form
