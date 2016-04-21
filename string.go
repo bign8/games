@@ -1,6 +1,9 @@
 package chess
 
-import "strings"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 var chrLookup = map[uint8]string{
 	'p': "♟", 'r': "♜", 'n': "♞", 'b': "♝", 'q': "♛", 'k': "♚",
@@ -43,4 +46,31 @@ func (s State) String() string {
 		"║ " + strings.Join(bits[56:64], col) + " ║  1",
 	}
 	return top + strings.Join(rows, sep) + bot
+}
+
+// BlockifyString adds enough spaces to the end of a string to appear "square"
+func BlockifyString(str string) string {
+	lines := strings.Split(str, "\n")
+	lines = BlockifyLines(lines)
+	return strings.Join(lines, "\n")
+}
+
+// BlockifyLines does the same as BlokifyString but with lists of lines
+func BlockifyLines(lines []string) []string {
+	cache := make([]int, len(lines))
+
+	// Find max length line
+	max := 0
+	for i, line := range lines {
+		cache[i] = utf8.RuneCountInString(line)
+		if cache[i] > max {
+			max = cache[i]
+		}
+	}
+
+	// Pad each line to max
+	for i := range lines {
+		lines[i] += strings.Repeat(" ", max-cache[i])
+	}
+	return lines
 }

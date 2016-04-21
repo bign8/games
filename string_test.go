@@ -1,12 +1,8 @@
 package chess
 
 import (
-	"fmt"
-	"log"
-	"strconv"
 	"strings"
 	"testing"
-	"unicode/utf8"
 )
 
 func BenchmarkNewString(b *testing.B) {
@@ -45,23 +41,14 @@ func TestNewString(b *testing.T) {
 }
 
 func compare(a, b string) string {
-	al := strings.Split(a, "\n")
-	bl := strings.Split(b, "\n")
-
-	max := 0
-	for i := 0; i < len(al); i++ {
-		if len(al[i]) > max {
-			max = utf8.RuneCountInString(al[i])
-		}
-	}
-	mask := fmt.Sprintf("%%-%ds", max+10)
-	// panic(mask)
-	log.Printf("Mash: %q", mask)
+	al := BlockifyLines(strings.Split(a, "\n"))
+	bl := BlockifyLines(strings.Split(b, "\n"))
+	padding := strings.Repeat(" ", 10)
 
 	out := make([]string, len(al))
 	for i := 0; i < len(al); i++ {
-		out[i] = fmt.Sprintf(mask, al[i]) + bl[i]
+		out[i] = al[i] + padding + bl[i]
 	}
 
-	return strings.Join(out, "\n") + " " + strconv.Itoa(max) + " " + mask
+	return strings.Join(out, "\n")
 }
