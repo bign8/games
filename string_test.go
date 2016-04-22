@@ -33,6 +33,8 @@ func TestNewString(b *testing.T) {
 		"║ ♖ ║ ♘ ║ ♗ ║ ♕ ║ ♔ ║ ♗ ║ ♘ ║ ♖ ║  1",
 		"╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝",
 		"  A   B   C   D   E   F   G   H",
+		"",
+		"White's Turn",
 	}
 	y := strings.Join(lines, "\n")
 	if x != y {

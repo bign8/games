@@ -98,11 +98,6 @@ func main() {
 	// actual game runtime
 	for err == nil {
 		fmt.Printf("%s\n\n", game)
-		if game.IsBlack() {
-			fmt.Println("Black's Turn")
-		} else {
-			fmt.Println("White's Turn")
-		}
 		fmt.Printf("\nMoves: %+q\n\n", game.Moves())
 		move := getMove(reader, game)
 		fmt.Printf("Used Move: %s\n", move)

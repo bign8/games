@@ -45,7 +45,13 @@ func (s State) String() string {
 		"║ " + strings.Join(bits[48:56], col) + " ║  2",
 		"║ " + strings.Join(bits[56:64], col) + " ║  1",
 	}
-	return top + strings.Join(rows, sep) + bot
+
+	// Parse out player
+	player := "White"
+	if s.isBlack {
+		player = "Black"
+	}
+	return top + strings.Join(rows, sep) + bot + "\n\n" + player + "'s Turn"
 }
 
 // BlockifyString adds enough spaces to the end of a string to appear "square"
