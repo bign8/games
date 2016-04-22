@@ -89,15 +89,28 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Start printing input info
 	fmt.Printf("Chess %s", version)
 	game := chess.New()
-	fmt.Printf("%s\n", game)
-
-	// // Start reading user input
 	reader := bufio.NewReader(os.Stdin)
-	// loc := getLocation(reader, "Enter Piece Position > ")
-	// fmt.Printf("You entered: %d %s\n", loc, loc.String())
-	fmt.Printf("Moves: %+q\n", game.Moves())
-	move := getMove(reader, game)
-	fmt.Printf("Used Move: %s\n", move)
+
+	// actual game runtime
+	for err == nil {
+		fmt.Printf("%s\n\n", game)
+		if game.IsBlack() {
+			fmt.Println("Black's Turn")
+		} else {
+			fmt.Println("White's Turn")
+		}
+		fmt.Printf("\nMoves: %+q\n\n", game.Moves())
+		move := getMove(reader, game)
+		fmt.Printf("Used Move: %s\n", move)
+		game, err = game.Apply(move)
+	}
+
+	// Error handling
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Chess Error:", err)
+	}
 }

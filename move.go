@@ -19,6 +19,11 @@ type Move struct {
 	Stop  Location
 }
 
+// Equals checks if Moves are equal
+func (m Move) Equals(n *Move) bool {
+	return m.Start == n.Start && m.Stop == n.Stop
+}
+
 // String prints a human readable move
 func (m Move) String() string {
 	return fmt.Sprintf("%s -> %s", m.Start, m.Stop)
@@ -76,6 +81,7 @@ func (s State) Moves() []*Move {
 }
 
 func (s State) pawnMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/Pawn_(chess)
 	var isStarting bool
 	var move, start, left, right Location
 	row, _ := loc.rowCol()
