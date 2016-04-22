@@ -7,6 +7,7 @@ import (
 
 func BenchmarkNewString(b *testing.B) {
 	game := New()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.String()
 	}

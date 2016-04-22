@@ -27,7 +27,7 @@ func (m Move) String() string {
 }
 
 // Moves gives the list of possible moves to take given a state of the game
-func (s State) Moves() []*Move {
+func (s *State) Moves() []*Move {
 	if s.moves == nil {
 		s.moves = make([]*Move, 0)
 		var newMoves []*Move
