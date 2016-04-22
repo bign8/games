@@ -2,8 +2,6 @@ package chess
 
 import "errors"
 
-const newGame = "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR"
-
 // State is an internal representation of a chess game.
 // - FEN notation: https://en.wikipedia.org/wiki/FEN
 // - See: http://golang-sizeof.tips/?t=Ly8gTm90ZXM6Ci8vIC0gc2l6ZXM6IGh0dHBzOi8vZ29sYW5nLm9yZy9wa2cvYnVpbHRpbi8KLy8gLSBGRU4gbm90YXRpb246IGh0dHBzOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL0ZvcnN5dGglRTIlODAlOTNFZHdhcmRzX05vdGF0aW9uCgpzdHJ1Y3QgewoJYm9hcmQgWzY0XWJ5dGUgLy8gYXJiaXRyYXJ5IHNpemUKCWlzQmxhY2sgYm9vbCAvLyBkZXRlcm1pbmVzIGFjdGl2ZSBjb2xvciAoY291bGQgbWFwIG9uIGNhc3RsaW5nKQoJY2FzdGxpbmcgdWludDggLy8gYml0IG1hc2tlZCBudW1iZXIgaW4gS1FrcSBvcmRlcgoJZW5QYXNzYW50IHVpbnQ4IC8vIGJvYXJkIHBvc2l0aW9uIDAgKG4vYSkgKyAxIC0gNjQKCWhhbGZtb3ZlIHVpbnQ4IC8vIG1heCA1MCAobGltaXRlZCBieSBydWxlKSBbdHlwZToyNTVdCgljb3VudCB1aW50MzIgLy8gbWF4IG9mIDQyOTQ5NjcyOTUgKGxpbWl0ZWQgYnkgdHlwZSkKfQoKLy8gQ2FuIGlnbm9yZSB0aGUgbGFzdCAyIGZvciBwb3NzaWJsZSBtb3ZlcyBtYXA=
@@ -24,7 +22,7 @@ type State struct {
 // New begins a brand new game
 func New() *State {
 	var board [64]byte
-	copy(board[:], newGame)
+	copy(board[:], "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR")
 	return &State{
 		board:     board,
 		isBlack:   false,

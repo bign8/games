@@ -106,6 +106,7 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 		right = loc.offset(-1, 1)
 		isStarting = row == 6
 	}
+
 	if _, ok := s.pieces[move.toInt()]; !ok {
 		res = append(res, NewMove(loc, move))
 	}
@@ -121,12 +122,23 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 	return res
 }
 
-func (s State) rookMoves(start Location) []*Move {
-	return make([]*Move, 0)
+func (s State) rookMoves(start Location) (res []*Move) {
+	return res
 }
 
-func (s State) knightMoves(start Location) []*Move {
-	return make([]*Move, 0)
+func (s State) knightMoves(loc Location) (res []*Move) {
+	x := []int8{1, 1, 2, 2, -1, -1, -2, -2}
+	y := []int8{2, -2, 1, -1, 2, -2, 1, -1}
+	for i := 0; i < len(x); i++ {
+		if m := loc.offset(x[i], y[i]); m != InvalidLocation {
+			idx := m.toInt()
+			if s.piece(idx) && s.black(idx) == s.isBlack {
+				continue
+			}
+			res = append(res, NewMove(loc, m))
+		}
+	}
+	return res
 }
 
 func (s State) bishopMoves(start Location) []*Move {
@@ -142,5 +154,9 @@ func (s State) kingMoves(start Location) []*Move {
 }
 
 func (s State) black(idx uint8) bool {
-	return 'a' < s.pieces[idx] && s.pieces[idx] < 'z'
+	return 'a' < s.board[idx] && s.board[idx] < 'z'
+}
+
+func (s State) piece(idx uint8) bool {
+	return s.board[idx] != '1'
 }

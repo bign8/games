@@ -59,8 +59,3 @@ func ParseLocation(in string) Location {
 	}
 	return Location(row*8 + col)
 }
-
-// // IsPieceAtLocation returns if the move a legal existing piece on the borad
-// func IsPieceAtLocation(loc Location) (bool, error) {
-//
-// }
