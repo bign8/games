@@ -14,7 +14,9 @@ type State struct {
 	enPassant uint8  // board position 0 (n/a) + 1 - 64
 	halfmove  uint8  // max 50 (limited by rule) [type:255]
 	count     uint32 // max of 4294967295 (limited by type)
-	moves     []Move
+
+	moves  []*Move        // cache of available moves
+	pieces map[uint8]byte // cache of occupied locations
 }
 
 // New begins a brand new game
