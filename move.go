@@ -1,9 +1,6 @@
 package chess
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 // NewMove takes 2 chess locations and builds a move.
 func NewMove(src, dst Location) *Move {
@@ -50,25 +47,36 @@ func (s State) Moves() []*Move {
 		}
 
 		var newMoves []*Move
-		normalBoard := strings.ToLower(s.board)
 		for i := 0; i < len(s.board); i++ {
 			if '0' < s.board[i] && s.board[i] < '9' {
 				idx += s.board[i] - '0'
 			} else {
 				if s.black(idx) == s.isBlack {
 					next := Location(idx)
-					switch normalBoard[i] {
+					switch s.board[i] {
 					case 'p':
+						fallthrough
+					case 'P':
 						newMoves = s.pawnMoves(next)
 					case 'r':
+						fallthrough
+					case 'R':
 						newMoves = s.rookMoves(next)
 					case 'n':
+						fallthrough
+					case 'N':
 						newMoves = s.knightMoves(next)
 					case 'b':
+						fallthrough
+					case 'B':
 						newMoves = s.bishopMoves(next)
 					case 'q':
+						fallthrough
+					case 'Q':
 						newMoves = s.queenMoves(next)
 					case 'k':
+						fallthrough
+					case 'K':
 						newMoves = s.kingMoves(next)
 					}
 					s.moves = append(s.moves, newMoves...)
