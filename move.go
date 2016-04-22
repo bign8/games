@@ -29,59 +29,38 @@ func (m Move) String() string {
 // Moves gives the list of possible moves to take given a state of the game
 func (s State) Moves() []*Move {
 	if s.moves == nil {
-		idx := byte(0)
 		s.moves = make([]*Move, 0)
-
-		// map all pieces
-		if s.pieces == nil {
-			s.pieces = make(map[uint8]byte)
-			for i := 0; i < len(s.board); i++ {
-				if '0' < s.board[i] && s.board[i] < '9' {
-					idx += s.board[i] - '0'
-				} else {
-					s.pieces[idx] = s.board[i]
-					idx++
-				}
-			}
-			idx = 0
-		}
-
 		var newMoves []*Move
-		for i := 0; i < len(s.board); i++ {
-			if '0' < s.board[i] && s.board[i] < '9' {
-				idx += s.board[i] - '0'
-			} else {
-				if s.black(idx) == s.isBlack {
-					next := Location(idx)
-					switch s.board[i] {
-					case 'p':
-						fallthrough
-					case 'P':
-						newMoves = s.pawnMoves(next)
-					case 'r':
-						fallthrough
-					case 'R':
-						newMoves = s.rookMoves(next)
-					case 'n':
-						fallthrough
-					case 'N':
-						newMoves = s.knightMoves(next)
-					case 'b':
-						fallthrough
-					case 'B':
-						newMoves = s.bishopMoves(next)
-					case 'q':
-						fallthrough
-					case 'Q':
-						newMoves = s.queenMoves(next)
-					case 'k':
-						fallthrough
-					case 'K':
-						newMoves = s.kingMoves(next)
-					}
-					s.moves = append(s.moves, newMoves...)
+		for idx := byte(0); idx < 64; idx++ {
+			if s.piece(idx) && s.black(idx) == s.isBlack {
+				next := Location(idx)
+				switch s.board[idx] {
+				case 'p':
+					fallthrough
+				case 'P':
+					newMoves = s.pawnMoves(next)
+				case 'r':
+					fallthrough
+				case 'R':
+					newMoves = s.rookMoves(next)
+				case 'n':
+					fallthrough
+				case 'N':
+					newMoves = s.knightMoves(next)
+				case 'b':
+					fallthrough
+				case 'B':
+					newMoves = s.bishopMoves(next)
+				case 'q':
+					fallthrough
+				case 'Q':
+					newMoves = s.queenMoves(next)
+				case 'k':
+					fallthrough
+				case 'K':
+					newMoves = s.kingMoves(next)
 				}
-				idx++
+				s.moves = append(s.moves, newMoves...)
 			}
 		}
 	}
@@ -107,16 +86,18 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 		isStarting = row == 6
 	}
 
-	if _, ok := s.pieces[move.toInt()]; !ok {
+	if !s.piece(move.toInt()) {
 		res = append(res, NewMove(loc, move))
 	}
-	if _, ok := s.pieces[start.toInt()]; !ok && isStarting {
+	if !s.piece(start.toInt()) && isStarting {
 		res = append(res, NewMove(loc, start))
 	}
-	if _, ok := s.pieces[left.toInt()]; ok {
+	idx := left.toInt()
+	if left != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
 		res = append(res, NewMove(loc, left))
 	}
-	if _, ok := s.pieces[right.toInt()]; ok {
+	idx = right.toInt()
+	if right != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
 		res = append(res, NewMove(loc, right))
 	}
 	return res
