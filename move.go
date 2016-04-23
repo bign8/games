@@ -126,12 +126,27 @@ func (s State) knightMoves(loc Location) (res []*Move) {
 	return res
 }
 
-func (s State) bishopMoves(start Location) []*Move {
-	return make([]*Move, 0)
+func (s State) bishopMoves(start Location) (res []*Move) {
+	return res
 }
 
-func (s State) queenMoves(start Location) []*Move {
-	return make([]*Move, 0)
+func (s State) queenMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/Queen_(chess)
+	x := []int8{0, 1, 1, 1, -1, -1, 0, -1}
+	y := []int8{1, 1, 0, -1, 1, 0, -1, -1}
+	for i := 0; i < len(x); i++ {
+		next := loc.offset(x[i], y[i])
+		idx := next.toInt()
+		for next != InvalidLocation && !s.piece(idx) {
+			res = append(res, NewMove(loc, next))
+			next = next.offset(x[i], y[i])
+			idx = next.toInt()
+		}
+		if next != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
+			res = append(res, NewMove(loc, next))
+		}
+	}
+	return res
 }
 
 func (s State) kingMoves(loc Location) (res []*Move) {
