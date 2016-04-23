@@ -106,7 +106,22 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 	return res
 }
 
-func (s State) rookMoves(start Location) (res []*Move) {
+func (s State) rookMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/Rook_(chess)
+	x := []int8{0, 1, -1, 0}
+	y := []int8{1, 0, 0, -1}
+	for i := 0; i < len(x); i++ {
+		next := loc.offset(x[i], y[i])
+		idx := next.toInt()
+		for next != InvalidLocation && !s.piece(idx) {
+			res = append(res, NewMove(loc, next))
+			next = next.offset(x[i], y[i])
+			idx = next.toInt()
+		}
+		if next != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
+			res = append(res, NewMove(loc, next))
+		}
+	}
 	return res
 }
 
@@ -126,7 +141,22 @@ func (s State) knightMoves(loc Location) (res []*Move) {
 	return res
 }
 
-func (s State) bishopMoves(start Location) (res []*Move) {
+func (s State) bishopMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/Bishop_(chess)
+	x := []int8{1, 1, -1, -1}
+	y := []int8{1, -1, 1, -1}
+	for i := 0; i < len(x); i++ {
+		next := loc.offset(x[i], y[i])
+		idx := next.toInt()
+		for next != InvalidLocation && !s.piece(idx) {
+			res = append(res, NewMove(loc, next))
+			next = next.offset(x[i], y[i])
+			idx = next.toInt()
+		}
+		if next != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
+			res = append(res, NewMove(loc, next))
+		}
+	}
 	return res
 }
 
