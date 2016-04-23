@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func BenchmarkNewString(b *testing.B) {
+func BenchmarkStateString(b *testing.B) {
 	game := New()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

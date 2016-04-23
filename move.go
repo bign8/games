@@ -28,6 +28,7 @@ func (m Move) String() string {
 
 // Moves gives the list of possible moves to take given a state of the game
 func (s *State) Moves() []*Move {
+	// TODO: stalemate: https://en.wikipedia.org/wiki/Stalemate
 	if s.moves == nil {
 		s.moves = make([]*Move, 0)
 		var newMoves []*Move
@@ -69,6 +70,8 @@ func (s *State) Moves() []*Move {
 
 func (s State) pawnMoves(loc Location) (res []*Move) {
 	// https://en.wikipedia.org/wiki/Pawn_(chess)
+	// TODO: enPassant https://en.wikipedia.org/wiki/En_passant
+	// TODO: promotion https://en.wikipedia.org/wiki/Promotion_(chess)
 	var isStarting bool
 	var move, start, left, right Location
 	row, _ := loc.rowCol()
@@ -108,6 +111,7 @@ func (s State) rookMoves(start Location) (res []*Move) {
 }
 
 func (s State) knightMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/Knight_(chess)
 	x := []int8{1, 1, 2, 2, -1, -1, -2, -2}
 	y := []int8{2, -2, 1, -1, 2, -2, 1, -1}
 	for i := 0; i < len(x); i++ {
@@ -130,8 +134,21 @@ func (s State) queenMoves(start Location) []*Move {
 	return make([]*Move, 0)
 }
 
-func (s State) kingMoves(start Location) []*Move {
-	return make([]*Move, 0)
+func (s State) kingMoves(loc Location) (res []*Move) {
+	// https://en.wikipedia.org/wiki/King_(chess)
+	// TODO castling https://en.wikipedia.org/wiki/Castling
+	x := []int8{0, 1, 1, 1, -1, -1, 0, -1}
+	y := []int8{1, 1, 0, -1, 1, 0, -1, -1}
+	for i := 0; i < len(x); i++ {
+		if m := loc.offset(x[i], y[i]); m != InvalidLocation {
+			idx := m.toInt()
+			if s.piece(idx) && s.black(idx) == s.isBlack {
+				continue
+			}
+			res = append(res, NewMove(loc, m))
+		}
+	}
+	return res
 }
 
 func (s State) black(idx uint8) bool {
