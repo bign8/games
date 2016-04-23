@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/bign8/chess"
@@ -46,42 +47,73 @@ func getLocationFromSet(reader *bufio.Reader, prompt string, set map[chess.Locat
 	return loc
 }
 
-func getMove(reader *bufio.Reader, state *chess.State) *chess.Move {
-	// TODO: use better data structures here to improve lookup performance
-	moves := state.Moves()
+func getNumberLessThan(reader *bufio.Reader, prompt string, max int) int {
+	for {
+		fmt.Printf("%s [0-%d] > ", prompt, max-1)
+		str, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Problem reading input:", err)
+			continue
+		}
+		str = strings.Trim(str, "\r\n\t ")
+		idx, err := strconv.Atoi(str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Problem processing number:", err)
+			continue
+		}
+		if idx >= max {
+			fmt.Fprintln(os.Stderr, "Value not permitted. Try again...")
+			continue
+		}
+		return idx
+	}
+}
 
-	// Convert starts of moves to a printable string
+func getMove(reader *bufio.Reader, state *chess.State) *chess.Move {
+
+	// Generate input tree
+	tree := make(map[chess.Location]map[chess.Location][]*chess.Move)
+	for _, move := range state.Moves() {
+		tier, ok := tree[move.Start]
+		if !ok {
+			tier = make(map[chess.Location][]*chess.Move)
+			tree[move.Start] = tier
+		}
+		tier[move.Stop] = append(tier[move.Stop], move)
+	}
+
+	// TODO: auto-pick if only one source
+
+	// Request Source
 	set := make(map[chess.Location]struct{})
-	for _, move := range moves {
-		set[move.Start] = struct{}{}
+	for key := range tree {
+		set[key] = struct{}{}
 	}
 	start := getLocationFromSet(reader, "Enter Starting Piece", set)
 
-	// Clip the list of moves based on starting input
+	// TODO: auto-pick if only one destination
+
+	// Request Destination
 	set = make(map[chess.Location]struct{})
-	for _, move := range moves {
-		if move.Start == start {
-			set[move.Stop] = struct{}{}
-		}
+	for key := range tree[start] {
+		set[key] = struct{}{}
 	}
-
-	// Auto-pick move if only one available
-	if len(set) == 1 {
-		for _, move := range moves {
-			if move.Start == start {
-				return move
-			}
-		}
-	}
-
-	// Get stop of intended move
 	stop := getLocationFromSet(reader, "Enter Piece Destination", set)
-	for _, move := range moves {
-		if move.Start == start && move.Stop == stop {
-			return move
-		}
+
+	// Auto-pick if only one move
+	moves := tree[start][stop]
+	if len(moves) == 1 {
+		fmt.Println("User Chose:", moves[0])
+		return moves[0]
 	}
-	return nil
+
+	// Custom UI for choosing a duplicate ending move
+	fmt.Println("ID\tMove")
+	for i, m := range moves {
+		fmt.Printf("%d\t%s\n", i, m)
+	}
+	idx := getNumberLessThan(reader, "Enter Move ID", len(moves))
+	return moves[idx]
 }
 
 func main() {

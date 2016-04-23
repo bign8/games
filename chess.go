@@ -64,6 +64,15 @@ func (s State) Apply(m *Move) (*State, error) {
 	board[m.Stop] = s.board[m.Start]
 	board[m.Start] = '1'
 
+	// Promotion
+	if m.promotion > 0 {
+		list := "_RNBQ"
+		if s.isBlack {
+			list = "_rnbq"
+		}
+		board[m.Stop] = list[m.promotion]
+	}
+
 	// fullmove count is only incremented after black's move
 	count := s.count
 	if s.isBlack {

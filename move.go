@@ -5,18 +5,30 @@ import "fmt"
 // NewMove takes 2 chess locations and builds a move.
 func NewMove(src, dst Location) *Move {
 	return &Move{
-		Start:   src,
-		Stop:    dst,
-		passing: InvalidLocation,
+		Start:     src,
+		Stop:      dst,
+		passing:   InvalidLocation,
+		promotion: 0,
 	}
 }
 
+/*
+Chr | upper | lower |  u bin  |  l bin  |
+ r  |   82  |  114  | 1010010 | 1110010 |
+ n  |   78  |  110  | 1001110 | 1101110 |
+ b  |   66  |   98  | 1000010 | 1100010 |
+ q  |   81  |  113  | 1010001 | 1110001 |
+*/
+
 // Move represents a single move in the game of chess
 type Move struct {
-	Start   Location
-	Stop    Location
-	passing Location
+	Start     Location
+	Stop      Location
+	passing   Location
+	promotion uint8 // 0:n/a, 1:rook, 2:knight, 3:bishop, 4:queen
 }
+
+var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
 
 // Equals checks if Moves are equal
 func (m Move) Equals(n *Move) bool {
@@ -25,7 +37,12 @@ func (m Move) Equals(n *Move) bool {
 
 // String prints a human readable move
 func (m Move) String() string {
-	return fmt.Sprintf("%s -> %s", m.Start, m.Stop)
+	template := "%s -> %s"
+
+	if m.promotion > 0 {
+		template += " (" + promotionLookup[m.promotion] + ")"
+	}
+	return fmt.Sprintf(template, m.Start, m.Stop)
 }
 
 // Moves gives the list of possible moves to take given a state of the game
@@ -71,7 +88,7 @@ func (s *State) Moves() []*Move {
 
 func (s State) pawnMoves(loc Location) (res []*Move) {
 	// https://en.wikipedia.org/wiki/Pawn_(chess)
-	// TODO: promotion https://en.wikipedia.org/wiki/Promotion_(chess)
+	// TODO: cleanup duplicate logic here
 	var isStarting bool
 	var move, start, left, right Location
 	row, _ := loc.rowCol()
@@ -89,9 +106,21 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 		isStarting = row == 6
 	}
 
-	if !s.piece(move.toInt()) {
-		res = append(res, NewMove(loc, move))
-		if !s.piece(start.toInt()) && isStarting {
+	if move != InvalidLocation && !s.piece(move.toInt()) {
+		if row, _ := move.rowCol(); row == 0 || row == 7 {
+			// Promotion (rook, knight, bishop, queen)
+			for i := uint8(1); i < 5; i++ {
+				m := NewMove(loc, move)
+				m.promotion = i
+				res = append(res, m)
+			}
+		} else {
+			// Regular move
+			res = append(res, NewMove(loc, move))
+		}
+
+		// Double start (set enPassant variable)
+		if start != InvalidLocation && !s.piece(start.toInt()) && isStarting {
 			m := NewMove(loc, start)
 			m.passing = move
 			res = append(res, m)
@@ -99,11 +128,31 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 	}
 	idx := left.toInt()
 	if left != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || left == s.enPassant) {
-		res = append(res, NewMove(loc, left))
+		if row, _ := left.rowCol(); row == 0 || row == 7 {
+			// Promotion (rook, knight, bishop, queen)
+			for i := uint8(1); i < 5; i++ {
+				m := NewMove(loc, left)
+				m.promotion = i
+				res = append(res, m)
+			}
+		} else {
+			// Regular move
+			res = append(res, NewMove(loc, left))
+		}
 	}
 	idx = right.toInt()
 	if right != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || right == s.enPassant) {
-		res = append(res, NewMove(loc, right))
+		if row, _ := right.rowCol(); row == 0 || row == 7 {
+			// Promotion (rook, knight, bishop, queen)
+			for i := uint8(1); i < 5; i++ {
+				m := NewMove(loc, right)
+				m.promotion = i
+				res = append(res, m)
+			}
+		} else {
+			// Regular move
+			res = append(res, NewMove(loc, right))
+		}
 	}
 	return res
 }
