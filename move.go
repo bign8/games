@@ -5,15 +5,17 @@ import "fmt"
 // NewMove takes 2 chess locations and builds a move.
 func NewMove(src, dst Location) *Move {
 	return &Move{
-		Start: src,
-		Stop:  dst,
+		Start:   src,
+		Stop:    dst,
+		passing: InvalidLocation,
 	}
 }
 
 // Move represents a single move in the game of chess
 type Move struct {
-	Start Location
-	Stop  Location
+	Start   Location
+	Stop    Location
+	passing Location
 }
 
 // Equals checks if Moves are equal
@@ -28,7 +30,6 @@ func (m Move) String() string {
 
 // Moves gives the list of possible moves to take given a state of the game
 func (s *State) Moves() []*Move {
-	// TODO: stalemate: https://en.wikipedia.org/wiki/Stalemate
 	if s.moves == nil {
 		s.moves = make([]*Move, 0)
 		var newMoves []*Move
@@ -70,7 +71,6 @@ func (s *State) Moves() []*Move {
 
 func (s State) pawnMoves(loc Location) (res []*Move) {
 	// https://en.wikipedia.org/wiki/Pawn_(chess)
-	// TODO: enPassant https://en.wikipedia.org/wiki/En_passant
 	// TODO: promotion https://en.wikipedia.org/wiki/Promotion_(chess)
 	var isStarting bool
 	var move, start, left, right Location
@@ -91,16 +91,18 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 
 	if !s.piece(move.toInt()) {
 		res = append(res, NewMove(loc, move))
-	}
-	if !s.piece(start.toInt()) && isStarting {
-		res = append(res, NewMove(loc, start))
+		if !s.piece(start.toInt()) && isStarting {
+			m := NewMove(loc, start)
+			m.passing = move
+			res = append(res, m)
+		}
 	}
 	idx := left.toInt()
-	if left != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
+	if left != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || left == s.enPassant) {
 		res = append(res, NewMove(loc, left))
 	}
 	idx = right.toInt()
-	if right != InvalidLocation && s.piece(idx) && s.black(idx) != s.isBlack {
+	if right != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || right == s.enPassant) {
 		res = append(res, NewMove(loc, right))
 	}
 	return res

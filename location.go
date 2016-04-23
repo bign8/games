@@ -20,18 +20,20 @@ var rowLookup = map[byte]uint8{
 	'1': 7, '2': 6, '3': 5, '4': 4, '5': 3, '6': 2, '7': 1, '8': 0,
 }
 
+func locFromRowCol(row, col int8) Location {
+	if 0 <= row && row < 8 && 0 <= col && col < 8 {
+		return Location(row*8 + col)
+	}
+	return InvalidLocation
+}
+
 func (l Location) rowCol() (int8, int8) {
 	return int8(l) / 8, int8(l) % 8
 }
 
 func (l Location) offset(down, right int8) Location {
 	row, col := l.rowCol()
-	row += down
-	col += right
-	if 0 <= row && row < 8 && 0 <= col && col < 8 {
-		return Location(row*8 + col)
-	}
-	return InvalidLocation
+	return locFromRowCol(row+down, col+right)
 }
 
 func (l Location) toInt() uint8 {
@@ -40,6 +42,9 @@ func (l Location) toInt() uint8 {
 
 // String prints the human readable format of a Location
 func (l Location) String() string {
+	if l == InvalidLocation {
+		return "-"
+	}
 	return fmt.Sprintf("%c%d", l%8+'A', 8-l/8)
 }
 

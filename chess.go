@@ -11,7 +11,7 @@ type State struct {
 	board     [64]byte // fixed size
 	isBlack   bool     // determines active color (could map on castling)
 	castling  uint8    // bit masked number in KQkq order
-	enPassant uint8    // board position 0 (n/a) + 1 - 64
+	enPassant Location // location behind last double pawn move
 	halfmove  uint8    // max 50 (limited by rule) [type:255]
 	count     uint32   // max of 4294967295 (limited by type)
 	moves     []*Move  // cache of available moves
@@ -25,7 +25,7 @@ func New() *State {
 		board:     board,
 		isBlack:   false,
 		castling:  15,
-		enPassant: 0,
+		enPassant: InvalidLocation,
 		halfmove:  0,
 		count:     1,
 	}
@@ -44,20 +44,50 @@ func (s State) Apply(m *Move) (*State, error) {
 		return nil, errors.New("chess: move not permitted")
 	}
 
+	// Should reset halfmove count https://en.wikipedia.org/wiki/Fifty-move_rule
+	halfmove := s.halfmove + 1
+	if s.piece(m.Stop.toInt()) || s.board[m.Start] == 'p' || s.board[m.Start] == 'P' {
+		halfmove = 0
+	}
+
+	// enPassant remove pawn
+	isPawn := s.board[m.Start] == 'p' || s.board[m.Start] == 'P'
+	if isPawn && m.Stop == s.enPassant && s.board[m.Stop] == '1' {
+		_, col := m.Stop.rowCol()
+		row, _ := m.Start.rowCol()
+		s.board[locFromRowCol(row, col)] = '1'
+	}
+
 	// Make Move
 	var board [64]byte
 	copy(board[:], s.board[:])
 	board[m.Stop] = s.board[m.Start]
 	board[m.Start] = '1'
 
-	// Generate new board... TODO: fix count + halfmove + nePassant + castling
+	// fullmove count is only incremented after black's move
+	count := s.count
+	if s.isBlack {
+		count++
+	}
+
+	// Generate new board... TODO: fix castling
 	state := &State{
 		board:     board,
 		isBlack:   !s.isBlack,
 		castling:  s.castling,
-		enPassant: s.enPassant,
-		halfmove:  s.halfmove,
-		count:     s.count + 1,
+		enPassant: m.passing,
+		halfmove:  halfmove,
+		count:     count,
 	}
 	return state, nil
+}
+
+// Terminal determines if the active game state is a complete move
+func (s State) Terminal() bool {
+	// https://en.wikipedia.org/wiki/Chess#End_of_the_game
+	// TODO: checkmate: https://en.wikipedia.org/wiki/Checkmate
+	// TODO: stalemate: https://en.wikipedia.org/wiki/Stalemate
+	// TODO: halfmove: https://en.wikipedia.org/wiki/Fifty-move_rule
+	// TODO: more win/draw cases ...
+	return false
 }
