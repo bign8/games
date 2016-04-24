@@ -91,6 +91,10 @@ func (s State) Apply(m *Move) (*State, error) {
 	copy(board[:], s.board[:])
 	board[m.Stop] = s.board[m.Start]
 	board[m.Start] = '1'
+	if m.castling != nil {
+		board[m.castling.Stop] = s.board[m.castling.Start]
+		board[m.castling.Start] = '1'
+	}
 
 	// Promotion
 	if m.promotion > 0 {

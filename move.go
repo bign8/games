@@ -26,6 +26,7 @@ type Move struct {
 	Stop      Location
 	passing   Location
 	promotion uint8 // 0:n/a, 1:rook, 2:knight, 3:bishop, 4:queen
+	castling  *Move // nil unless castling
 }
 
 var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
@@ -34,7 +35,15 @@ var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
 func (m Move) Equals(n *Move) bool {
 	pos := m.Start == n.Start && m.Stop == n.Stop
 	special := n.passing == n.passing && n.promotion == n.promotion
-	return pos && special
+	var castling bool
+	if m.castling == nil && n.castling == nil {
+		castling = true
+	} else if m.castling == nil || n.castling == nil {
+		castling = false
+	} else {
+		castling = m.castling.Start == n.castling.Start && m.castling.Stop == n.castling.Stop
+	}
+	return pos && special && castling
 }
 
 // String prints a human readable move
@@ -43,6 +52,9 @@ func (m Move) String() string {
 
 	if m.promotion > 0 {
 		template += " (" + promotionLookup[m.promotion] + ")"
+	}
+	if m.castling != nil {
+		template += " (castling)"
 	}
 	return fmt.Sprintf(template, m.Start, m.Stop)
 }
@@ -246,6 +258,40 @@ func (s State) kingMoves(loc Location) (res []*Move) {
 			res = append(res, NewMove(loc, m))
 		}
 	}
+
+	var kq uint8
+	var home int8
+	if s.isBlack {
+		kq = (s.castling >> 2) & 3
+		home = 0
+	} else {
+		kq = (s.castling >> 0) & 3
+		home = 7
+	}
+	if kq&2 == 2 {
+		// check for kingside castle
+		rook := locFromRowCol(home, 7)
+		knight := locFromRowCol(home, 6)
+		bishop := locFromRowCol(home, 5)
+		if s.board[knight] == '1' && s.board[bishop] == '1' {
+			m := NewMove(loc, knight)
+			m.castling = NewMove(rook, bishop)
+			res = append(res, m)
+		}
+	}
+	if kq&1 == 1 {
+		// check for queenside castle
+		rook := locFromRowCol(home, 0)
+		knight := locFromRowCol(home, 1)
+		bishop := locFromRowCol(home, 2)
+		queen := locFromRowCol(home, 3)
+		if s.board[knight] == '1' && s.board[bishop] == '1' && s.board[queen] == '1' {
+			m := NewMove(loc, bishop)
+			m.castling = NewMove(rook, queen) // rook move
+			res = append(res, m)
+		}
+	}
+
 	return res
 }
 
