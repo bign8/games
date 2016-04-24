@@ -10,3 +10,6 @@ func BenchmarkMoves(b *testing.B) {
 		game.Moves()
 	}
 }
+
+// castling board
+// "r111k11r111111111111111111111111111111111111111111111111R111K11R"

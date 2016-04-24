@@ -50,12 +50,40 @@ func (s State) Apply(m *Move) (*State, error) {
 		halfmove = 0
 	}
 
-	// enPassant remove pawn
+	// enPassant - remove pawn
 	isPawn := s.board[m.Start] == 'p' || s.board[m.Start] == 'P'
 	if isPawn && m.Stop == s.enPassant && s.board[m.Stop] == '1' {
 		_, col := m.Stop.rowCol()
 		row, _ := m.Start.rowCol()
 		s.board[locFromRowCol(row, col)] = '1'
+	}
+
+	// castling - track if king or rook moves - KQkq - TODO: clean up this ligic
+	var kq uint8
+	var home int8
+	if s.isBlack {
+		kq = (s.castling >> 2) & 3
+		home = 0
+	} else {
+		kq = (s.castling >> 0) & 3
+		home = 7
+	}
+	if kq > 0 {
+		if s.board[m.Start] == 'K' || s.board[m.Start] == 'k' {
+			kq = 0 // If king is moved, castling is no longer possible
+		} else if row, col := m.Start.rowCol(); (s.board[m.Start] == 'r' || s.board[m.Start] == 'R') && row == home {
+			if col == 0 {
+				kq = kq & 2
+			} else {
+				kq = kq & 1
+			}
+		}
+	}
+	var castling uint8
+	if s.isBlack {
+		castling = kq<<2 | (s.castling & 3)
+	} else {
+		castling = kq<<0 | (s.castling & 12)
 	}
 
 	// Make Move
@@ -83,7 +111,7 @@ func (s State) Apply(m *Move) (*State, error) {
 	state := &State{
 		board:     board,
 		isBlack:   !s.isBlack,
-		castling:  s.castling,
+		castling:  castling,
 		enPassant: m.passing,
 		halfmove:  halfmove,
 		count:     count,

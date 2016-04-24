@@ -32,7 +32,9 @@ var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
 
 // Equals checks if Moves are equal
 func (m Move) Equals(n *Move) bool {
-	return m.Start == n.Start && m.Stop == n.Stop
+	pos := m.Start == n.Start && m.Stop == n.Stop
+	special := n.passing == n.passing && n.promotion == n.promotion
+	return pos && special
 }
 
 // String prints a human readable move
