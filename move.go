@@ -80,6 +80,10 @@ func (s *State) Moves() []*Move {
 		for idx := byte(0); idx < 64; idx++ {
 			if s.piece(idx) {
 				next := Location(idx)
+				// TODO: remove this and figure out a better way
+				if s.black(idx) != s.isBlack {
+					continue
+				}
 				switch s.board[idx] {
 				case 'p':
 					fallthrough

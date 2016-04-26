@@ -8,32 +8,77 @@ import (
 
 //*
 
-// // Out generats a minimal transmission of this data in []byte form
-// func (s State) Out() string {
-//
-// 	// TODO: make this actually work
-// 	// Consolidate 1's back down to 2-8 if possible
-// 	// TODO: move all this logic to PARSE
-// 	newBoard := s.board[:]
-// 	length := 0
-// 	for i := 63; i >= 0; i-- {
-// 		if newBoard[i] == '1' {
-// 			length++
-// 			if length > 0 && i%8 == 0 { // line wrap
-// 				newBoard = newBoard[:i] + strconv.Itoa(length) + newBoard[i+length:]
-// 				length = 0
-// 			}
-// 		} else if length > 0 { // end of existing chain of numbers
-// 			newBoard = newBoard[:i+1] + strconv.Itoa(length) + newBoard[i+length+1:]
-// 			length = 0
-// 		}
-// 	}
-//
-// 	return "TODO"
-// }
+// FEN generats a minimal transmission of this data in []byte form
+func (s State) FEN() string {
 
-// Parse parses a state from []byte generated via Bytes()
-func Parse(bits string) (*State, error) {
+	// TODO: make this actually work
+	// Consolidate 1's back down to 2-8 if possible
+	// TODO: move all this logic to PARSE
+	newBoard := ""
+	parts := make([]string, 6)
+	pieces := make([]string, 64+7)
+	index := 0
+
+	// Setup board text
+	length := 0
+	for i := 0; i < 64; i++ {
+		if i%8 == 0 && i != 0 {
+			pieces[index] = "/"
+			index++
+		}
+		if s.board[i] == '1' {
+			length++
+			if length > 0 && i%8 == 7 { // line wrap
+				pieces[index] = strconv.Itoa(length)
+				length = 0
+			}
+		} else if length > 0 { // end of existing chain of numbers
+			pieces[index] = strconv.Itoa(length)
+			length = 0
+		} else {
+			pieces[index] = string(s.board[i])
+		}
+		index++
+	}
+	parts[0] = strings.Join(pieces, "")
+
+	// Set active player
+	if s.isBlack {
+		parts[1] = "b"
+	} else {
+		parts[1] = "w"
+	}
+
+	// Set castling
+	if s.castling == 0 {
+		parts[2] = "-"
+		newBoard += "-"
+	} else {
+		if s.castling&8 == 8 {
+			parts[2] += "K"
+		}
+		if s.castling&4 == 4 {
+			parts[2] += "Q"
+		}
+		if s.castling&2 == 2 {
+			parts[2] += "k"
+		}
+		if s.castling&1 == 1 {
+			parts[2] += "q"
+		}
+	}
+
+	// Set enPassant
+	parts[3] = s.enPassant.String()
+
+	// Set Halfmove
+	parts[4] = strconv.FormatUint(uint64(s.halfmove), 10)
+	parts[5] = strconv.FormatUint(uint64(s.count), 10)
+	return strings.Join(parts, " ")
+}
+
+// ParseFEN parses a state from []byte generated via Bytes()
+func ParseFEN(bits string) (*State, error) {
 	parts := strings.Split(bits, " ") // grid castle enPassant halfmove count
 
 	// Performant replace
