@@ -1,9 +1,6 @@
 package chess
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 // Location defines a location on the chess board that allows fast lookups
 type Location uint8
@@ -50,7 +47,6 @@ func (l Location) String() string {
 
 // ParseLocation returns a new chess board location object
 func ParseLocation(in string) Location {
-	in = strings.Trim(in, "\r\n\t ")
 	if len(in) != 2 {
 		return InvalidLocation
 	}

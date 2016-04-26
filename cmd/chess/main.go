@@ -20,7 +20,8 @@ func getLocation(reader *bufio.Reader, prompt string) chess.Location {
 			fmt.Fprintln(os.Stderr, "Problem reading input:", err)
 			continue
 		}
-		out := chess.ParseLocation(str)
+
+		out := chess.ParseLocation(strings.Trim(str, "\r\n\t "))
 		if out == chess.InvalidLocation {
 			fmt.Fprintln(os.Stderr, "Invalid input. Try again...")
 			continue

@@ -34,9 +34,7 @@ import (
 
 // Parse parses a state from []byte generated via Bytes()
 func Parse(bits string) (*State, error) {
-	parts := strings.Split(bits, " ")
-	// castling := parts[2]
-	// enPassant := parts[3]
+	parts := strings.Split(bits, " ") // grid castle enPassant halfmove count
 
 	// Performant replace
 	var grid [64]byte
@@ -57,22 +55,38 @@ func Parse(bits string) (*State, error) {
 		return nil, fmt.Errorf("invalid board dimensions: %d != 64", len(board))
 	}
 
+	// Parse castling
+	castle := uint8(0)
+	for i := 0; i < len(parts[2]); i++ {
+		switch parts[2][i] {
+		case 'K':
+			castle |= 8
+		case 'Q':
+			castle |= 4
+		case 'k':
+			castle |= 2
+		case 'q':
+			castle |= 1
+		}
+	}
+
+	// halfmove parsing
 	halfmove, err := strconv.ParseUint(parts[4], 10, 8)
 	if err != nil {
 		return nil, err
 	}
 
+	// count parsing
 	count, err := strconv.ParseUint(parts[5], 10, 32)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: parse state from bytes
 	return &State{
 		board:     grid,
 		isBlack:   parts[1] == "b",
-		castling:  15,              // TODO: parse
-		enPassant: InvalidLocation, // TODO: parse
+		castling:  castle,
+		enPassant: ParseLocation(parts[3]),
 		halfmove:  uint8(halfmove),
 		count:     uint32(count),
 	}, nil

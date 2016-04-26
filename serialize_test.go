@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func BenchmarkParse(b *testing.B) {
+func BenchmarkParseFEN(b *testing.B) {
 	board := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
