@@ -15,6 +15,9 @@ type State struct {
 	halfmove  uint8    // max 50 (limited by rule) [type:255]
 	count     uint32   // max of 4294967295 (limited by type)
 	moves     []*Move  // cache of available moves
+	check     bool
+	mate      bool
+	err       error
 }
 
 // New begins a brand new game
@@ -29,6 +32,10 @@ func New() *State {
 		halfmove:  0,
 		count:     1,
 	}
+}
+
+func (s State) Error() error {
+	return s.err
 }
 
 // Apply executes a move on a given state of the board
@@ -119,6 +126,8 @@ func (s State) Apply(m *Move) (*State, error) {
 		enPassant: m.passing,
 		halfmove:  halfmove,
 		count:     count,
+		check:     m.check,
+		mate:      m.mate,
 	}
 	return state, nil
 }
@@ -130,5 +139,5 @@ func (s State) Terminal() bool {
 	// TODO: stalemate: https://en.wikipedia.org/wiki/Stalemate
 	// TODO: halfmove: https://en.wikipedia.org/wiki/Fifty-move_rule
 	// TODO: more win/draw cases ...
-	return false
+	return s.mate
 }

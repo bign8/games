@@ -27,6 +27,8 @@ type Move struct {
 	passing   Location
 	promotion uint8 // 0:n/a, 1:rook, 2:knight, 3:bishop, 4:queen
 	castling  *Move // nil unless castling
+	check     bool
+	mate      bool
 }
 
 var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
@@ -56,16 +58,27 @@ func (m Move) String() string {
 	if m.castling != nil {
 		template += " (castling)"
 	}
+	if m.check {
+		if m.mate {
+			template += " (check)"
+		} else {
+			template += " (checkmate)"
+		}
+	}
 	return fmt.Sprintf(template, m.Start, m.Stop)
 }
 
 // Moves gives the list of possible moves to take given a state of the game
 func (s *State) Moves() []*Move {
+	if s.mate {
+		return nil
+	}
 	if s.moves == nil {
 		s.moves = make([]*Move, 0)
 		var newMoves []*Move
+		var attacks []*Move
 		for idx := byte(0); idx < 64; idx++ {
-			if s.piece(idx) && s.black(idx) == s.isBlack {
+			if s.piece(idx) {
 				next := Location(idx)
 				switch s.board[idx] {
 				case 'p':
@@ -93,8 +106,34 @@ func (s *State) Moves() []*Move {
 				case 'K':
 					newMoves = s.kingMoves(next)
 				}
-				s.moves = append(s.moves, newMoves...)
+				if s.black(idx) == s.isBlack {
+					s.moves = append(s.moves, newMoves...)
+				} else {
+					attacks = append(attacks, newMoves...)
+				}
 			}
+		}
+		// TODO: figure out if move is check-mate
+		// TODO: other types of check
+		// - Discovered Check: https://en.wikipedia.org/wiki/Discovered_check
+		// - Double Check: https://en.wikipedia.org/wiki/Double_check
+		// - Cross Check: https://en.wikipedia.org/wiki/Cross-check
+		// TODO: VERIFY WE ARE NOT PUTTING THE KING INTO CHECK
+		badSquares := make(map[Location]struct{})
+		for _, attack := range attacks {
+			badSquares[attack.Stop] = struct{}{}
+		}
+		var intoCheck []int
+		for i, move := range s.moves {
+			isKingStop := s.board[move.Stop] == 'k' || s.board[move.Stop] == 'K'
+			s.moves[i].check = s.black(move.Stop.toInt()) != s.isBlack && isKingStop
+			if _, ok := badSquares[move.Stop]; isKingStop && ok {
+				intoCheck = append(intoCheck, i)
+			}
+		}
+		// TODO: remove intoChecks from moves
+		for i := len(intoCheck) - 1; i >= 0; i-- {
+
 		}
 	}
 	return s.moves
@@ -259,36 +298,39 @@ func (s State) kingMoves(loc Location) (res []*Move) {
 		}
 	}
 
-	var kq uint8
-	var home int8
-	if s.isBlack {
-		kq = (s.castling >> 2) & 3
-		home = 0
-	} else {
-		kq = (s.castling >> 0) & 3
-		home = 7
-	}
-	if kq&2 == 2 {
-		// check for kingside castle
-		rook := locFromRowCol(home, 7)
-		knight := locFromRowCol(home, 6)
-		bishop := locFromRowCol(home, 5)
-		if s.board[knight] == '1' && s.board[bishop] == '1' {
-			m := NewMove(loc, knight)
-			m.castling = NewMove(rook, bishop)
-			res = append(res, m)
+	// Castling is only permitted if we are not in check
+	if !s.check {
+		var kq uint8
+		var home int8
+		if s.isBlack {
+			kq = (s.castling >> 2) & 3
+			home = 0
+		} else {
+			kq = (s.castling >> 0) & 3
+			home = 7
 		}
-	}
-	if kq&1 == 1 {
-		// check for queenside castle
-		rook := locFromRowCol(home, 0)
-		knight := locFromRowCol(home, 1)
-		bishop := locFromRowCol(home, 2)
-		queen := locFromRowCol(home, 3)
-		if s.board[knight] == '1' && s.board[bishop] == '1' && s.board[queen] == '1' {
-			m := NewMove(loc, bishop)
-			m.castling = NewMove(rook, queen) // rook move
-			res = append(res, m)
+		if kq&2 == 2 {
+			// check for kingside castle
+			rook := locFromRowCol(home, 7)
+			knight := locFromRowCol(home, 6)
+			bishop := locFromRowCol(home, 5)
+			if s.board[knight] == '1' && s.board[bishop] == '1' {
+				m := NewMove(loc, knight)
+				m.castling = NewMove(rook, bishop)
+				res = append(res, m)
+			}
+		}
+		if kq&1 == 1 {
+			// check for queenside castle
+			rook := locFromRowCol(home, 0)
+			knight := locFromRowCol(home, 1)
+			bishop := locFromRowCol(home, 2)
+			queen := locFromRowCol(home, 3)
+			if s.board[knight] == '1' && s.board[bishop] == '1' && s.board[queen] == '1' {
+				m := NewMove(loc, bishop)
+				m.castling = NewMove(rook, queen) // rook move
+				res = append(res, m)
+			}
 		}
 	}
 
