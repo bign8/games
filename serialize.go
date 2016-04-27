@@ -6,75 +6,79 @@ import (
 	"strings"
 )
 
-//*
+var _lookup = []byte{'z', '1', '2', '3', '4', '5', '6', '7', '8'}
 
 // FEN generats a minimal transmission of this data in []byte form
 func (s State) FEN() string {
-
-	// TODO: make this actually work
-	// Consolidate 1's back down to 2-8 if possible
-	// TODO: move all this logic to PARSE
-	newBoard := ""
-	parts := make([]string, 6)
-	pieces := make([]string, 64+7)
+	pieces := make([]byte, 64+7+1+4+2) // squares + slashes + piece + castling + spaces
 	index := 0
 
-	// Setup board text
 	length := 0
 	for i := 0; i < 64; i++ {
 		if i%8 == 0 && i != 0 {
-			pieces[index] = "/"
+			pieces[index] = '/'
 			index++
 		}
 		if s.board[i] == '1' {
 			length++
 			if length > 0 && i%8 == 7 { // line wrap
-				pieces[index] = strconv.Itoa(length)
+				pieces[index] = _lookup[length]
+				index++
 				length = 0
 			}
 		} else if length > 0 { // end of existing chain of numbers
-			pieces[index] = strconv.Itoa(length)
+			pieces[index] = _lookup[length]
+			index++
 			length = 0
 		} else {
-			pieces[index] = string(s.board[i])
+			pieces[index] = s.board[i]
+			index++
 		}
-		index++
 	}
-	parts[0] = strings.Join(pieces, "")
+
+	// Space
+	pieces[index] = ' '
+	index++
 
 	// Set active player
 	if s.isBlack {
-		parts[1] = "b"
+		pieces[index] = 'b'
 	} else {
-		parts[1] = "w"
+		pieces[index] = 'w'
 	}
+	index++
 
-	// Set castling
+	// Space
+	pieces[index] = ' '
+	index++
+
 	if s.castling == 0 {
-		parts[2] = "-"
-		newBoard += "-"
+		pieces[index] = '-'
+		index++
 	} else {
 		if s.castling&8 == 8 {
-			parts[2] += "K"
+			pieces[index] = 'K'
+			index++
 		}
 		if s.castling&4 == 4 {
-			parts[2] += "Q"
+			pieces[index] = 'Q'
+			index++
 		}
 		if s.castling&2 == 2 {
-			parts[2] += "k"
+			pieces[index] = 'k'
+			index++
 		}
 		if s.castling&1 == 1 {
-			parts[2] += "q"
+			pieces[index] = 'q'
+			index++
 		}
 	}
 
-	// Set enPassant
-	parts[3] = s.enPassant.String()
-
-	// Set Halfmove
-	parts[4] = strconv.FormatUint(uint64(s.halfmove), 10)
-	parts[5] = strconv.FormatUint(uint64(s.count), 10)
-	return strings.Join(parts, " ")
+	// Set remaining parts
+	enPassant := s.enPassant.String()
+	halfmove := strconv.FormatUint(uint64(s.halfmove), 10)
+	count := strconv.FormatUint(uint64(s.count), 10)
+	return string(pieces[:index]) + " " + enPassant + " " + halfmove + " " + count
 }
 
 // ParseFEN parses a state from []byte generated via Bytes()
