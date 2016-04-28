@@ -216,6 +216,7 @@ func (s State) pawnMoves(loc Location) (res []*Move) {
 
 func (s State) rookMoves(loc Location) (res []*Move) {
 	// https://en.wikipedia.org/wiki/Rook_(chess)
+	res = make([]*Move, 0, 14)
 	x := []int8{0, 1, -1, 0}
 	y := []int8{1, 0, 0, -1}
 	for i := 0; i < len(x); i++ {
