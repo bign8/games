@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var _lookup = []byte{'z', '1', '2', '3', '4', '5', '6', '7', '8'}
+var _lookup = []byte{'?', '1', '2', '3', '4', '5', '6', '7', '8'}
 
 // FEN generats a minimal transmission of this data in []byte form
 func (s State) FEN() string {
@@ -84,6 +84,9 @@ func (s State) FEN() string {
 // ParseFEN parses a state from []byte generated via Bytes()
 func ParseFEN(bits string) (*State, error) {
 	parts := strings.Split(bits, " ") // grid castle enPassant halfmove count
+	if len(parts) != 6 {
+		return nil, fmt.Errorf("Invalid number of FEN args: 6 != %d", len(parts))
+	}
 
 	// Performant replace
 	var grid [64]byte
