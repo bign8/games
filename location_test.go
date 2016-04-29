@@ -28,3 +28,11 @@ func BenchmarkLocationParse(b *testing.B) {
 		loc = ParseLocation("e4")
 	}
 }
+
+func BenchmarkLocationOffset(b *testing.B) {
+	loc = ParseLocation("e4")
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		loc.offset(1, 1)
+	}
+}
