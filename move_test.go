@@ -50,6 +50,51 @@ func BenchmarkMovesRook(b *testing.B) {
 	}
 }
 
+func BenchmarkMovesPawn(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		board.pawnMoves(start)
+	}
+}
+
+func BenchmarkMovesKnight(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		board.knightMoves(start)
+	}
+}
+
+func BenchmarkMovesBishop(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		board.bishopMoves(start)
+	}
+}
+
+func BenchmarkMovesQueen(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		board.queenMoves(start)
+	}
+}
+
+func BenchmarkMovesKing(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		board.kingMoves(start)
+	}
+}
+
 func TestRookMoves(t *testing.T) {
 	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
 	start := Location(32)
