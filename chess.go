@@ -127,7 +127,6 @@ func (s State) Apply(m *Move) (*State, error) {
 		halfmove:  halfmove,
 		count:     count,
 		check:     m.check,
-		mate:      m.mate,
 	}
 	return state, nil
 }

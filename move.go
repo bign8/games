@@ -28,7 +28,6 @@ type Move struct {
 	promotion uint8 // 0:n/a, 1:rook, 2:knight, 3:bishop, 4:queen
 	castling  *Move // nil unless castling
 	check     bool
-	mate      bool
 }
 
 var promotionLookup = []string{"n/a", "Rook", "Knight", "Bishop", "Queen"}
@@ -59,11 +58,7 @@ func (m Move) String() string {
 		template += " (castling)"
 	}
 	if m.check {
-		if m.mate {
-			template += " (check)"
-		} else {
-			template += " (checkmate)"
-		}
+		template += " (check)"
 	}
 	// template += " " + strconv.Itoa(int(m.Start.toInt())) + " " + strconv.Itoa(int(m.Stop.toInt()))
 	return fmt.Sprintf(template, m.Start, m.Stop)
