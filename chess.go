@@ -53,7 +53,7 @@ func (s State) Apply(m *Move) (*State, error) {
 
 	// Should reset halfmove count https://en.wikipedia.org/wiki/Fifty-move_rule
 	halfmove := s.halfmove + 1
-	if s.piece(m.Stop.toInt()) || s.board[m.Start] == 'p' || s.board[m.Start] == 'P' {
+	if s.piece(m.Stop) || s.board[m.Start] == 'p' || s.board[m.Start] == 'P' {
 		halfmove = 0
 	}
 

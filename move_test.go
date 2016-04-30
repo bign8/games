@@ -126,3 +126,58 @@ func TestRookMoves(t *testing.T) {
 		t.Errorf("Not all rook moves found: %s", err)
 	}
 }
+
+func TestStateIsCheck(t *testing.T) {
+	start := Location(0)
+
+	// bishop
+	if board, _ := ParseFEN("8/1b6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for bishop check")
+	}
+
+	// queen (bishop)
+	if board, _ := ParseFEN("8/1q6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for queen (bishop) check")
+	}
+
+	// rook
+	if board, _ := ParseFEN("8/r7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for rook check")
+	}
+
+	// queen (rook)
+	if board, _ := ParseFEN("8/q7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for queen (rook) check")
+	}
+
+	// knight
+	if board, _ := ParseFEN("8/8/1n6/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for knight check")
+	}
+
+	// pawn
+	if board, _ := ParseFEN("8/1p6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for pawn check")
+	}
+
+	// // pawn 2
+	// if board, _ := ParseFEN("8/8/8/8/8/8/6p1/8 b KQkq - 0 1"); !board.isCheck(Location(63), false) {
+	// 	t.Error("isCheck: returned wrong value for pawn 2 check")
+	// }
+
+	// none
+	if board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1"); board.isCheck(start, true) {
+		t.Error("isCheck: returned wrong value for no check")
+	}
+}
+
+func BenchmarkStateIsCheck(b *testing.B) {
+	board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1")
+	start := Location(32)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if board.isCheck(start, false) {
+			b.Error("Should never be in check here")
+		}
+	}
+}

@@ -71,38 +71,37 @@ func (s *State) Moves() []*Move {
 	}
 	if s.moves == nil {
 		newMoves := make([]Move, 0, 100) // 206 theory
-		for idx := byte(0); idx < 64; idx++ {
+		for idx := Location(0); idx < 64; idx++ {
 			if s.board[idx] != '1' {
 				// TODO: remove this and figure out a better way
 				if s.black(idx) != s.isBlack {
 					continue
 				}
-				next := Location(idx)
 				switch s.board[idx] {
 				case 'p':
 					fallthrough
 				case 'P':
-					newMoves = s.pawnMoves(next, newMoves) // 12 * 8
+					newMoves = s.pawnMoves(idx, newMoves) // 12 * 8
 				case 'r':
 					fallthrough
 				case 'R':
-					newMoves = s.rookMoves(next, newMoves) // 14 * 2
+					newMoves = s.rookMoves(idx, newMoves) // 14 * 2
 				case 'n':
 					fallthrough
 				case 'N':
-					newMoves = s.knightMoves(next, newMoves) // 8 * 2
+					newMoves = s.knightMoves(idx, newMoves) // 8 * 2
 				case 'b':
 					fallthrough
 				case 'B':
-					newMoves = s.bishopMoves(next, newMoves) // 14 * 2
+					newMoves = s.bishopMoves(idx, newMoves) // 14 * 2
 				case 'q':
 					fallthrough
 				case 'Q':
-					newMoves = s.queenMoves(next, newMoves) // 28 * 1
+					newMoves = s.queenMoves(idx, newMoves) // 28 * 1
 				case 'k':
 					fallthrough
 				case 'K':
-					newMoves = s.kingMoves(next, newMoves) // 10 * 1
+					newMoves = s.kingMoves(idx, newMoves) // 10 * 1
 				}
 
 			}
@@ -112,30 +111,98 @@ func (s *State) Moves() []*Move {
 		for i := range newMoves {
 			s.moves = append(s.moves, &(newMoves[i]))
 		}
-		// TODO: figure out if move is check-mate
-		// TODO: other types of check
-		// - Discovered Check: https://en.wikipedia.org/wiki/Discovered_check
-		// - Double Check: https://en.wikipedia.org/wiki/Double_check
-		// - Cross Check: https://en.wikipedia.org/wiki/Cross-check
-		// TODO: VERIFY WE ARE NOT PUTTING THE KING INTO CHECK
-		// badSquares := make(map[Location]struct{})
-		// for _, attack := range attacks {
-		// 	badSquares[attack.Stop] = struct{}{}
-		// }
-		// var intoCheck []int
-		// for i, move := range s.moves {
-		// 	isKingStop := s.board[move.Stop] == 'k' || s.board[move.Stop] == 'K'
-		// 	s.moves[i].check = s.black(move.Stop.toInt()) != s.isBlack && isKingStop
-		// 	if _, ok := badSquares[move.Stop]; isKingStop && ok {
-		// 		intoCheck = append(intoCheck, i)
-		// 	}
-		// }
-		// // TODO: remove intoChecks from moves
-		// for i := len(intoCheck) - 1; i >= 0; i-- {
-		//
-		// }
+
+		// find each king
+		var mine, yours Location
+		numFound := 0
+		for i := Location(0); i < 64 && numFound < 2; i++ {
+			if s.board[i] == 'k' || s.board[i] == 'K' {
+				numFound++
+				if s.black(i) == s.isBlack {
+					mine = i
+				} else {
+					yours = i
+				}
+			}
+		}
+
+		// Remove moves that place king in check
+		tail := len(s.moves)
+		for i := 0; i < tail; i++ {
+			m := s.moves[i]
+
+			// apply move to state
+			orig := s.board[m.Stop]
+			s.board[m.Stop] = s.board[m.Start]
+			s.board[m.Start] = '1'
+
+			// is my or their king in check?
+			if s.isCheck(mine, s.isBlack) {
+				tail--
+				s.moves[i], s.moves[tail] = s.moves[tail], s.moves[i]
+			} else if s.isCheck(yours, !s.isBlack) {
+				s.moves[i].check = true
+			}
+
+			// revert move on state
+			s.board[m.Start] = s.board[m.Stop]
+			s.board[m.Stop] = orig
+
+		}
+		s.moves = s.moves[:tail]
 	}
 	return s.moves
+}
+
+func (s State) isCheck(loc Location, isBlack bool) bool {
+	var temp, temp2 Location
+	// fmt.Printf("The real loc: %s %d\n", loc, loc)
+
+	// Checking Pawns
+	if isBlack {
+		temp = loc.offset(1, 1)
+		temp2 = loc.offset(1, -1)
+	} else {
+		temp = loc.offset(-1, 1)
+		temp2 = loc.offset(-1, -1)
+	}
+	if temp != InvalidLocation && (s.board[temp] == 'p' || s.board[temp] == 'P') && s.black(temp) == isBlack {
+		return true
+	}
+	if temp2 != InvalidLocation && (s.board[temp2] == 'p' || s.board[temp2] == 'P') && s.black(temp2) == isBlack {
+		return true
+	}
+
+	// Checking Bishop/Queen
+	for i := 0; i < len(bishopX); i++ {
+		temp = loc.offset(bishopX[i], bishopY[i])
+		for temp != InvalidLocation && s.board[temp] == '1' {
+			temp = temp.offset(bishopX[i], bishopY[i])
+		}
+		if temp != InvalidLocation && (s.board[temp] == 'b' || s.board[temp] == 'B' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) == isBlack {
+			return true
+		}
+	}
+
+	// Checking Rook/Queen
+	for i := 0; i < len(rookX); i++ {
+		temp = loc.offset(rookX[i], rookY[i])
+		for temp != InvalidLocation && s.board[temp] == '1' {
+			temp = temp.offset(rookX[i], rookY[i])
+		}
+		if temp != InvalidLocation && (s.board[temp] == 'r' || s.board[temp] == 'R' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) == isBlack {
+			return true
+		}
+	}
+
+	// Checking Knights
+	for i := 0; i < len(knightX); i++ {
+		temp = loc.offset(knightX[i], knightY[i])
+		if temp != InvalidLocation && (s.board[temp] == 'n' || s.board[temp] == 'N') && s.black(temp) == isBlack {
+			return true
+		}
+	}
+	return false
 }
 
 func (s State) pawnMoves(loc Location, res []Move) []Move {
@@ -158,7 +225,7 @@ func (s State) pawnMoves(loc Location, res []Move) []Move {
 		isStarting = row == 6
 	}
 
-	if move != InvalidLocation && !s.piece(move.toInt()) {
+	if move != InvalidLocation && !s.piece(move) {
 		if row, _ := move.rowCol(); row == 0 || row == 7 {
 			// Promotion (rook, knight, bishop, queen)
 			for i := uint8(1); i < 5; i++ {
@@ -172,14 +239,13 @@ func (s State) pawnMoves(loc Location, res []Move) []Move {
 		}
 
 		// Double start (set enPassant variable)
-		if start != InvalidLocation && !s.piece(start.toInt()) && isStarting {
+		if start != InvalidLocation && !s.piece(start) && isStarting {
 			m := NewMove(loc, start)
 			m.passing = move
 			res = append(res, m)
 		}
 	}
-	idx := left.toInt()
-	if left != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || left == s.enPassant) {
+	if left != InvalidLocation && ((s.piece(left) && s.black(left) != s.isBlack) || left == s.enPassant) {
 		if row, _ := left.rowCol(); row == 0 || row == 7 {
 			// Promotion (rook, knight, bishop, queen)
 			for i := uint8(1); i < 5; i++ {
@@ -192,8 +258,7 @@ func (s State) pawnMoves(loc Location, res []Move) []Move {
 			res = append(res, NewMove(loc, left))
 		}
 	}
-	idx = right.toInt()
-	if right != InvalidLocation && ((s.piece(idx) && s.black(idx) != s.isBlack) || right == s.enPassant) {
+	if right != InvalidLocation && ((s.piece(right) && s.black(right) != s.isBlack) || right == s.enPassant) {
 		if row, _ := right.rowCol(); row == 0 || row == 7 {
 			// Promotion (rook, knight, bishop, queen)
 			for i := uint8(1); i < 5; i++ {
@@ -221,7 +286,7 @@ func (s State) rookMoves(loc Location, res []Move) []Move {
 			next = next.offset(rookX[i], rookY[i])
 			idx = next.toInt()
 		}
-		if next != InvalidLocation && s.board[idx] != '1' && s.black(idx) != s.isBlack {
+		if next != InvalidLocation && s.board[idx] != '1' && s.black(next) != s.isBlack {
 			res = append(res, NewMove(loc, next))
 		}
 	}
@@ -234,8 +299,7 @@ func (s State) knightMoves(loc Location, res []Move) []Move {
 	// https://en.wikipedia.org/wiki/Knight_(chess)
 	for i := 0; i < len(knightX); i++ {
 		if m := loc.offset(knightX[i], knightY[i]); m != InvalidLocation {
-			idx := m.toInt()
-			if s.piece(idx) && s.black(idx) == s.isBlack {
+			if s.piece(m) && s.black(m) == s.isBlack {
 				continue
 			}
 			res = append(res, NewMove(loc, m))
@@ -254,7 +318,7 @@ func (s State) bishopMoves(loc Location, res []Move) []Move {
 			res = append(res, NewMove(loc, next))
 			next = next.offset(bishopX[i], bishopY[i])
 		}
-		if next != InvalidLocation && s.board[next] != '1' && s.black(uint8(next)) != s.isBlack {
+		if next != InvalidLocation && s.board[next] != '1' && s.black(next) != s.isBlack {
 			res = append(res, NewMove(loc, next))
 		}
 	}
@@ -267,13 +331,11 @@ func (s State) queenMoves(loc Location, res []Move) []Move {
 	// https://en.wikipedia.org/wiki/Queen_(chess)
 	for i := 0; i < 8; i++ {
 		next := loc.offset(allX[i], allY[i])
-		idx := next.toInt()
-		for next != InvalidLocation && !s.piece(idx) {
+		for next != InvalidLocation && !s.piece(next) {
 			res = append(res, NewMove(loc, next))
 			next = next.offset(allX[i], allY[i])
-			idx = next.toInt()
 		}
-		if next != InvalidLocation && s.board[idx] != '1' && s.black(idx) != s.isBlack {
+		if next != InvalidLocation && s.board[next] != '1' && s.black(next) != s.isBlack {
 			res = append(res, NewMove(loc, next))
 		}
 	}
@@ -284,8 +346,7 @@ func (s State) kingMoves(loc Location, res []Move) []Move {
 	// https://en.wikipedia.org/wiki/King_(chess)
 	for i := 0; i < 8; i++ {
 		if m := loc.offset(allX[i], allY[i]); m != InvalidLocation {
-			idx := m.toInt()
-			if s.board[idx] != '1' && s.black(idx) == s.isBlack {
+			if s.board[m] != '1' && s.black(m) == s.isBlack {
 				continue
 			}
 			res = append(res, NewMove(loc, m))
@@ -332,10 +393,10 @@ func (s State) kingMoves(loc Location, res []Move) []Move {
 	return res
 }
 
-func (s State) black(idx uint8) bool {
+func (s State) black(idx Location) bool {
 	return 'a' < s.board[idx] && s.board[idx] < 'z'
 }
 
-func (s State) piece(idx uint8) bool {
+func (s State) piece(idx Location) bool {
 	return s.board[idx] != '1'
 }
