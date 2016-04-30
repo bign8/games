@@ -131,39 +131,39 @@ func TestStateIsCheck(t *testing.T) {
 	start := Location(0)
 
 	// bishop
-	if board, _ := ParseFEN("8/1b6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/1B6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for bishop check")
 	}
 
 	// queen (bishop)
-	if board, _ := ParseFEN("8/1q6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/1Q6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for queen (bishop) check")
 	}
 
 	// rook
-	if board, _ := ParseFEN("8/r7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/R7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for rook check")
 	}
 
 	// queen (rook)
-	if board, _ := ParseFEN("8/q7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/Q7/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for queen (rook) check")
 	}
 
 	// knight
-	if board, _ := ParseFEN("8/8/1n6/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/8/1N6/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for knight check")
 	}
 
 	// pawn
-	if board, _ := ParseFEN("8/1p6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
+	if board, _ := ParseFEN("8/1P6/8/8/8/8/8/8 w KQkq - 0 1"); !board.isCheck(start, true) {
 		t.Error("isCheck: returned wrong value for pawn check")
 	}
 
-	// // pawn 2
-	// if board, _ := ParseFEN("8/8/8/8/8/8/6p1/8 b KQkq - 0 1"); !board.isCheck(Location(63), false) {
-	// 	t.Error("isCheck: returned wrong value for pawn 2 check")
-	// }
+	// pawn 2
+	if board, _ := ParseFEN("8/8/8/8/8/8/6p1/8 b KQkq - 0 1"); !board.isCheck(Location(63), false) {
+		t.Error("isCheck: returned wrong value for pawn 2 check")
+	}
 
 	// none
 	if board, _ := ParseFEN("8/8/8/8/8/8/8/8 w KQkq - 0 1"); board.isCheck(start, true) {

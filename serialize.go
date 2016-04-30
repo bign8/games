@@ -29,6 +29,8 @@ func (s State) FEN() string {
 		} else if length > 0 { // end of existing chain of numbers
 			pieces[index] = _lookup[length]
 			index++
+			pieces[index] = s.board[i]
+			index++
 			length = 0
 		} else {
 			pieces[index] = s.board[i]

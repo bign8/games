@@ -107,6 +107,7 @@ func (s *State) Moves() []*Move {
 			}
 		}
 
+		// Generate pointer based move array
 		s.moves = make([]*Move, 0, len(newMoves))
 		for i := range newMoves {
 			s.moves = append(s.moves, &(newMoves[i]))
@@ -115,7 +116,7 @@ func (s *State) Moves() []*Move {
 		// find each king
 		var mine, yours Location
 		numFound := 0
-		for i := Location(0); i < 64 && numFound < 2; i++ {
+		for i := Location(0); i < 64 && numFound <= 2; i++ {
 			if s.board[i] == 'k' || s.board[i] == 'K' {
 				numFound++
 				if s.black(i) == s.isBlack {
@@ -156,7 +157,6 @@ func (s *State) Moves() []*Move {
 
 func (s State) isCheck(loc Location, isBlack bool) bool {
 	var temp, temp2 Location
-	// fmt.Printf("The real loc: %s %d\n", loc, loc)
 
 	// Checking Pawns
 	if isBlack {
@@ -166,10 +166,10 @@ func (s State) isCheck(loc Location, isBlack bool) bool {
 		temp = loc.offset(-1, 1)
 		temp2 = loc.offset(-1, -1)
 	}
-	if temp != InvalidLocation && (s.board[temp] == 'p' || s.board[temp] == 'P') && s.black(temp) == isBlack {
+	if temp != InvalidLocation && (s.board[temp] == 'p' || s.board[temp] == 'P') && s.black(temp) != isBlack {
 		return true
 	}
-	if temp2 != InvalidLocation && (s.board[temp2] == 'p' || s.board[temp2] == 'P') && s.black(temp2) == isBlack {
+	if temp2 != InvalidLocation && (s.board[temp2] == 'p' || s.board[temp2] == 'P') && s.black(temp2) != isBlack {
 		return true
 	}
 
@@ -179,7 +179,7 @@ func (s State) isCheck(loc Location, isBlack bool) bool {
 		for temp != InvalidLocation && s.board[temp] == '1' {
 			temp = temp.offset(bishopX[i], bishopY[i])
 		}
-		if temp != InvalidLocation && (s.board[temp] == 'b' || s.board[temp] == 'B' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) == isBlack {
+		if temp != InvalidLocation && (s.board[temp] == 'b' || s.board[temp] == 'B' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) != isBlack {
 			return true
 		}
 	}
@@ -190,7 +190,7 @@ func (s State) isCheck(loc Location, isBlack bool) bool {
 		for temp != InvalidLocation && s.board[temp] == '1' {
 			temp = temp.offset(rookX[i], rookY[i])
 		}
-		if temp != InvalidLocation && (s.board[temp] == 'r' || s.board[temp] == 'R' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) == isBlack {
+		if temp != InvalidLocation && (s.board[temp] == 'r' || s.board[temp] == 'R' || s.board[temp] == 'q' || s.board[temp] == 'Q') && s.black(temp) != isBlack {
 			return true
 		}
 	}
@@ -198,7 +198,7 @@ func (s State) isCheck(loc Location, isBlack bool) bool {
 	// Checking Knights
 	for i := 0; i < len(knightX); i++ {
 		temp = loc.offset(knightX[i], knightY[i])
-		if temp != InvalidLocation && (s.board[temp] == 'n' || s.board[temp] == 'N') && s.black(temp) == isBlack {
+		if temp != InvalidLocation && (s.board[temp] == 'n' || s.board[temp] == 'N') && s.black(temp) != isBlack {
 			return true
 		}
 	}
