@@ -16,7 +16,6 @@ type State struct {
 	count     uint32   // max of 4294967295 (limited by type)
 	moves     []*Move  // cache of available moves
 	check     bool
-	mate      bool
 	err       error
 }
 
@@ -24,6 +23,7 @@ type State struct {
 func New() *State {
 	var board [64]byte
 	copy(board[:], "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR")
+	// copy(board[:], "rnbqkbnr1ppp1ppp11111111p111p11Q11B1P11111111111PPPP1PPPRNB1K1NR")
 	return &State{
 		board:     board,
 		isBlack:   false,
@@ -138,5 +138,5 @@ func (s State) Terminal() bool {
 	// TODO: stalemate: https://en.wikipedia.org/wiki/Stalemate
 	// TODO: halfmove: https://en.wikipedia.org/wiki/Fifty-move_rule
 	// TODO: more win/draw cases ...
-	return s.mate
+	return len(s.Moves()) == 0
 }

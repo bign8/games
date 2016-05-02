@@ -66,9 +66,6 @@ func (m Move) String() string {
 
 // Moves gives the list of possible moves to take given a state of the game
 func (s *State) Moves() []*Move {
-	if s.mate {
-		return nil
-	}
 	if s.moves == nil {
 		newMoves := make([]Move, 0, 100) // 206 theory
 		for idx := Location(0); idx < 64; idx++ {
@@ -103,7 +100,6 @@ func (s *State) Moves() []*Move {
 				case 'K':
 					newMoves = s.kingMoves(idx, newMoves) // 10 * 1
 				}
-
 			}
 		}
 
@@ -113,21 +109,8 @@ func (s *State) Moves() []*Move {
 			s.moves = append(s.moves, &(newMoves[i]))
 		}
 
-		// find each king
-		var mine, yours Location
-		numFound := 0
-		for i := Location(0); i < 64 && numFound <= 2; i++ {
-			if s.board[i] == 'k' || s.board[i] == 'K' {
-				numFound++
-				if s.black(i) == s.isBlack {
-					mine = i
-				} else {
-					yours = i
-				}
-			}
-		}
-
 		// Remove moves that place king in check
+		var mine, yours Location
 		tail := len(s.moves)
 		for i := 0; i < tail; i++ {
 			m := s.moves[i]
@@ -137,10 +120,25 @@ func (s *State) Moves() []*Move {
 			s.board[m.Stop] = s.board[m.Start]
 			s.board[m.Start] = '1'
 
+			// find each king
+			// TODO: only do this if the king has been moved
+			numFound := 0
+			for i := Location(0); i < 64 && numFound <= 2; i++ {
+				if s.board[i] == 'k' || s.board[i] == 'K' {
+					numFound++
+					if s.black(i) == s.isBlack {
+						mine = i
+					} else {
+						yours = i
+					}
+				}
+			}
+
 			// is my or their king in check?
 			if s.isCheck(mine, s.isBlack) {
 				tail--
 				s.moves[i], s.moves[tail] = s.moves[tail], s.moves[i]
+				i--
 			} else if s.isCheck(yours, !s.isBlack) {
 				s.moves[i].check = true
 			}
@@ -151,6 +149,7 @@ func (s *State) Moves() []*Move {
 
 		}
 		s.moves = s.moves[:tail]
+		// fmt.Printf("Length of moves: %d, tail: %d\n", len(s.moves), tail)
 	}
 	return s.moves
 }

@@ -129,12 +129,17 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	// actual game runtime
-	for err == nil {
+	for err == nil && !game.Terminal() {
 		fmt.Printf("%s\n\n", game)
 		fmt.Printf("\nMoves: %+q\n\n", game.Moves())
 		move := getMove(reader, game)
 		fmt.Printf("Used Move: %s\n", move)
 		game, err = game.Apply(move)
+	}
+
+	// Print terminal message
+	if game.Terminal() {
+		fmt.Printf("Game Complete\n\n%s\n", game)
 	}
 
 	// Error handling

@@ -51,7 +51,12 @@ func (s State) String() string {
 	if s.isBlack {
 		player = "Black"
 	}
-	return top + strings.Join(rows, sep) + bot + "\n\n" + player + "'s Turn"
+	debug := ""
+	if s.check {
+		debug = "Player is in check!"
+	}
+	// debug = s.FEN() + "\n" + string(s.board[:])
+	return top + strings.Join(rows, sep) + bot + "\n" + debug + "\n" + player + "'s Turn"
 }
 
 // BlockifyString adds enough spaces to the end of a string to appear "square"
