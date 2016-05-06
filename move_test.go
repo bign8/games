@@ -14,6 +14,15 @@ func BenchmarkMoves(b *testing.B) {
 	}
 }
 
+func BenchmarkMovesClip(b *testing.B) {
+	game := New()
+	moves := game.Moves()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		game.clipCheckMoves(moves)
+	}
+}
+
 // castling board
 // "r111k11r111111111111111111111111111111111111111111111111R111K11R"
 

@@ -109,20 +109,29 @@ func (s *State) Moves() []*Move {
 			s.moves = append(s.moves, &(newMoves[i]))
 		}
 
-		// Remove moves that place king in check
-		var mine, yours Location
-		tail := len(s.moves)
-		for i := 0; i < tail; i++ {
-			m := s.moves[i]
+		s.moves = s.clipCheckMoves(s.moves)
+	}
+	return s.moves
+}
 
-			// apply move to state
-			orig := s.board[m.Stop]
-			s.board[m.Stop] = s.board[m.Start]
-			s.board[m.Start] = '1'
+func (s State) clipCheckMoves(moves []*Move) []*Move {
+	// TODO: improve the performance of this function
 
-			// find each king
-			// TODO: only do this if the king has been moved
-			numFound := 0
+	// Remove moves that place king in check
+	var mine, yours Location
+	numFound := 0
+
+	tail := len(moves)
+	for i := 0; i < tail; i++ {
+		m := moves[i]
+
+		// apply move to state
+		orig := s.board[m.Stop]
+		s.board[m.Stop] = s.board[m.Start]
+		s.board[m.Start] = '1'
+
+		// find each king
+		if !((s.board[mine] == 'K' || s.board[mine] == 'k') && (s.board[yours] == 'K' || s.board[yours] == 'k')) {
 			for i := Location(0); i < 64 && numFound <= 2; i++ {
 				if s.board[i] == 'k' || s.board[i] == 'K' {
 					numFound++
@@ -133,25 +142,23 @@ func (s *State) Moves() []*Move {
 					}
 				}
 			}
-
-			// is my or their king in check?
-			if s.isCheck(mine, s.isBlack) {
-				tail--
-				s.moves[i], s.moves[tail] = s.moves[tail], s.moves[i]
-				i--
-			} else if s.isCheck(yours, !s.isBlack) {
-				s.moves[i].check = true
-			}
-
-			// revert move on state
-			s.board[m.Start] = s.board[m.Stop]
-			s.board[m.Stop] = orig
-
 		}
-		s.moves = s.moves[:tail]
-		// fmt.Printf("Length of moves: %d, tail: %d\n", len(s.moves), tail)
+
+		// is my or their king in check?
+		if s.isCheck(mine, s.isBlack) {
+			tail--
+			moves[i], moves[tail] = moves[tail], moves[i]
+			i--
+		} else if s.isCheck(yours, !s.isBlack) {
+			moves[i].check = true
+		}
+
+		// revert move on state
+		s.board[m.Start] = s.board[m.Stop]
+		s.board[m.Stop] = orig
 	}
-	return s.moves
+	return moves[:tail]
+	// fmt.Printf("Length of moves: %d, tail: %d\n", len(s.moves), tail)
 }
 
 func (s State) isCheck(loc Location, isBlack bool) bool {

@@ -3,13 +3,18 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/bign8/chess"
+)
+
+var (
+	version = "0.0.0.0"
+	hash    = "zzzzz"
+	slug    = "2016-05-01 UTC"
 )
 
 func getLocation(reader *bufio.Reader, prompt string) chess.Location {
@@ -118,17 +123,14 @@ func getMove(reader *bufio.Reader, state *chess.State) *chess.Move {
 }
 
 func main() {
-	version, err := ioutil.ReadFile("VERSION")
-	if err != nil {
-		panic(err)
-	}
+	fmt.Printf("Chess Version: %s\nCommit Hash: %s\nBuild Stamp: %s\n\n", version, hash, slug)
 
 	// Start printing input info
-	fmt.Printf("Chess %s", version)
 	game := chess.New()
 	reader := bufio.NewReader(os.Stdin)
 
 	// actual game runtime
+	var err error
 	for err == nil && !game.Terminal() {
 		fmt.Printf("%s\n\n", game)
 		fmt.Printf("\nMoves: %+q\n\n", game.Moves())
