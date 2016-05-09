@@ -32,7 +32,7 @@ func (cli cliPlayer) Play(s State) Action {
 	// TODO: print state + moves side by side
 
 	// Print state of the union
-	fmt.Println("\n" + s.String() + "\n" + cli.String() + "'s available moves:")
+	fmt.Println("=================================================================\n" + s.String() + "\n" + cli.String() + "'s available moves:")
 	for i, move := range moves {
 		fmt.Printf("  %d: %s\n", i, move)
 	}

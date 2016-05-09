@@ -18,8 +18,8 @@ func main() {
 	fn := all["Tick-Tac-Toe"]
 
 	// TODO: setup players
-	p1 := games.NewCLIPlayer("Player 1")
-	p2 := games.NewCLIPlayer("Player 2")
+	p1 := games.NewCLIPlayer("X")
+	p2 := games.NewCLIPlayer("O")
 
 	// Play Game
 	game := fn(p1, p2)

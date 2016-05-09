@@ -3,7 +3,7 @@ package games
 
 import "fmt"
 
-// Starter is a function used to initiate a game
+// Starter is a function used to create a game's initial state
 type Starter func(...Player) State
 
 // Player is the active player of a game
