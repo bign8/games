@@ -1,45 +1,64 @@
 package ttt
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
 
-// Player is the player for a game of tic-tac-toe
-type Player bool
+	"github.com/bign8/games"
+)
 
-// Move is the move performed on a tic-tac-toe game
-type Move uint8
+type ttt struct {
+	board   [9]byte
+	ctr     uint8
+	players []games.Player
+	err     error
+}
+
+type tttMove uint8
 
 // String does something
-func (m Move) String() string {
+func (m tttMove) String() string {
 	return "Position " + strconv.Itoa(int(m))
 }
 
-// State is the state of a tic-tac-toe game
-type State struct {
-	board  [9]byte
-	player Player
+// Error tells if there is a problem with regular game play
+func (g ttt) Error() error {
+	return g.err
+}
+
+// Player returns the active player given a state
+func (g ttt) Player() games.Player {
+	return g.players[g.ctr%2]
 }
 
 // New takes creates a new game of ttt
-func New() State {
+func New(players ...games.Player) games.State {
+	if len(players) != 2 {
+		return &ttt{err: fmt.Errorf("invalid number of players: %d", len(players))}
+	}
 	var board [9]byte
 	copy(board[:], "         ")
-	return State{board, false}
+	return &ttt{board, 0, players, nil}
 }
 
 // Apply applies a given move to a state
-func (g State) Apply(m Move) (State, error) {
+func (g ttt) Apply(a games.Action) games.State {
+	if g.Error() != nil {
+		return g
+	}
+	// TODO: check for legal move
+	m := a.(*tttMove)
 	var board [9]byte
 	copy(board[:], g.board[:])
-	if g.player {
-		board[m] = 'X'
+	if g.ctr%2 == 0 {
+		board[*m] = 'X'
 	} else {
-		board[m] = 'O'
+		board[*m] = 'O'
 	}
-	res := State{board, !g.player}
-	return res, nil
+	return &ttt{board, g.ctr + 1, g.players, nil}
 }
 
-func (g State) String() string {
+func (g ttt) String() string {
 	b := g.board
 	for i, x := range g.board {
 		if x == ' ' {
@@ -51,11 +70,12 @@ func (g State) String() string {
 		" ║\n╠═══╬═══╬═══╣\n║ " + string(b[6]) + " ║ " + string(b[7]) + " ║ " + string(b[8]) + " ║\n╚═══╩═══╩═══╝"
 }
 
-// Moves returns the next possible states given a particular state
-func (g State) Moves() (moves []Move) {
+// Actions returns the next possible states given a particular state
+func (g ttt) Actions() (moves []games.Action) {
 	for j, bit := range g.board {
 		if bit == ' ' {
-			moves = append(moves, Move(j))
+			m := tttMove(j)
+			moves = append(moves, &m)
 		}
 	}
 	return
@@ -63,7 +83,10 @@ func (g State) Moves() (moves []Move) {
 
 // Terminal determines if we are currently in a winning state
 // TODO: implement with bit masks
-func (g State) Terminal() bool {
+func (g ttt) Terminal() bool {
+	if g.Error() != nil {
+		return true
+	}
 	// TODO: make this smarter
 	// chrs := iToT(uint16(g.board))
 	chrs := g.board

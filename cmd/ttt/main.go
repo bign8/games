@@ -54,12 +54,11 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	// actual game runtime
-	var err error
-	for err == nil && !game.Terminal() {
+	for !game.Terminal() {
 		fmt.Printf("%s\n\n", game)
 		move := getMove(reader, game)
 		fmt.Printf("Used Move: %s\n", move)
-		game, err = game.Apply(move)
+		game = game.Apply(move)
 	}
 
 	// Print terminal message
@@ -68,6 +67,7 @@ func main() {
 	}
 
 	// Error handling
+	err := game.Error()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Chess Error:", err)
 	}
