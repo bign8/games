@@ -5,33 +5,57 @@ import (
 	"os"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/ttt"
+	"github.com/bign8/games/impl/ttt"
+	"github.com/bign8/games/player/cli"
 )
 
-var all = map[string]games.Starter{
-	// "Chess":        chess.New(),
-	"Tick-Tac-Toe": ttt.New,
+type implConfig struct {
+	name  string
+	start games.Starter
+	names []string
+}
+
+var impl = map[string]implConfig{
+	// "Chess":        chess.New,
+	"ttt": implConfig{
+		name:  "Tick-Tac-Toe",
+		start: ttt.New,
+		names: []string{"X", "O"},
+	},
+}
+
+type playerConfig struct {
+	name   string
+	create games.Gamer
+}
+
+var player = map[string]playerConfig{
+	"cli": playerConfig{
+		name:   "Human via Command Line",
+		create: cli.New,
+	},
 }
 
 func main() {
 	// TODO: pick game
-	fn := all["Tick-Tac-Toe"]
+	config := impl["ttt"]
 
 	// TODO: setup players
-	p1 := games.NewCLIPlayer("X")
-	p2 := games.NewCLIPlayer("O")
+	p1 := player["cli"].create(config.names[0])
+	p2 := player["cli"].create(config.names[1])
 
 	// Play Game
-	game := fn(p1, p2)
+	game := config.start(p1, p2)
 	game = games.Run(game)
 
 	// Print terminal message
-	if game.Terminal() {
+	if game.Terminal() && (p1.Human() || p2.Human()) {
 		fmt.Printf("Game Complete\n\n%s\n", game)
 	}
 
 	// Print error message
 	if game.Error() != nil {
 		fmt.Fprintf(os.Stderr, "Error executing game: %s", game.Error())
+		os.Exit(1)
 	}
 }

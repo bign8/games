@@ -6,10 +6,14 @@ import "fmt"
 // Starter is a function used to create a game's initial state
 type Starter func(...Player) State
 
+// Gamer is a function used to create a game's player
+type Gamer func(string) Player
+
 // Player is the active player of a game
 type Player interface {
 	fmt.Stringer
 	Play(State) Action
+	Human() bool
 }
 
 // Action is the base type for a game move
