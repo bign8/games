@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bign8/games/chess"
+	"github.com/bign8/games/impl/chess"
 )
 
 var (
