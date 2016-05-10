@@ -31,9 +31,6 @@ type State interface {
 	Error() error       // If any problem exists in regular game-play
 }
 
-// Utility gives a numeric value to a given state
-type Utility func(State, Player) float64
-
 // AI generates a player that maximises the result of the Utilites provided
 func AI(ranks ...Utility) Player {
 	return nil
