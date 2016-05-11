@@ -7,7 +7,7 @@ import "fmt"
 type Starter func(...Player) State
 
 // Gamer is a function used to create a game's player
-type Gamer func(string) Player
+type Gamer func(string, PlayerType) Player
 
 // PlayerType allows for direct player comparison during tree search
 type PlayerType int
@@ -15,10 +15,8 @@ type PlayerType int
 const (
 	// UnknownPlayer is the default PlayerType
 	UnknownPlayer PlayerType = iota
-
 	// MaxPlayer is a player attempting to maximize the utility function
 	MaxPlayer
-
 	// MinPlayer is a player attempting to minimize the unility function
 	MinPlayer
 )
@@ -43,6 +41,7 @@ type State interface {
 	Apply(Action) State // Applying an action to a game
 	Actions() []Action  // List of available actions in a State
 	Terminal() bool     // If the game is in a terminal state
+	Utility() int       // Each game can define their own utility
 	Error() error       // If any problem exists in regular game-play
 }
 

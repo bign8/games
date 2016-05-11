@@ -13,13 +13,15 @@ import (
 type cliPlayer struct {
 	name   string
 	reader *bufio.Reader
+	pType  games.PlayerType
 }
 
 // New creates a new player that interfaces with a human via Stdin/out/err
-func New(name string) games.Player {
+func New(name string, p games.PlayerType) games.Player {
 	return &cliPlayer{
 		name:   name,
 		reader: bufio.NewReader(os.Stdin),
+		pType:  p,
 	}
 }
 
@@ -29,6 +31,10 @@ func (cli cliPlayer) Human() bool {
 
 func (cli cliPlayer) String() string {
 	return cli.name
+}
+
+func (cli cliPlayer) Type() games.PlayerType {
+	return cli.pType
 }
 
 func (cli cliPlayer) Play(s games.State) games.Action {

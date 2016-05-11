@@ -9,12 +9,14 @@ import (
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl/ttt"
 	"github.com/bign8/games/player/cli"
+	"github.com/bign8/games/player/minimax"
 )
 
 type implConfig struct {
 	name  string
 	start games.Starter
 	names []string
+	types []games.PlayerType
 }
 
 var impl = map[string]implConfig{
@@ -23,6 +25,7 @@ var impl = map[string]implConfig{
 		name:  "Tick-Tac-Toe",
 		start: ttt.New,
 		names: []string{"X", "O"},
+		types: []games.PlayerType{games.MaxPlayer, games.MinPlayer},
 	},
 }
 
@@ -57,6 +60,10 @@ var player = map[string]playerConfig{
 	"cli": playerConfig{
 		name:   "Human via Command Line",
 		create: cli.New,
+	},
+	"mm": playerConfig{
+		name:   "MiniMax Search",
+		create: minimax.New,
 	},
 }
 
@@ -93,7 +100,7 @@ func main() {
 	players := make([]games.Player, len(config.names))
 	for i, name := range config.names {
 		fmt.Printf("=================================================================\nChoosing player %s (%d/%d)\n", name, i+1, len(config.names))
-		players[i] = getPlayer(in).create(name)
+		players[i] = getPlayer(in).create(name, config.types[i])
 		human = human || players[i].Human()
 	}
 

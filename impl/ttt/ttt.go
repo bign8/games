@@ -144,41 +144,57 @@ func (g ttt) Terminal() bool {
 	if g.ctr == 9 {
 		return true
 	}
+	isWin, _ := g.isWin()
+	return isWin
+}
+
+func (g ttt) isWin() (bool, byte) {
 	// TODO: make this smarter
 	// chrs := iToT(uint16(g.board))
 	chrs := g.board
 	if chrs[0] != ' ' {
 		// p := sToPlayer(chrs[0])
 		if chrs[0] == chrs[1] && chrs[1] == chrs[2] { // top horiz
-			return true
+			return true, chrs[0]
 		}
 		if chrs[0] == chrs[3] && chrs[3] == chrs[6] { // left vert
-			return true
+			return true, chrs[0]
 		}
 		if chrs[0] == chrs[4] && chrs[4] == chrs[8] { // top-left to bot-right
-			return true
+			return true, chrs[0]
 		}
 	}
 	if chrs[4] != ' ' {
 		// p := sToPlayer(chrs[4])
 		if chrs[3] == chrs[4] && chrs[4] == chrs[5] { // mid horiz
-			return true
+			return true, chrs[4]
 		}
 		if chrs[1] == chrs[4] && chrs[4] == chrs[7] { // mid vert
-			return true
+			return true, chrs[4]
 		}
 		if chrs[2] == chrs[4] && chrs[4] == chrs[6] { // top-right to bot-left
-			return true
+			return true, chrs[4]
 		}
 	}
 	if chrs[8] != ' ' {
 		// p := sToPlayer(chrs[8])
 		if chrs[6] == chrs[7] && chrs[7] == chrs[8] { // bot horiz
-			return true
+			return true, chrs[8]
 		}
 		if chrs[2] == chrs[5] && chrs[5] == chrs[8] { // right vert
-			return true
+			return true, chrs[8]
 		}
 	}
-	return false
+	return false, ' '
+}
+
+func (g ttt) Utility() int {
+	isWin, chr := g.isWin()
+	if !isWin {
+		return 0
+	}
+	if chr == 'X' {
+		return 1
+	}
+	return -1
 }
