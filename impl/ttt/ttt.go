@@ -87,45 +87,9 @@ func (g ttt) String() string {
 
 // Actions returns the next possible states given a particular state
 func (g ttt) Actions() (moves []games.Action) {
-	// // TODO: simplify lookups
-	// // Starting move reducibility
-	// if g.ctr == 0 {
-	// 	return []games.Action{tttMove(0), tttMove(1), tttMove(4)}
-	// }
-	// // Second move reducibility
-	// if g.ctr == 1 {
-	// 	if g.board[0] == 'X' { // Top-Left is occupied
-	// 		moves = []games.Action{tttMove(1), tttMove(2), tttMove(4), tttMove(5), tttMove(8)}
-	// 	} else if g.board[1] == 'X' { // Top-Side is occupied
-	// 		moves = []games.Action{tttMove(0), tttMove(3), tttMove(4), tttMove(6), tttMove(7)}
-	// 	} else { // Center is occupied
-	// 		moves = []games.Action{tttMove(0), tttMove(1)}
-	// 	}
-	// 	return
-	// }
-	// // Third move reducibility (TODO: verify this)
-	// if g.ctr == 2 {
-	// 	if g.board[4] != ' ' {
-	// 		if g.board[0] != ' ' {
-	// 			return []games.Action{tttMove(1), tttMove(2), tttMove(5), tttMove(8)}
-	// 		} else if g.board[1] != ' ' {
-	// 			return []games.Action{tttMove(0), tttMove(3), tttMove(6), tttMove(7)}
-	// 		}
-	// 	} else if g.board[0] != ' ' && g.board[8] != ' ' {
-	// 		return []games.Action{tttMove(1), tttMove(2), tttMove(4), tttMove(5)}
-	// 	} else if g.board[1] != ' ' && g.board[7] != ' ' {
-	// 		return []games.Action{tttMove(0), tttMove(3), tttMove(4), tttMove(6)}
-	// 	}
-	// }
-	// // Fourth move reducibility
-	// if g.ctr == 3 && g.board[4] != ' ' {
-	// 	if g.board[0] != ' ' && g.board[8] != ' ' { // diagonal
-	// 		return []games.Action{tttMove(1), tttMove(2), tttMove(5)}
-	// 	} else if g.board[1] != ' ' && g.board[7] != ' ' { // vertical
-	// 		return []games.Action{tttMove(0), tttMove(3), tttMove(6)}
-	// 	}
-	// }
-	// // TODO: more mirror cases
+	if !g.Player().Human() && g.ctr == 0 { // Starting move reducibility
+		return []games.Action{tttMove(8), tttMove(7), tttMove(4)}
+	}
 	for j, bit := range g.board {
 		if bit == ' ' {
 			m := tttMove(j)
@@ -138,10 +102,7 @@ func (g ttt) Actions() (moves []games.Action) {
 // Terminal determines if we are currently in a winning state
 // TODO: implement with bit masks
 func (g ttt) Terminal() bool {
-	if g.Error() != nil {
-		return true
-	}
-	if g.ctr == 9 {
+	if g.Error() != nil || g.ctr == 9 {
 		return true
 	}
 	isWin, _ := g.isWin()
@@ -150,10 +111,8 @@ func (g ttt) Terminal() bool {
 
 func (g ttt) isWin() (bool, byte) {
 	// TODO: make this smarter
-	// chrs := iToT(uint16(g.board))
 	chrs := g.board
 	if chrs[0] != ' ' {
-		// p := sToPlayer(chrs[0])
 		if chrs[0] == chrs[1] && chrs[1] == chrs[2] { // top horiz
 			return true, chrs[0]
 		}
@@ -165,7 +124,6 @@ func (g ttt) isWin() (bool, byte) {
 		}
 	}
 	if chrs[4] != ' ' {
-		// p := sToPlayer(chrs[4])
 		if chrs[3] == chrs[4] && chrs[4] == chrs[5] { // mid horiz
 			return true, chrs[4]
 		}
@@ -177,7 +135,6 @@ func (g ttt) isWin() (bool, byte) {
 		}
 	}
 	if chrs[8] != ' ' {
-		// p := sToPlayer(chrs[8])
 		if chrs[6] == chrs[7] && chrs[7] == chrs[8] { // bot horiz
 			return true, chrs[8]
 		}
@@ -189,11 +146,9 @@ func (g ttt) isWin() (bool, byte) {
 }
 
 func (g ttt) Utility() int {
-	isWin, chr := g.isWin()
-	if !isWin {
+	if isWin, chr := g.isWin(); !isWin {
 		return 0
-	}
-	if chr == 'X' {
+	} else if chr == 'X' {
 		return 1
 	}
 	return -1
