@@ -9,11 +9,26 @@ type Starter func(...Player) State
 // Gamer is a function used to create a game's player
 type Gamer func(string) Player
 
+// PlayerType allows for direct player comparison during tree search
+type PlayerType int
+
+const (
+	// UnknownPlayer is the default PlayerType
+	UnknownPlayer PlayerType = iota
+
+	// MaxPlayer is a player attempting to maximize the utility function
+	MaxPlayer
+
+	// MinPlayer is a player attempting to minimize the unility function
+	MinPlayer
+)
+
 // Player is the active player of a game
 type Player interface {
 	fmt.Stringer
 	Play(State) Action
 	Human() bool
+	Type() PlayerType
 }
 
 // Action is the base type for a game move
