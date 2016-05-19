@@ -153,3 +153,13 @@ func (g ttt) Utility() int {
 	}
 	return -1
 }
+
+func init() {
+	games.Register(games.Game{
+		Name:        "Tick-Tac-Toe",
+		Slug:        "ttt",
+		Start:       New,
+		PlayerNames: []string{"X", "O"},
+		PlayerTypes: []games.PlayerType{games.MaxPlayer, games.MinPlayer},
+	})
+}

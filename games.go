@@ -1,7 +1,10 @@
 // Package games borrows terminology from "AI - A Modern Approach" Chapter 5
 package games
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 // Starter is a function used to create a game's initial state
 type Starter func(...Player) State
@@ -56,4 +59,41 @@ func Run(game State) State {
 		game = game.Apply(game.Player().Play(game))
 	}
 	return game
+}
+
+// Game is contains all the meta-data surrounding a game so it can be played
+type Game struct {
+	Name        string
+	Slug        string
+	Start       Starter `json:"-"`
+	PlayerNames []string
+	PlayerTypes []PlayerType
+	AI          Gamer `json:"-"`
+}
+
+var mu sync.RWMutex
+var registry = make(map[string]Game)
+
+// Register allows implementations to register their specific version of a game
+func Register(game Game) error {
+	mu.Lock()
+	defer mu.Unlock()
+	if _, ok := registry[game.Slug]; ok {
+		return fmt.Errorf("games: Game already registered with slug: %s", game.Slug)
+	}
+	registry[game.Slug] = game
+	return nil
+}
+
+// List returns all the currently registerd games in the system
+func List() []Game {
+	mu.RLock()
+	defer mu.RUnlock()
+	res := make([]Game, len(registry))
+	i := 0
+	for _, game := range registry {
+		res[i] = game
+		i++
+	}
+	return res
 }
