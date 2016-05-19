@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Some Magic</title>
+  <meta name="description" content="xxx">
+  <meta name="author" content="Nate Woods">
+</head>
+
+<body>
+  {{range .}}
+    <div>
+      <h2>{{ .Name }}</h2>
+      <img src="/static/img/{{ .Slug }}.png" alt="{{ .Name }}">
+      <a href="/play/{{ .Slug }}">Play</a>
+    </div>
+  {{else}}
+    <div><strong>No Games :(</strong></div>
+  {{end}}
+</body>
+</html>
