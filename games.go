@@ -97,3 +97,14 @@ func List() []Game {
 	}
 	return res
 }
+
+// Get returns the full registered game by slug
+func Get(slug string) *Game {
+	mu.RLock()
+	defer mu.RUnlock()
+	g, ok := registry[slug]
+	if !ok {
+		return nil
+	}
+	return &g
+}
