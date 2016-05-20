@@ -32,7 +32,7 @@
     </div>
 
     <div class="row">
-      {{range .}}
+      {{range .Games}}
       <div class="col-xs-6 col-md-4">
         <a href="/play/{{ .Slug }}" class="thumbnail">
           <img src="/static/img/{{ .Slug }}.png" alt="{{ .Name }}">

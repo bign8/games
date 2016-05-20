@@ -63,12 +63,17 @@ func Run(game State) State {
 
 // Game is contains all the meta-data surrounding a game so it can be played
 type Game struct {
-	Name        string
-	Slug        string
-	Start       Starter `json:"-"`
-	PlayerNames []string
-	PlayerTypes []PlayerType
-	AI          Gamer `json:"-"`
+	Name    string
+	Slug    string
+	Start   Starter        `json:"-"`
+	Players []PlayerConfig `json:"-"`
+	AI      Gamer          `json:"-"`
+}
+
+// PlayerConfig is the starting configuration for a player
+type PlayerConfig struct {
+	Name string
+	Type PlayerType
 }
 
 var mu sync.RWMutex

@@ -8,7 +8,8 @@ function showMessage(m) {
 
 function init() {
   var input = document.getElementById("input");
-  var websocket = new WebSocket('ws://' + document.location.host + '/api/v0.0.0/socket');
+  var loc = document.location.toString().replace("http://", "ws://") + '/socket';
+  var websocket = new WebSocket(loc);
   input.addEventListener("keyup", function(e) {
     if (e.keyCode == 13) {
       var m = input.value;

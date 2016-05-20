@@ -154,12 +154,23 @@ func (g ttt) Utility() int {
 	return -1
 }
 
+// Game is the fully described version of TTT
+var Game = games.Game{
+	Name:  "Tick-Tac-Toe",
+	Slug:  "ttt",
+	Start: New,
+	Players: []games.PlayerConfig{
+		games.PlayerConfig{
+			Name: "X",
+			Type: games.MaxPlayer,
+		},
+		games.PlayerConfig{
+			Name: "O",
+			Type: games.MinPlayer,
+		},
+	},
+}
+
 func init() {
-	games.Register(games.Game{
-		Name:        "Tick-Tac-Toe",
-		Slug:        "ttt",
-		Start:       New,
-		PlayerNames: []string{"X", "O"},
-		PlayerTypes: []games.PlayerType{games.MaxPlayer, games.MinPlayer},
-	})
+	games.Register(Game)
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 )
 
@@ -23,6 +24,8 @@ func (s socket) Close() error {
 var chain = NewChain(2) // 2-word prefixes
 
 func socketHandler(ws *websocket.Conn) {
+	slug := mux.Vars(ws.Request())["slug"]
+	log.Printf("Socket connected of type: %s", slug)
 	r, w := io.Pipe()
 	go func() {
 		_, err := io.Copy(io.MultiWriter(w, chain), ws)
@@ -41,13 +44,13 @@ func match(c io.ReadWriteCloser) {
 	case partner <- c:
 		// now handled by the other goroutine
 	case p := <-partner:
-		chat(p, c)
+		play(p, c)
 	case <-time.After(5 * time.Second):
-		chat(Bot(), c)
+		play(Bot(), c)
 	}
 }
 
-func chat(a, b io.ReadWriteCloser) {
+func play(a, b io.ReadWriteCloser) {
 	fmt.Fprintln(a, "Found one! Say hi.")
 	fmt.Fprintln(b, "Found one! Say hi.")
 	errc := make(chan error, 1)
