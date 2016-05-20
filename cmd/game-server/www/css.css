@@ -52,7 +52,7 @@ body {
 
 /* Customize container */
 @media (min-width: 768px) {
-  .container {
+  .container-narrow {
     max-width: 730px;
   }
 }

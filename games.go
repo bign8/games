@@ -46,6 +46,7 @@ type State interface {
 	Terminal() bool     // If the game is in a terminal state
 	Utility() int       // Each game can define their own utility
 	Error() error       // If any problem exists in regular game-play
+	SVG(bool) string    // Browser representation of a state (editable)
 }
 
 // AI generates a player that maximises the result of the Utilites provided
@@ -65,6 +66,7 @@ func Run(game State) State {
 type Game struct {
 	Name    string
 	Slug    string
+	Board   string
 	Start   Starter        `json:"-"`
 	Players []PlayerConfig `json:"-"`
 	AI      Gamer          `json:"-"`
