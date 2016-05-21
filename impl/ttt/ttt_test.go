@@ -46,3 +46,15 @@ func BenchmarkUtility(b *testing.B) {
 		game.Utility()
 	}
 }
+
+func BenchmarkSVG(b *testing.B) {
+	p := cli.New("asdf", games.MinPlayer)
+	game := New(p, p)
+	game = game.Apply(game.Actions()[4])
+	game = game.Apply(game.Actions()[4])
+	game = game.Apply(game.Actions()[3])
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		game.SVG(false)
+	}
+}

@@ -1,9 +1,14 @@
-var output;
+var output, game;
 
 function showMessage(m) {
-  var p = document.createElement("p");
-  p.innerHTML = m.data ? m.data : m;
-  output.appendChild(p);
+  var load = m.data ? m.data : m;
+  if (load.trimLeft().slice(0,4) == '<svg') {
+    game.innerHTML = load;
+  } else {
+    var p = document.createElement("p");
+    p.innerHTML = load;
+    output.appendChild(p);
+  }
 }
 
 function init() {
@@ -19,6 +24,7 @@ function init() {
     }
   }, false);
   output = document.getElementById("output");
+  game = document.getElementById("game");
   websocket.onmessage = showMessage;
   websocket.onclose = showMessage.bind(this, "Connection Closed.");
 }

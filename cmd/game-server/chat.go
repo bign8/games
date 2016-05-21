@@ -1,11 +1,16 @@
 package main
 
+// https://talks.golang.org/2012/chat.slide#41
+// https://talks.golang.org/2012/chat/both/chat.go
+
 import (
 	"fmt"
 	"io"
 	"log"
 	"time"
 
+	"github.com/bign8/games"
+	"github.com/bign8/games/player/cli"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 )
@@ -25,6 +30,7 @@ var chain = NewChain(2) // 2-word prefixes
 
 func socketHandler(ws *websocket.Conn) {
 	slug := mux.Vars(ws.Request())["slug"]
+	// TODO: verify valid slug
 	log.Printf("Socket connected of type: %s", slug)
 	r, w := io.Pipe()
 	go func() {
@@ -32,27 +38,43 @@ func socketHandler(ws *websocket.Conn) {
 		w.CloseWithError(err)
 	}()
 	s := socket{r, ws, make(chan bool)}
-	go match(s)
+	go match(s, slug)
 	<-s.done
 }
 
 var partner = make(chan io.ReadWriteCloser)
 
-func match(c io.ReadWriteCloser) {
+func match(c io.ReadWriteCloser, slug string) {
 	fmt.Fprint(c, "Waiting for a partner...")
 	select {
 	case partner <- c:
 		// now handled by the other goroutine
 	case p := <-partner:
-		play(p, c)
+		play(slug, p, c)
 	case <-time.After(5 * time.Second):
-		play(Bot(), c)
+		play(slug, Bot(), c)
 	}
 }
 
-func play(a, b io.ReadWriteCloser) {
+func play(slug string, a, b io.ReadWriteCloser) {
 	fmt.Fprintln(a, "Found one! Say hi.")
 	fmt.Fprintln(b, "Found one! Say hi.")
+
+	// TODO: actually initialize and run the game
+	game := registry[slug]
+	players := make([]games.Player, len(game.Players))
+	for i, config := range game.Players {
+		players[i] = cli.New(config.Name, config.Type)
+	}
+	state := game.Start(players[0], players[1])
+	state = state.Apply(state.Actions()[5])
+	state = state.Apply(state.Actions()[4])
+	state = state.Apply(state.Actions()[3])
+	svg := state.SVG(false)
+	fmt.Fprintln(a, svg)
+	fmt.Fprintln(b, svg)
+
+	// Start conversation between the players
 	errc := make(chan error, 1)
 	go cp(a, b, errc)
 	go cp(b, a, errc)
