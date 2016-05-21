@@ -76,9 +76,9 @@ func (g ttt) String() string {
 
 // Actions returns the next possible states given a particular state
 func (g ttt) Actions() (moves []games.Action) {
-	if !g.Player().Human() && g.ctr == 0 { // Starting move reducibility
-		return []games.Action{tttMove(8), tttMove(7), tttMove(4)}
-	}
+	// if !g.Player().Human() && g.ctr == 0 { // Starting move reducibility
+	// 	return []games.Action{tttMove(8), tttMove(7), tttMove(4)}
+	// }
 	for j, bit := range g.board {
 		if bit == ' ' {
 			m := tttMove(j)
@@ -197,8 +197,4 @@ var Game = games.Game{
 	<!--<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="115" x="0">Created by TNS</text>
   <text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="120" x="0">from the Noun Project</text>-->
 </svg>`,
-}
-
-func init() {
-	games.Register(Game)
 }

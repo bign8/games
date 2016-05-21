@@ -12,27 +12,14 @@ import (
 	"github.com/bign8/games/player/minimax"
 )
 
-type implConfig struct {
-	name  string
-	start games.Starter
-	names []string
-	types []games.PlayerType
+var impl = map[string]games.Game{
+	ttt.Game.Slug: ttt.Game,
 }
 
-var impl = map[string]implConfig{
-	// "Chess":        chess.New,
-	"ttt": implConfig{
-		name:  "Tick-Tac-Toe",
-		start: ttt.New,
-		names: []string{"X", "O"},
-		types: []games.PlayerType{games.MaxPlayer, games.MinPlayer},
-	},
-}
-
-func getImpl(in *bufio.Reader) implConfig {
+func getImpl(in *bufio.Reader) games.Game {
 	slugs := make([]string, 0, len(impl))
 	for slug, config := range impl {
-		fmt.Printf("\t%s: %s\n", slug, config.name)
+		fmt.Printf("\t%s: %s\n", slug, config.Name)
 		slugs = append(slugs, slug)
 	}
 	for {
@@ -53,7 +40,7 @@ func getImpl(in *bufio.Reader) implConfig {
 
 type playerConfig struct {
 	name   string
-	create games.Gamer
+	create func() games.Actor
 }
 
 var player = map[string]playerConfig{
@@ -96,20 +83,21 @@ func main() {
 	config := getImpl(in)
 
 	// Setup Players
-	human := false
-	players := make([]games.Player, len(config.names))
-	for i, name := range config.names {
-		fmt.Printf("=================================================================\nChoosing player %s (%d/%d)\n", name, i+1, len(config.names))
-		players[i] = getPlayer(in).create(name, config.types[i])
-		human = human || players[i].Human()
+	// human := false
+	count := len(config.Players)
+	players := make([]games.Player, count)
+	for i, p := range config.Players {
+		fmt.Printf("=================================================================\nChoosing player %s (%d/%d)\n", p.Name, i+1, count)
+		players[i] = games.NewPlayer(getPlayer(in).create(), p)
+		// human = human || players[i].Human
 	}
 
 	// Play Game
-	game := config.start(players...)
+	game := config.Start(players...)
 	game = games.Run(game)
 
 	// Print terminal message
-	if game.Terminal() && human {
+	if game.Terminal() {
 		fmt.Printf("Game Complete\n\n%s\n", game)
 	}
 

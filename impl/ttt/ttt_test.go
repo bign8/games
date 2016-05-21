@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/player/cli"
 )
 
 func BenchmarkStateString(b *testing.B) {
@@ -22,8 +21,7 @@ func BenchmarkNewState(b *testing.B) {
 }
 
 func BenchmarkApply(b *testing.B) {
-	p := cli.New("asdf", games.MinPlayer)
-	game := New(p, p)
+	game := newGame()
 	move := game.Actions()[0]
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -48,8 +46,7 @@ func BenchmarkUtility(b *testing.B) {
 }
 
 func BenchmarkSVG(b *testing.B) {
-	p := cli.New("asdf", games.MinPlayer)
-	game := New(p, p)
+	game := newGame()
 	game = game.Apply(game.Actions()[4])
 	game = game.Apply(game.Actions()[4])
 	game = game.Apply(game.Actions()[3])
@@ -57,4 +54,19 @@ func BenchmarkSVG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		game.SVG(false)
 	}
+}
+
+func newGame() games.State {
+	p1 := games.PlayerConfig{Name: "asdf", Type: games.MinPlayer}
+	p2 := games.PlayerConfig{Name: "qwer", Type: games.MaxPlayer}
+	return New(
+		games.NewPlayer(&dumb{}, p1),
+		games.NewPlayer(&dumb{}, p2),
+	)
+}
+
+type dumb struct{}
+
+func (p dumb) Act(s games.State) games.Action {
+	return s.Actions()[0]
 }

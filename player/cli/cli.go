@@ -11,40 +11,24 @@ import (
 )
 
 type cliPlayer struct {
-	name   string
 	reader *bufio.Reader
-	pType  games.PlayerType
 }
 
 // New creates a new player that interfaces with a human via Stdin/out/err
-func New(name string, p games.PlayerType) games.Player {
+func New() games.Actor {
 	return &cliPlayer{
-		name:   name,
 		reader: bufio.NewReader(os.Stdin),
-		pType:  p,
 	}
 }
 
-func (cli cliPlayer) Human() bool {
-	return true
-}
-
-func (cli cliPlayer) String() string {
-	return cli.name
-}
-
-func (cli cliPlayer) Type() games.PlayerType {
-	return cli.pType
-}
-
-func (cli cliPlayer) Play(s games.State) games.Action {
+func (cli cliPlayer) Act(s games.State) games.Action {
 	moves := s.Actions()
 	max := len(moves)
 
 	// TODO: print state + moves side by side
 
 	// Print state of the union
-	fmt.Println("=================================================================\n" + s.String() + "\n" + cli.String() + "'s available moves:")
+	fmt.Println("=================================================================\n" + s.String() + "\n" + s.Player().Name + "'s available moves:")
 	for i, move := range moves {
 		fmt.Printf("  %d: %s\n", i, move)
 	}

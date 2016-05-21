@@ -7,49 +7,35 @@ import (
 	"github.com/bign8/games"
 )
 
-type minimaxPlayer struct {
-	name  string
-	pType games.PlayerType
-	ctr   uint
+type minimax struct {
+	ctr uint
 }
 
 // New creates a new player that interfaces with a human via Stdin/out/err
-func New(name string, t games.PlayerType) games.Player {
-	return &minimaxPlayer{
-		name:  name,
-		pType: t,
-	}
+func New() games.Actor {
+	return &minimax{ctr: 0}
 }
 
-func (mm minimaxPlayer) Human() bool {
-	return false
-}
-
-func (mm minimaxPlayer) String() string {
-	return mm.name
-}
-
-func (mm minimaxPlayer) Type() games.PlayerType {
-	return mm.pType
-}
-
-func (mm *minimaxPlayer) Play(s games.State) games.Action {
+func (mm *minimax) Act(s games.State) games.Action {
 	mm.ctr = 0
 	start := time.Now()
 	a, _ := mm.search(s)
-	fmt.Printf("%s explored %d games in %s\n", mm.name, mm.ctr, time.Since(start))
+	fmt.Printf(
+		"%s chose %q after exploring %d games in %s\n",
+		s.Player().Name, a.String(), mm.ctr, time.Since(start),
+	)
 	return a
 }
 
 // MiniMax searches the full game tree until terminal nodes
-func (mm *minimaxPlayer) search(s games.State) (games.Action, int) {
+func (mm *minimax) search(s games.State) (games.Action, int) {
 	if s.Terminal() {
 		mm.ctr++
 		// fmt.Printf("%s - %d\n", s, s.Utility())
 		return nil, s.Utility()
 	}
 	compare := func(a, b int) bool { return a < b }
-	if s.Player().Type() == games.MinPlayer {
+	if s.Player().Type == games.MinPlayer {
 		compare = func(a, b int) bool { return a > b }
 	}
 
