@@ -43,7 +43,7 @@ func socketHandler(ws *websocket.Conn) {
 var partner = make(chan io.ReadWriteCloser)
 
 func match(c io.ReadWriteCloser, slug string) {
-	fmt.Fprint(c, "Waiting for a partner...")
+	fmt.Fprint(c, "sWaiting for a partner...")
 	select {
 	case partner <- c:
 		// now handled by the other goroutine

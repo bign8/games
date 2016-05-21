@@ -9,8 +9,8 @@ import (
 )
 
 func play(slug string, a, b io.ReadWriteCloser) {
-	fmt.Fprintln(a, "Found one! Say hi.")
-	fmt.Fprintln(b, "Found one! Say hi.")
+	fmt.Fprintln(a, "sFound one! Say hi.")
+	fmt.Fprintln(b, "sFound one! Say hi.")
 
 	// TODO: actually initialize and run the game
 	game := registry[slug]
@@ -23,8 +23,8 @@ func play(slug string, a, b io.ReadWriteCloser) {
 	state = state.Apply(state.Actions()[4])
 	state = state.Apply(state.Actions()[3])
 	svg := state.SVG(false)
-	fmt.Fprintln(a, svg)
-	fmt.Fprintln(b, svg)
+	fmt.Fprintln(a, "g"+svg)
+	fmt.Fprintln(b, "g"+svg)
 
 	// Start conversation between the players
 	errc := make(chan error, 1)

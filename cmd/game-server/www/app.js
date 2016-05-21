@@ -1,32 +1,35 @@
 var output, game;
 
-function showMessage(m) {
-  var load = m.data ? m.data : m;
-  if (load.trimLeft().slice(0,4) == '<svg') {
-    game.innerHTML = load;
-  } else {
-    var p = document.createElement("p");
-    p.innerHTML = load;
-    output.appendChild(p);
-  }
+function userMessage(m) {
+  var p = document.createElement('p');
+  p.innerHTML = m;
+  output.appendChild(p);
+}
+
+systemMessage = userMessage; // TODO: update in future
+
+function gameMessage(m) {
+  game.innerHTML = m;
 }
 
 function init() {
   var input = document.getElementById("input");
   var loc = document.location.toString().replace("http://", "ws://") + '/socket';
-  var websocket = new WebSocket(loc);
+  var newSocket = new RoomSocket(loc);
+  newSocket.listen('s', systemMessage);
+  newSocket.listen('u', userMessage);
+  newSocket.listen('g', gameMessage);
   input.addEventListener("keyup", function(e) {
     if (e.keyCode == 13) {
       var m = input.value;
       input.value = "";
-      websocket.send(m);
-      showMessage(m);
+      newSocket.send('u', m);
+      userMessage(m);
     }
   }, false);
   output = document.getElementById("output");
   game = document.getElementById("game");
-  websocket.onmessage = showMessage;
-  websocket.onclose = showMessage.bind(this, "Connection Closed.");
+  newSocket.onclose = systemMessage.bind(this, "Connection Closed.");
 }
 
 window.addEventListener("load", init, false);
