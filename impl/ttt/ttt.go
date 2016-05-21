@@ -16,30 +16,18 @@ type ttt struct {
 
 type tttMove uint8
 
+var moveNames = []string{
+	"Top Left Corner", "Top Middle", "Top Right Corner",
+	"Left Middle", "Center Square", "Right Middle",
+	"Bottom Left Corner", "Bottom Middle", "Bottom Right Corner",
+}
+
 // String does something
 func (m tttMove) String() string {
-	switch m {
-	case 0:
-		return "Top Left Corner"
-	case 1:
-		return "Top Middle"
-	case 2:
-		return "Top Right Corner"
-	case 3:
-		return "Left Middle"
-	case 4:
-		return "Center Square"
-	case 5:
-		return "Right Middle"
-	case 6:
-		return "Bottom Left Corner"
-	case 7:
-		return "Bottom Middle"
-	case 8:
-		return "Bottom Right Corner"
-	default:
+	if m > 8 {
 		return fmt.Sprintf("Undefined Move: %d", m)
 	}
+	return moveNames[m]
 }
 
 // Error tells if there is a problem with regular game play
@@ -182,6 +170,9 @@ func (g ttt) SVG(active bool) string {
 			pieces[ctr] = svgPrefix + svgOPos[i] + svgOSuffix
 			ctr++
 		}
+	}
+	if active {
+		// TODO
 	}
 	return svgHead + strings.Join(pieces[:ctr], "") + svgTail
 }
