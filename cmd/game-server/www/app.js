@@ -1,79 +1,78 @@
-var output, game, moves, newSocket, move_set = [];
+var N8 = N8 || {};  // bign8 global namespace
 
-// TODO: use closures to make these functions private
+N8.games = (function(w, d) {
+  var output, game, moves, newSocket, move_set = [];
 
-function userMessage(m) {
-  var p = document.createElement('p');
-  p.innerHTML = m;
-  output.appendChild(p);
-}
-systemMessage = userMessage; // TODO: update in future
-
-function chooseMove(move) {
-  newSocket.send('g', move.Name + '\n');
-  moves.innerHTML = '';
-  game.innerHTML = move.SVG;
-}
-
-function buildMoveButton(move) {
-  var li = document.createElement('button');
-  li.className = 'list-group-item';
-  li.innerHTML = move.Name;
-  li.addEventListener('mouseover', function() {
-    game.innerHTML = move.SVG;
-  }, false);
-  li.addEventListener('click', function() {
-    chooseMove(move);
-  });
-  moves.appendChild(li);
-}
-
-function gameMessage(m) {
-  var obj = JSON.parse(m);
-  console.log(obj);
-  game.innerHTML = obj.SVG;
-  moves.innerHTML = '';
-  move_set = obj.Moves;
-  for (var i = 0; i < obj.Moves.length; i++) {
-    buildMoveButton(obj.Moves[i], obj.SVG)
+  function userMessage(m) {
+    var p = document.createElement('p');
+    p.innerHTML = m;
+    output.appendChild(p);
   }
-  moves.addEventListener('mouseout', function() {
+  systemMessage = userMessage; // TODO: update in future
+
+  function chooseMove(move) {
+    newSocket.send('g', move.Name + '\n');
+    moves.innerHTML = '';
+    game.innerHTML = move.SVG;
+  }
+
+  function buildMoveButton(move) {
+    var li = document.createElement('button');
+    li.className = 'list-group-item';
+    li.innerHTML = move.Name;
+    li.addEventListener('mouseover', function() {
+      game.innerHTML = move.SVG;
+    }, false);
+    li.addEventListener('click', function() {
+      chooseMove(move);
+    });
+    moves.appendChild(li);
+  }
+
+  function gameMessage(m) {
+    var obj = JSON.parse(m);
+    console.log(obj);
     game.innerHTML = obj.SVG;
-  }, false);
-}
-
-function init() {
-  var input = document.getElementById("input");
-  var loc = document.location.toString().replace("http://", "ws://") + '/socket';
-  newSocket = new RoomSocket(loc);
-  newSocket.listen('s', systemMessage);
-  newSocket.listen('u', userMessage);
-  newSocket.listen('g', gameMessage);
-  input.addEventListener("keyup", function(e) {
-    if (e.keyCode == 13) {
-      var m = input.value;
-      input.value = "";
-      newSocket.send('u', m + '\n');
-      userMessage(m);
+    moves.innerHTML = '';
+    move_set = obj.Moves;
+    for (var i = 0; i < obj.Moves.length; i++) {
+      buildMoveButton(obj.Moves[i], obj.SVG)
     }
-  }, false);
-  output = document.getElementById("output");
-  game = document.getElementById("game");
-  moves = document.getElementById("moves");
-  newSocket.onclose = systemMessage.bind(this, "Connection Closed.");
-}
+    moves.addEventListener('mouseout', function() {
+      game.innerHTML = obj.SVG;
+    }, false);
+  }
 
-window.addEventListener("load", init, false);
-
-var N8 = N8 || {};  // bign8.info global namespace
-
-N8.games = {
-  chooseMove : function(move_string) {
-    for (var i = 0; i < move_set.length; i++) {
-      if (move_set[i].Name == move_string) {
-        return chooseMove(move_set[i]);
+  // Window on-load event
+  w.addEventListener('load', function() {
+    var input = document.getElementById("input");
+    var loc = document.location.toString().replace("http://", "ws://") + '/socket';
+    newSocket = new RoomSocket(loc);
+    newSocket.listen('s', systemMessage);
+    newSocket.listen('u', userMessage);
+    newSocket.listen('g', gameMessage);
+    input.addEventListener("keyup", function(e) {
+      if (e.keyCode == 13) {
+        var m = input.value;
+        input.value = "";
+        newSocket.send('u', m + '\n');
+        userMessage(m);
       }
-    }
-    console.log('Move not found:', move_string);
-  },
-};
+    }, false);
+    output = document.getElementById("output");
+    game = document.getElementById("game");
+    moves = document.getElementById("moves");
+    newSocket.onclose = systemMessage.bind(this, "Connection Closed.");
+  }, false);
+
+  return {
+    chooseMove : function(move_string) {
+      for (var i = 0; i < move_set.length; i++) {
+        if (move_set[i].Name == move_string) {
+          return chooseMove(move_set[i]);
+        }
+      }
+      console.log('Move not found:', move_string);
+    },
+  };
+})(window, document);
