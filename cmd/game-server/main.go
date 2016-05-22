@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl/ttt"
@@ -29,6 +28,7 @@ func main() {
 	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
 	r.HandleFunc("/play/{slug}", gameHandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("www"))))
+	r.HandleFunc("/about", aboutHandler)
 	r.PathPrefix("/").HandlerFunc(rootHandler)
 
 	// Spin up server
@@ -60,40 +60,10 @@ func gamesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-	rootTemplate.Execute(w, struct {
-		Games interface{}
-	}{
-		Games: registry,
-	})
-}
-
-var rootTemplate = template.Must(template.ParseFiles("www/index.html"))
-
 func randomHandler(w http.ResponseWriter, r *http.Request) {
 	for _, game := range registry { // TODO: verify this is random iteration
 		urlStr := fmt.Sprintf("/play/%s", game.Slug)
 		http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
 		return
 	}
-}
-
-var gameTemplate = template.Must(template.ParseFiles("www/game.html"))
-
-func gameHandler(w http.ResponseWriter, r *http.Request) {
-	game, ok := registry[mux.Vars(r)["slug"]]
-	if !ok {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-	gameTemplate.Execute(w, struct {
-		Game interface{}
-	}{
-		Game: game,
-	})
-	// fmt.Fprintf(w, "Playing %s baby!", game.Name)
 }

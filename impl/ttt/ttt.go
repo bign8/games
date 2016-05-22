@@ -147,6 +147,8 @@ func (g ttt) Utility() int {
 	return -1
 }
 
+// https://thenounproject.com/term/tic-tac-toe/25029/
+
 var svgHead = `<svg viewBox="0 0 100 100">`
 var svgTail = `</svg>`
 var svgPrefix = `<path d="m`
