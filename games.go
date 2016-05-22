@@ -3,6 +3,9 @@ package games
 
 import "fmt"
 
+// SVGChooseMove is the JS function that needs to be called within a SVG for a move to be chosen
+const SVGChooseMove = `parent.N8.games.chooseMove`
+
 // Starter is a function used to create a game's initial state
 type Starter func(...Player) State
 

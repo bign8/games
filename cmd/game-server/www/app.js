@@ -1,4 +1,6 @@
-var output, game, moves, newSocket;
+var output, game, moves, newSocket, move_set = [];
+
+// TODO: use closures to make these functions private
 
 function userMessage(m) {
   var p = document.createElement('p');
@@ -6,6 +8,12 @@ function userMessage(m) {
   output.appendChild(p);
 }
 systemMessage = userMessage; // TODO: update in future
+
+function chooseMove(move) {
+  newSocket.send('g', move.Name + '\n');
+  moves.innerHTML = '';
+  game.innerHTML = move.SVG;
+}
 
 function buildMoveButton(move) {
   var li = document.createElement('button');
@@ -15,10 +23,7 @@ function buildMoveButton(move) {
     game.innerHTML = move.SVG;
   }, false);
   li.addEventListener('click', function() {
-    console.log('clicking');
-    newSocket.send('g', move.Name + '\n');
-    moves.innerHTML = '';
-    game.innerHTML = move.SVG;
+    chooseMove(move);
   });
   moves.appendChild(li);
 }
@@ -28,6 +33,7 @@ function gameMessage(m) {
   console.log(obj);
   game.innerHTML = obj.SVG;
   moves.innerHTML = '';
+  move_set = obj.Moves;
   for (var i = 0; i < obj.Moves.length; i++) {
     buildMoveButton(obj.Moves[i], obj.SVG)
   }
@@ -58,3 +64,16 @@ function init() {
 }
 
 window.addEventListener("load", init, false);
+
+var N8 = N8 || {};  // bign8.info global namespace
+
+N8.games = {
+  chooseMove : function(move_string) {
+    for (var i = 0; i < move_set.length; i++) {
+      if (move_set[i].Name == move_string) {
+        return chooseMove(move_set[i]);
+      }
+    }
+    console.log('Move not found:', move_string);
+  },
+};

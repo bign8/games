@@ -164,6 +164,12 @@ var svgXPos = []string{
 	`14.476,40.466`, `40.523,40.466`, `66.597,40.466`,
 	`14.476,66.598`, `40.523,66.598`, `66.597,66.598`,
 }
+var svgTargetPos = []string{
+	`x="11" y="11"`, `x="38" y="11"`, `x="64" y="11"`,
+	`x="11" y="38"`, `x="38" y="38"`, `x="64" y="38"`,
+	`x="11" y="64"`, `x="38" y="64"`, `x="64" y="64"`,
+}
+var svgTargetID = []string{`p1`, `p2`, `p3`, `p4`, `p5`, `p6`, `p7`, `p8`, `p9`}
 
 func (g ttt) SVG(active bool) string {
 	ctr := 0
@@ -177,10 +183,29 @@ func (g ttt) SVG(active bool) string {
 			ctr++
 		}
 	}
+	pieces = pieces[:ctr]
+
+	// Clickable targets
+	var groups string
 	if active {
-		// TODO
+		suffix := svgXSuffix
+		pos := svgXPos
+		if g.Player().Name == "O" {
+			suffix = svgOSuffix
+			pos = svgOPos
+		}
+		ctr = 0
+		hover, target := make([]string, 9), make([]string, 9)
+		for i, bit := range g.board {
+			if bit == ' ' {
+				hover[ctr] = `<rect height="25" width="25" ` + svgTargetPos[i] + ` fill="transparent" onclick="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onmouseover="` + svgTargetID[i] + `.setAttribute('opacity', '0.5')" onmouseout="` + svgTargetID[i] + `.setAttribute('opacity', '0')"/>`
+				target[ctr] = `<path id="` + svgTargetID[i] + `" opacity="0" d="m` + pos[i] + suffix
+				ctr++
+			}
+		}
+		groups = "<g>" + strings.Join(target[:ctr], "") + "</g><g>" + strings.Join(hover[:ctr], "") + "</g>"
 	}
-	return svgHead + strings.Join(pieces[:ctr], "") + svgTail
+	return svgHead + "<g>" + strings.Join(pieces, "") + "</g>" + groups + svgTail
 }
 
 // Game is the fully described version of TTT
