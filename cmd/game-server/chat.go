@@ -42,6 +42,7 @@ func socketHandler(ws *websocket.Conn) {
 
 var partner = make(chan io.ReadWriteCloser)
 
+// TODO: allow this to handle games with more than 2 players
 func match(c io.ReadWriteCloser, slug string) {
 	fmt.Fprint(c, "sWaiting for a partner...")
 	select {
@@ -50,6 +51,6 @@ func match(c io.ReadWriteCloser, slug string) {
 	case p := <-partner:
 		play(slug, p, c)
 	case <-time.After(5 * time.Second):
-		play(slug, Bot(), c)
+		play(slug, c, Bot())
 	}
 }
