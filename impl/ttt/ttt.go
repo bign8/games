@@ -198,7 +198,7 @@ func (g ttt) SVG(active bool) string {
 		hover, target := make([]string, 9), make([]string, 9)
 		for i, bit := range g.board {
 			if bit == ' ' {
-				hover[ctr] = `<rect height="25" width="25" ` + svgTargetPos[i] + ` fill="transparent" onclick="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onmouseover="` + svgTargetID[i] + `.setAttribute('opacity', '0.5')" onmouseout="` + svgTargetID[i] + `.setAttribute('opacity', '0')"/>`
+				hover[ctr] = `<rect height="25" width="25" ` + svgTargetPos[i] + ` fill="transparent" ontouchend="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onclick="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onmouseover="` + svgTargetID[i] + `.setAttribute('opacity', '0.5')" onmouseout="` + svgTargetID[i] + `.setAttribute('opacity', '0')"/>`
 				target[ctr] = `<path id="` + svgTargetID[i] + `" opacity="0" d="m` + pos[i] + suffix
 				ctr++
 			}

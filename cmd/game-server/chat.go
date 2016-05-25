@@ -1,12 +1,11 @@
 package main
 
-// https://talks.golang.org/2012/chat.slide#41
+// https://talks.golang.org/2012/chat.slide
 // https://talks.golang.org/2012/chat/both/chat.go
 
 import (
 	"fmt"
 	"io"
-	"log"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -27,9 +26,7 @@ func (s socket) Close() error {
 var chain = NewChain(2) // 2-word prefixes
 
 func socketHandler(ws *websocket.Conn) {
-	slug := mux.Vars(ws.Request())["slug"]
-	// TODO: verify valid slug
-	log.Printf("Socket connected of type: %s", slug)
+	slug := mux.Vars(ws.Request())["slug"] // TODO: verify valid slug
 	r, w := io.Pipe()
 	go func() {
 		_, err := io.Copy(io.MultiWriter(w, chain), ws)
