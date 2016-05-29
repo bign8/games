@@ -23,11 +23,16 @@ func createManager(source io.ReadWriteCloser) *manager {
 		scanner := bufio.NewScanner(source) // Reader
 		for scanner.Scan() {
 			msg := scanner.Bytes()
+			if len(msg) == 0 {
+				log.Println("Zero length message from somebody")
+				continue
+			}
 			man.mu.RLock()
 			obj, ok := man.rooms[msg[0]]
 			man.mu.RUnlock()
 			if ok {
-				obj.Write(msg[1:]) // TODO: error check here
+				msg = append(msg, '\n') // TODO: benchmark (vs. shift bits and set last)
+				obj.Write(msg[1:])      // TODO: error check here
 			} else {
 				log.Printf("Invalid room message (%x): %s", msg[0], msg[1:])
 			}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/bign8/games"
 )
@@ -14,25 +15,31 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	fmt.Fprintln(x, "sFound one! Say hi.")
 	fmt.Fprintln(y, "sFound one! Say hi.")
 
+	// Setup socket managers for sockets
+	xMan := createManager(x)
+	yMan := createManager(y)
+	xChat := xMan.Room('u')
+	yChat := yMan.Room('u')
+	xGame := xMan.Room('g')
+	yGame := yMan.Room('g')
+	_, isBot := y.(bot)
+
+	// Setup player chat-room // TODO: handle > 2 players
+	errc := make(chan error, 1)
+	go cp(xChat, yChat, errc)
+	go cp(yChat, xChat, errc)
+
 	// Convert actors to real players
 	game := registry[slug]
 	players := make([]games.Player, len(game.Players))
-
-	// Generate Players
-	// TODO: support more than 2-way communication (more players)
-	ltr := make(chan string)
-	rtl := make(chan string)
-	errc := make(chan error, 1)
-	a := newChatActor(x, ltr, rtl, errc, game.AI)
-	b := newChatActor(y, rtl, ltr, errc, game.AI)
-	players[0] = games.NewPlayer(a, game.Players[0])
-	players[1] = games.NewPlayer(b, game.Players[1])
+	players[0] = games.NewPlayer(newSocketActor(xGame, errc, false, game.AI), game.Players[0])
+	players[1] = games.NewPlayer(newSocketActor(yGame, errc, isBot, game.AI), game.Players[1])
 
 	// Play the game
 	state := game.Start(players...)
 	data := game4client(games.Run(state))
-	a.out <- data
-	b.out <- data
+	xGame.Write(data) // Broadcast final game state
+	yGame.Write(data)
 
 	// Log errors if necessary
 	if err := <-errc; err != nil {
@@ -42,58 +49,39 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	y.Close()
 }
 
-// func cp(w io.Writer, r io.Reader, errc chan<- error) {
-// 	_, err := io.Copy(w, r)
-// 	errc <- err
-// }
-
-type actor struct {
-	moves chan string
-	in    chan string
-	out   chan<- string
-	isBot bool
-	ai    games.Actor
+func cp(w io.Writer, r io.Reader, errc chan<- error) {
+	_, err := io.Copy(io.MultiWriter(w, chain), r) // copy chats to markov chain
+	errc <- err
 }
 
-func newChatActor(s io.ReadWriteCloser, in chan string, out chan<- string, errc chan<- error, ai games.Actor) actor {
-	_, ok := s.(bot)
-	a := actor{make(chan string, 5), in, out, ok, ai}
+type actor struct {
+	isBot bool
+	ai    games.Actor
+	s     *bufio.Scanner
+	write io.Writer
+}
 
-	// TODO: combine these go-routines
-	go func() {
-		var msg string
-		scanner := bufio.NewScanner(s)
-		for scanner.Scan() {
-			msg = scanner.Text()
-			if msg[0] == 'g' {
-				a.moves <- msg[1:]
-			} else {
-				out <- msg
-			}
-		}
-		errc <- scanner.Err()
-	}()
-
-	go func() {
-		for msg := range in {
-			fmt.Fprint(s, msg)
-		}
-	}()
-
+func newSocketActor(s io.ReadWriteCloser, errc chan<- error, isBot bool, ai games.Actor) *actor {
+	a := &actor{
+		isBot: isBot,
+		ai:    ai,
+		s:     bufio.NewScanner(s),
+		write: s,
+	}
 	return a
 }
 
-func (p actor) Act(state games.State) games.Action {
-	if p.isBot {
-		return p.ai.Act(state)
+func (a *actor) Act(s games.State) games.Action {
+	if a.isBot {
+		time.Sleep(time.Second)
+		return a.ai.Act(s)
 	}
 
-	actions := state.Actions()
-	p.in <- game4client(state)
-	var move string
+	actions := s.Actions()
+	a.write.Write(game4client(s))
 	var chosen *games.Action
-	for chosen == nil {
-		move = <-p.moves
+	for chosen == nil && a.s.Scan() {
+		move := a.s.Text()
 		for _, a := range actions {
 			if a.String() == move {
 				chosen = &a
@@ -101,7 +89,7 @@ func (p actor) Act(state games.State) games.Action {
 			}
 		}
 		if chosen == nil {
-			p.in <- "sInvalidMove... Try again!"
+			a.write.Write([]byte("sInvalidMove... Try again!"))
 		}
 	}
 	return *chosen
@@ -117,7 +105,7 @@ type gameMoveMSG struct {
 	SVG  string
 }
 
-func game4client(s games.State) string {
+func game4client(s games.State) []byte {
 	moves := make([]gameMoveMSG, len(s.Actions()))
 
 	for i, a := range s.Actions() {
@@ -132,5 +120,5 @@ func game4client(s games.State) string {
 		Moves: moves,
 	}
 	js, _ := json.Marshal(data)
-	return "g" + string(js)
+	return js
 }

@@ -27,12 +27,7 @@ var chain = NewChain(2) // 2-word prefixes
 
 func socketHandler(ws *websocket.Conn) {
 	slug := mux.Vars(ws.Request())["slug"] // TODO: verify valid slug
-	r, w := io.Pipe()
-	go func() {
-		_, err := io.Copy(io.MultiWriter(w, chain), ws)
-		w.CloseWithError(err)
-	}()
-	s := socket{r, ws, make(chan bool)}
+	s := socket{ws, ws, make(chan bool)}
 	go match(s, slug)
 	<-s.done
 }

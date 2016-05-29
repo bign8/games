@@ -18,12 +18,14 @@ type bot struct {
 }
 
 func (b bot) Write(buf []byte) (int, error) {
-	go b.speak()
+	if len(buf) > 0 && buf[0] == 'u' {
+		go b.speak()
+	}
 	return len(buf), nil
 }
 
 func (b bot) speak() {
 	time.Sleep(time.Second)
 	msg := chain.Generate(10) // at most 10 words
-	b.out.Write([]byte(msg))
+	b.out.Write([]byte("u" + msg + "\n"))
 }
