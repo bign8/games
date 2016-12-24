@@ -20,14 +20,14 @@ func BenchmarkNewState(b *testing.B) {
 	}
 }
 
-func BenchmarkApply(b *testing.B) {
-	game := newGame()
-	move := game.Actions()[0]
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		game.Apply(move)
-	}
-}
+// func BenchmarkApply(b *testing.B) {
+// 	game := newGame()
+// 	move := game.Actions()[0]
+// 	b.ResetTimer()
+// 	for i := 0; i < b.N; i++ {
+// 		game.Apply(move)
+// 	}
+// }
 
 func BenchmarkTerminal(b *testing.B) {
 	game := New()
@@ -39,31 +39,32 @@ func BenchmarkTerminal(b *testing.B) {
 
 func BenchmarkUtility(b *testing.B) {
 	game := New()
+	a := game.Player()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.Utility()
+		game.Utility(a)
 	}
 }
 
-func BenchmarkSVG(b *testing.B) {
-	game := newGame()
-	game = game.Apply(game.Actions()[4])
-	game = game.Apply(game.Actions()[4])
-	game = game.Apply(game.Actions()[3])
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		game.SVG(false)
-	}
-}
+// func BenchmarkSVG(b *testing.B) {
+// 	game := newGame()
+// 	game = game.Apply(game.Actions()[4])
+// 	game = game.Apply(game.Actions()[4])
+// 	game = game.Apply(game.Actions()[3])
+// 	b.ResetTimer()
+// 	for i := 0; i < b.N; i++ {
+// 		game.SVG(false)
+// 	}
+// }
 
-func newGame() games.State {
-	p1 := games.PlayerConfig{Name: "asdf", Type: games.MinPlayer}
-	p2 := games.PlayerConfig{Name: "qwer", Type: games.MaxPlayer}
-	return New(
-		games.NewPlayer(&dumb{}, p1),
-		games.NewPlayer(&dumb{}, p2),
-	)
-}
+// func newGame() games.State {
+// 	p1 := games.PlayerConfig{Name: "asdf", Type: games.MinPlayer}
+// 	p2 := games.PlayerConfig{Name: "qwer", Type: games.MaxPlayer}
+// 	return New(
+// 		games.NewPlayer(&dumb{}, p1),
+// 		games.NewPlayer(&dumb{}, p2),
+// 	)
+// }
 
 type dumb struct{}
 

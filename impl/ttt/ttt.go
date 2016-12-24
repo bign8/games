@@ -11,7 +11,7 @@ import (
 type ttt struct {
 	board   [9]byte
 	ctr     uint8
-	players []games.Player
+	players []games.Actor
 	err     error
 }
 
@@ -37,12 +37,12 @@ func (g ttt) Error() error {
 }
 
 // Player returns the active player given a state
-func (g ttt) Player() games.Player {
+func (g ttt) Player() games.Actor {
 	return g.players[g.ctr%2]
 }
 
 // New takes creates a new game of ttt
-func New(players ...games.Player) games.State {
+func New(players ...games.Actor) games.State {
 	if len(players) != 2 {
 		return &ttt{err: fmt.Errorf("invalid number of players: %d", len(players))}
 	}
@@ -138,10 +138,10 @@ func (g ttt) isWin() (bool, byte) {
 	return false, ' '
 }
 
-func (g ttt) Utility() int {
+func (g ttt) Utility(a games.Actor) int {
 	if isWin, chr := g.isWin(); !isWin {
 		return 0
-	} else if chr == 'X' {
+	} else if chr == a.Name()[0] {
 		return 1
 	}
 	return -1
@@ -170,6 +170,11 @@ var svgTargetPos = []string{
 	`x="11" y="64"`, `x="38" y="64"`, `x="64" y="64"`,
 }
 var svgTargetID = []string{`p1`, `p2`, `p3`, `p4`, `p5`, `p6`, `p7`, `p8`, `p9`}
+var svgBoard = `<svg viewBox="0 0 100 100">
+<path d="m62.193,11.333l0,24.785l-24,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333l0,24.785l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333zm0,50.785l-24,0l0,-24l24,0l0,24z"/>
+<!--<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="115" x="0">Created by TNS</text>
+<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="120" x="0">from the Noun Project</text>-->
+</svg>`
 
 func (g ttt) SVG(active bool) string {
 	ctr := 0
@@ -190,7 +195,7 @@ func (g ttt) SVG(active bool) string {
 	if active {
 		suffix := svgXSuffix
 		pos := svgXPos
-		if g.Player().Name == "O" {
+		if g.Player().Name() == "O" {
 			suffix = svgOSuffix
 			pos = svgOPos
 		}
@@ -210,17 +215,9 @@ func (g ttt) SVG(active bool) string {
 
 // Game is the fully described version of TTT
 var Game = games.Game{
-	Name:  "Tic-Tac-Toe",
-	Slug:  "ttt",
-	Start: New,
-	Players: []games.PlayerConfig{
-		{Name: "X", Type: games.MaxPlayer},
-		{Name: "O", Type: games.MinPlayer},
-	},
-	Board: `<svg viewBox="0 0 100 100">
-	<path d="m62.193,11.333l0,24.785l-24,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333l0,24.785l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333zm0,50.785l-24,0l0,-24l24,0l0,24z"/>
-	<!--<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="115" x="0">Created by TNS</text>
-  <text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="120" x="0">from the Noun Project</text>-->
-</svg>`,
-	AI: minimax.New(),
+	Name:    "Tic-Tac-Toe",
+	Board:   svgBoard,
+	Players: []string{"X", "O"},
+	Start:   New,
+	AI:      minimax.New(),
 }

@@ -146,13 +146,9 @@ func (s State) Terminal() bool {
 }
 
 var Game = games.Game{
-	Name:  "Chess",
-	Slug:  "chess",
-	Board: "<!-- TODO: board -->",
-	Start: nil,
-	Players: []games.PlayerConfig{
-		{Name: "White", Type: games.MaxPlayer},
-		{Name: "Black", Type: games.MinPlayer},
-	},
-	AI: nil,
+	Name:    "Chess",
+	Board:   "<!-- TODO: board -->",
+	Players: []string{"White", "Black"},
+	Start:   nil,
+	AI:      nil,
 }

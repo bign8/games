@@ -7,18 +7,14 @@ import (
 	"strings"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/impl/ttt"
+	"github.com/bign8/games/impl"
 	"github.com/bign8/games/player/cli"
 	"github.com/bign8/games/player/minimax"
 )
 
-var impl = map[string]games.Game{
-	ttt.Game.Slug: ttt.Game,
-}
-
 func getImpl(in *bufio.Reader) games.Game {
-	slugs := make([]string, 0, len(impl))
-	for slug, config := range impl {
+	slugs := make([]string, 0, impl.Len())
+	for slug, config := range impl.Map() {
 		fmt.Printf("\t%s: %s\n", slug, config.Name)
 		slugs = append(slugs, slug)
 	}
@@ -30,7 +26,7 @@ func getImpl(in *bufio.Reader) games.Game {
 			continue
 		}
 		str = strings.Trim(str, "\r\n\t ")
-		if config, ok := impl[str]; !ok {
+		if config, ok := impl.Get(str); !ok {
 			fmt.Fprintf(os.Stderr, "Input slug not found: %s\n", str)
 		} else {
 			return config
