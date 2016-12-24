@@ -9,16 +9,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bign8/games"
-	"github.com/bign8/games/impl/ttt"
+	"github.com/bign8/games/impl"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 )
 
 // This stupid line of code allows all the implementation to run init
-var registry = map[string]games.Game{
-	ttt.Game.Slug: ttt.Game,
-}
+var registry = impl.Registry
 
 func main() {
 	// Setup routes

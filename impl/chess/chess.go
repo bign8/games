@@ -1,6 +1,10 @@
 package chess
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/bign8/games"
+)
 
 // State is an internal representation of a chess game.
 // - FEN notation: https://en.wikipedia.org/wiki/FEN
@@ -139,4 +143,16 @@ func (s State) Terminal() bool {
 	// TODO: halfmove: https://en.wikipedia.org/wiki/Fifty-move_rule
 	// TODO: more win/draw cases ...
 	return len(s.Moves()) == 0
+}
+
+var Game = games.Game{
+	Name:  "Chess",
+	Slug:  "chess",
+	Board: "<!-- TODO: board -->",
+	Start: nil,
+	Players: []games.PlayerConfig{
+		{Name: "White", Type: games.MaxPlayer},
+		{Name: "Black", Type: games.MinPlayer},
+	},
+	AI: nil,
 }
