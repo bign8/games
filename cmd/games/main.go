@@ -13,6 +13,7 @@ import (
 )
 
 func getImpl(in *bufio.Reader) games.Game {
+	fmt.Println("Choosing game to play")
 	slugs := make([]string, 0, impl.Len())
 	for slug, config := range impl.Map() {
 		fmt.Printf("\t%s: %s\n", slug, config.Name)
@@ -36,21 +37,21 @@ func getImpl(in *bufio.Reader) games.Game {
 
 type playerConfig struct {
 	name   string
-	create func() games.Actor
-}
-
-var player = map[string]playerConfig{
-	"cli": playerConfig{
-		name:   "Human via Command Line",
-		create: cli.New,
-	},
-	"mm": playerConfig{
-		name:   "MiniMax Search",
-		create: minimax.New,
-	},
+	create func(string) games.Actor
 }
 
 func getPlayer(in *bufio.Reader) playerConfig {
+	var player = map[string]playerConfig{
+		"cli": playerConfig{
+			name:   "Human via Command Line",
+			create: cli.New(in),
+		},
+		"mm": playerConfig{
+			name:   "MiniMax Search",
+			create: minimax.New,
+		},
+	}
+
 	slugs := make([]string, 0, len(player))
 	for slug, config := range player {
 		fmt.Printf("\t%s: %s\n", slug, config.name)
@@ -72,25 +73,19 @@ func getPlayer(in *bufio.Reader) playerConfig {
 	}
 }
 
+func playerBuilder(in *bufio.Reader) func(games.Game, string) games.Actor {
+	return func(_ games.Game, name string) games.Actor {
+		fmt.Printf("=================================================================\nChoosing player %s\n", name)
+		return getPlayer(in).create(name)
+	}
+}
+
 func main() {
 	// Choose Game
 	in := bufio.NewReader(os.Stdin)
-	fmt.Println("Choosing game to play")
-	config := getImpl(in)
-
-	// Setup Players
-	// human := false
-	count := len(config.Players)
-	players := make([]games.Player, count)
-	for i, p := range config.Players {
-		fmt.Printf("=================================================================\nChoosing player %s (%d/%d)\n", p.Name, i+1, count)
-		players[i] = games.NewPlayer(getPlayer(in).create(), p)
-		// human = human || players[i].Human
-	}
 
 	// Play Game
-	game := config.Start(players...)
-	game = games.Run(game)
+	game := games.Run(getImpl(in), playerBuilder(in))
 
 	// Print terminal message
 	if game.Terminal() {
