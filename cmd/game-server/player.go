@@ -9,8 +9,10 @@ import (
 	"time"
 
 	"github.com/bign8/games"
+	"github.com/bign8/games/impl"
 )
 
+// TODO: allow this to support 3+ player games
 func play(slug string, x, y io.ReadWriteCloser) {
 	fmt.Fprintln(x, "sFound one! Say hi.")
 	fmt.Fprintln(y, "sFound one! Say hi.")
@@ -30,14 +32,23 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	go cp(yChat, xChat, errc)
 
 	// Convert actors to real players
-	game := registry[slug]
-	players := make([]games.Player, len(game.Players))
-	players[0] = games.NewPlayer(newSocketActor(xGame, errc, false, game.AI), game.Players[0])
-	players[1] = games.NewPlayer(newSocketActor(yGame, errc, isBot, game.AI), game.Players[1])
+	// TODO: support this for 3+ game players
+	i := -1
+	actors := []struct {
+		msg   io.ReadWriteCloser
+		isBot bool
+	}{
+		{xGame, false},
+		{yGame, isBot},
+	}
+	builder := func(g games.Game, name string) games.Actor {
+		i++
+		return newSocketActor(name, actors[i].msg, errc, actors[i].isBot, g.AI)
+	}
+	game, _ := impl.Get(slug)
 
 	// Play the game
-	state := game.Start(players...)
-	data := game4client(games.Run(state))
+	data := game4client(games.Run(game, builder))
 	xGame.Write(data) // Broadcast final game state
 	yGame.Write(data)
 
@@ -55,20 +66,26 @@ func cp(w io.Writer, r io.Reader, errc chan<- error) {
 }
 
 type actor struct {
+	name  string
 	isBot bool
 	ai    games.Actor
 	s     *bufio.Scanner
 	write io.Writer
 }
 
-func newSocketActor(s io.ReadWriteCloser, errc chan<- error, isBot bool, ai games.Actor) *actor {
+func newSocketActor(name string, s io.ReadWriteCloser, errc chan<- error, isBot bool, ai games.Actor) *actor {
 	a := &actor{
+		name:  name,
 		isBot: isBot,
 		ai:    ai,
 		s:     bufio.NewScanner(s),
 		write: s,
 	}
 	return a
+}
+
+func (a *actor) Name() string {
+	return a.name
 }
 
 func (a *actor) Act(s games.State) games.Action {

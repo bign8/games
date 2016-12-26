@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/bign8/games/impl"
 	"github.com/gorilla/mux"
 )
 
@@ -21,12 +22,12 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	rootTemplate.Execute(w, struct {
 		Games interface{}
 	}{
-		Games: registry,
+		Games: impl.Map(),
 	})
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	game, ok := registry[mux.Vars(r)["slug"]]
+	game, ok := impl.Get(mux.Vars(r)["slug"])
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
