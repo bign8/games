@@ -6,28 +6,38 @@ import (
 	"github.com/bign8/games"
 )
 
+var _ games.Actor = (*badActor)(nil)
+
+type badActor string
+
+func (ba badActor) Name() string                   { return string(ba) }
+func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
+
 func BenchmarkStateString(b *testing.B) {
 	game := New()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.String()
 	}
+
 }
 
 func BenchmarkNewState(b *testing.B) {
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
 	for i := 0; i < b.N; i++ {
-		New()
+		New(&p1, &p2)
 	}
 }
 
-// func BenchmarkApply(b *testing.B) {
-// 	game := newGame()
-// 	move := game.Actions()[0]
-// 	b.ResetTimer()
-// 	for i := 0; i < b.N; i++ {
-// 		game.Apply(move)
-// 	}
-// }
+func BenchmarkApply(b *testing.B) {
+	game := newGame()
+	move := game.Actions()[0]
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		game.Apply(move)
+	}
+}
 
 func BenchmarkTerminal(b *testing.B) {
 	game := New()
@@ -38,7 +48,7 @@ func BenchmarkTerminal(b *testing.B) {
 }
 
 func BenchmarkUtility(b *testing.B) {
-	game := New()
+	game := newGame()
 	a := game.Player()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -46,25 +56,22 @@ func BenchmarkUtility(b *testing.B) {
 	}
 }
 
-// func BenchmarkSVG(b *testing.B) {
-// 	game := newGame()
-// 	game = game.Apply(game.Actions()[4])
-// 	game = game.Apply(game.Actions()[4])
-// 	game = game.Apply(game.Actions()[3])
-// 	b.ResetTimer()
-// 	for i := 0; i < b.N; i++ {
-// 		game.SVG(false)
-// 	}
-// }
+func BenchmarkSVG(b *testing.B) {
+	game := newGame()
+	game = game.Apply(game.Actions()[4])
+	game = game.Apply(game.Actions()[4])
+	game = game.Apply(game.Actions()[3])
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		game.SVG(false)
+	}
+}
 
-// func newGame() games.State {
-// 	p1 := games.PlayerConfig{Name: "asdf", Type: games.MinPlayer}
-// 	p2 := games.PlayerConfig{Name: "qwer", Type: games.MaxPlayer}
-// 	return New(
-// 		games.NewPlayer(&dumb{}, p1),
-// 		games.NewPlayer(&dumb{}, p2),
-// 	)
-// }
+func newGame() games.State {
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
+	return New(&p1, &p2)
+}
 
 type dumb struct{}
 
