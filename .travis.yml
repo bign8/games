@@ -1,5 +1,9 @@
 language: go
-go: 1.6.2
+go: 1.7.x
 notifications:
   email: false
-script: go test -race -bench=. -benchmem -v ./...
+install:
+  - go get github.com/Masterminds/glide
+  - glide install -v
+script:
+  - go test -race -bench=. -benchmem -v $(glide nv)
