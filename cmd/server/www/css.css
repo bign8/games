@@ -4,6 +4,10 @@ body {
   padding-bottom: 20px;
 }
 
+.thumbnail img {
+  height: 165px;
+}
+
 /*body::after {
     background-image: url('/static/img/cover.jpg');
     background-size: cover;
