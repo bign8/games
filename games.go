@@ -39,6 +39,7 @@ type Game struct {
 	Slug    string   // Short name of game
 	Board   string   // SVG of board state
 	Players []string // List of Player names
+	Counts  []uint8  // Possible number of players to play a game (if nil assume == len(Players))
 	Start   Starter  `json:"-"`
 	AI      Actor    `json:"-"`
 }

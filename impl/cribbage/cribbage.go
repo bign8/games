@@ -8,6 +8,7 @@ var Game = games.Game{
 	Slug:    "cribbage",
 	Board:   "<!-- TODO: board -->",
 	Players: []string{"Red", "Green", "Blue"},
+	Counts:  []uint8{2, 3},
 	Start:   nil,
 	AI:      nil,
 }

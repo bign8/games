@@ -144,13 +144,13 @@ var frameHTML = `
 <body>
   <div class="container container-narrow">
     <div class="header clearfix">
-      <nav>
+      <!--<nav>
         <ul class="nav nav-pills pull-right">
           <li role="presentation">
             <a href="/about">About</a>
           </li>
         </ul>
-      </nav>
+      </nav>-->
       <h3 id="top"><a href="/" class="text-muted">Game Roulette</a></h3>
     </div>
 
