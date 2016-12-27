@@ -216,6 +216,7 @@ func (g ttt) SVG(active bool) string {
 // Game is the fully described version of TTT
 var Game = games.Game{
 	Name:    "Tic-Tac-Toe",
+	Slug:    "ttt",
 	Board:   svgBoard,
 	Players: []string{"X", "O"},
 	Start:   New,

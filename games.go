@@ -36,6 +36,7 @@ type State interface {
 // Game is contains all the meta-data surrounding a game so it can be played
 type Game struct {
 	Name    string   // Name of the game
+	Slug    string   // Short name of game
 	Board   string   // SVG of board state
 	Players []string // List of Player names
 	Start   Starter  `json:"-"`

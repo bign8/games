@@ -52,10 +52,11 @@ func Map() map[string]games.Game {
 func init() {
 	mux.Lock()
 	defer mux.Unlock()
-	reg["go"] = gos.Game
-	reg["ttt"] = ttt.Game
-	reg["chess"] = chess.Game
-	reg["mancala"] = mancala.Game
-	reg["checkers"] = checkers.Game
-	reg["connect4"] = connect4.Game
+	register := func(g games.Game) { reg[g.Slug] = g }
+	register(gos.Game)
+	register(ttt.Game)
+	register(chess.Game)
+	register(mancala.Game)
+	register(checkers.Game)
+	register(connect4.Game)
 }
