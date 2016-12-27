@@ -24,7 +24,7 @@ func (mm *minimax) Name() string {
 func (mm *minimax) Act(s games.State) games.Action {
 	mm.ctr = 0
 	start := time.Now()
-	a, _ := mm.search(s, s.Player())
+	a, _ := mm.search(s, s.Player(), 1)
 	fmt.Printf(
 		"%s chose %q after exploring %d games in %s\n",
 		mm.name, a.String(), mm.ctr, time.Since(start),
@@ -33,24 +33,25 @@ func (mm *minimax) Act(s games.State) games.Action {
 }
 
 // MiniMax searches the full game tree until terminal nodes
-func (mm *minimax) search(s games.State, p games.Actor) (games.Action, int) {
+func (mm *minimax) search(s games.State, p games.Actor, dist int) (games.Action, float32) {
 	if s.Terminal() {
 		mm.ctr++
-		u := s.Utility(p)
-		// fmt.Printf("%s - %d for %s\n", s, u, p.Name())
+		u := float32(s.Utility(p)) / float32(dist)
+		fmt.Printf("%s - %f for %s\n", s, u, p.Name())
 		return nil, u
 	}
 
 	actions := s.Actions()
 	myBest := actions[0]
-	_, myScore := mm.search(s.Apply(myBest), p)
+	_, myScore := mm.search(s.Apply(myBest), p, dist+1)
 	bestScore := myScore
 	for _, a := range actions[1:] {
-		_, value := mm.search(s.Apply(a), p)
+		_, value := mm.search(s.Apply(a), p, dist+1)
 		myScore += value
 		if value > bestScore {
 			myBest = a
 			bestScore = value
+			fmt.Printf("%d - %s updating to %f for %s\n", dist, a.String(), bestScore, p.Name())
 		}
 	}
 	return myBest, myScore
