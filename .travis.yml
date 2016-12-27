@@ -2,8 +2,17 @@ language: go
 go: 1.7.x
 notifications:
   email: false
+  webhooks:
+    urls:
+      - http://status.bign8.info/api/ci/travis
+    on_success: always
+    on_failure: always
+    on_start: always
 install:
   - go get github.com/Masterminds/glide
   - glide install -v
 script:
   - go test -race -bench=. -benchmem -v $(glide nv)
+cache:
+  directories:
+  - $HOME/.glide
