@@ -119,7 +119,7 @@ var rootHTML = `
 <div class="row">
   {{range .Games}}
   <div class="col-xs-6 col-md-4">
-    <a href="/play/{{ .Slug }}" class="thumbnail">
+    <a href="/play/{{ .Slug }}" class="thumbnail" title="{{ .Name }}">
       <img src="/static/img/{{ .Slug }}.png" alt="{{ .Name }}">
     </a>
   </div>

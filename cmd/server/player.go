@@ -48,7 +48,7 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	game, _ := impl.Get(slug)
 
 	// Play the game
-	data := game4client(games.Run(game, builder))
+	data := game4client(games.Run(game, builder), true)
 	xGame.Write(data) // Broadcast final game state
 	yGame.Write(data)
 
@@ -95,7 +95,7 @@ func (a *actor) Act(s games.State) games.Action {
 	}
 
 	actions := s.Actions()
-	a.write.Write(game4client(s))
+	a.write.Write(game4client(s, false))
 	var chosen *games.Action
 	for chosen == nil && a.s.Scan() {
 		move := a.s.Text()
@@ -122,7 +122,7 @@ type gameMoveMSG struct {
 	SVG  string
 }
 
-func game4client(s games.State) []byte {
+func game4client(s games.State, done bool) []byte {
 	moves := make([]gameMoveMSG, len(s.Actions()))
 
 	for i, a := range s.Actions() {
@@ -133,7 +133,7 @@ func game4client(s games.State) []byte {
 	}
 
 	data := gameMSG{
-		SVG:   s.SVG(true),
+		SVG:   s.SVG(!done),
 		Moves: moves,
 	}
 	js, _ := json.Marshal(data)

@@ -138,6 +138,7 @@ func (g ttt) isWin() (bool, byte) {
 	return false, ' '
 }
 
+// Utility for TTT is simple: 1 for a win, -1 for a loss, 0 if game is in progress
 func (g ttt) Utility(a games.Actor) int {
 	if isWin, chr := g.isWin(); !isWin {
 		return 0
