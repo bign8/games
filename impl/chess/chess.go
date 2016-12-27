@@ -4,7 +4,10 @@ import (
 	"errors"
 
 	"github.com/bign8/games"
+	"github.com/bign8/games/player/minimax"
 )
+
+var _ games.State = (*State)(nil)
 
 // State is an internal representation of a chess game.
 // - FEN notation: https://en.wikipedia.org/wiki/FEN
@@ -20,11 +23,15 @@ type State struct {
 	count     uint32   // max of 4294967295 (limited by type)
 	moves     []*Move  // cache of available moves
 	check     bool
+	actors    []games.Actor
 	err       error
 }
 
 // New begins a brand new game
-func New() *State {
+func New(actors ...games.Actor) games.State {
+	if len(actors) != 2 {
+		return &State{err: errors.New("Invalid number of players")}
+	}
 	var board [64]byte
 	copy(board[:], "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR")
 	// copy(board[:], "rnbqkbnr1ppp1ppp11111111p111p11Q11B1P11111111111PPPP1PPPRNB1K1NR")
@@ -35,7 +42,15 @@ func New() *State {
 		enPassant: InvalidLocation,
 		halfmove:  0,
 		count:     1,
+		actors:    actors,
 	}
+}
+
+func (s State) Player() games.Actor {
+	if s.isBlack {
+		return s.actors[1]
+	}
+	return s.actors[0]
 }
 
 func (s State) Error() error {
@@ -43,7 +58,8 @@ func (s State) Error() error {
 }
 
 // Apply executes a move on a given state of the board
-func (s State) Apply(m *Move) (*State, error) {
+func (s State) Apply(mo games.Action) games.State {
+	m := mo.(*Move)
 	var found bool
 	for _, move := range s.Moves() {
 		found = move.Equals(m)
@@ -52,7 +68,7 @@ func (s State) Apply(m *Move) (*State, error) {
 		}
 	}
 	if !found {
-		return nil, errors.New("chess: move not permitted")
+		return &State{err: errors.New("chess: move not permitted")}
 	}
 
 	// Should reset halfmove count https://en.wikipedia.org/wiki/Fifty-move_rule
@@ -131,8 +147,9 @@ func (s State) Apply(m *Move) (*State, error) {
 		halfmove:  halfmove,
 		count:     count,
 		check:     m.check,
+		actors:    s.actors,
 	}
-	return state, nil
+	return state
 }
 
 // Terminal determines if the active game state is a complete move
@@ -146,10 +163,15 @@ func (s State) Terminal() bool {
 }
 
 var Game = games.Game{
-	Name:    "Chess",
-	Slug:    "chess",
-	Board:   "<!-- TODO: board -->",
+	Name: "Chess",
+	Slug: "chess",
+	Board: `
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="810"
+height="810" viewBox="-.05 -.05 8.1 8.1">
+<rect x="-.5" y="-.5" width="9" height="9"/>
+<path fill="#FFF" d="M0,0H8v1H0zm0,2H8v1H0zm0 2H8v1H0zm0,2H8v1H0zM1,0V8h1V0zm2,0V8h1V0zm2 0V8h1V0zm2,0V8h1V0z"/></svg>`,
 	Players: []string{"White", "Black"},
-	Start:   nil,
-	AI:      nil,
+	Start:   New,
+	AI:      minimax.New("0"),
 }

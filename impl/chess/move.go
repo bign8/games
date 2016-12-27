@@ -1,6 +1,10 @@
 package chess
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/bign8/games"
+)
 
 // NewMove takes 2 chess locations and builds a move.
 func NewMove(src, dst Location) Move {
@@ -62,6 +66,15 @@ func (m Move) String() string {
 	}
 	// template += " " + strconv.Itoa(int(m.Start.toInt())) + " " + strconv.Itoa(int(m.Stop.toInt()))
 	return fmt.Sprintf(template, m.Start, m.Stop)
+}
+
+func (s *State) Actions() []games.Action {
+	m := s.Moves()
+	a := make([]games.Action, len(m))
+	for i, x := range m {
+		a[i] = x
+	}
+	return a
 }
 
 // Moves gives the list of possible moves to take given a state of the game

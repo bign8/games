@@ -108,6 +108,10 @@ body {
 .board-wrapper {
   position: relative;
 }
+.board-wrapper svg {
+  height: 100%;
+  width: 100%;
+}
 .board-wrapper .board {
   position: absolute;
   top: 0;
