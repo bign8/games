@@ -16,8 +16,8 @@ type cliPlayer struct {
 }
 
 // New creates a new player that interfaces with a human via Stdin/out/err
-func New(buf *bufio.Reader) func(string) games.Actor {
-	return func(name string) games.Actor {
+func New(buf *bufio.Reader) games.ActorBuilder {
+	return func(_ games.Game, name string) games.Actor {
 		return &cliPlayer{
 			name:   name,
 			reader: buf,

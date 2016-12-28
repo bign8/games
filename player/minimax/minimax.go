@@ -13,7 +13,7 @@ type minimax struct {
 }
 
 // New creates a new player that interfaces with a human via Stdin/out/err
-func New(name string) games.Actor {
+func New(_ games.Game, name string) games.Actor {
 	return &minimax{name: name, ctr: 0}
 }
 

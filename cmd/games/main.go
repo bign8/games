@@ -37,7 +37,7 @@ func getImpl(in *bufio.Reader) games.Game {
 
 type playerConfig struct {
 	name   string
-	create func(string) games.Actor
+	create games.ActorBuilder
 }
 
 func getPlayer(in *bufio.Reader) playerConfig {
@@ -74,9 +74,9 @@ func getPlayer(in *bufio.Reader) playerConfig {
 }
 
 func playerBuilder(in *bufio.Reader) func(games.Game, string) games.Actor {
-	return func(_ games.Game, name string) games.Actor {
+	return func(g games.Game, name string) games.Actor {
 		fmt.Printf("=================================================================\nChoosing player %s\n", name)
-		return getPlayer(in).create(name)
+		return getPlayer(in).create(g, name)
 	}
 }
 

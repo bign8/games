@@ -221,5 +221,5 @@ var Game = games.Game{
 	Board:   svgBoard,
 	Players: []string{"X", "O"},
 	Start:   New,
-	AI:      minimax.New("O"),
+	AI:      minimax.New,
 }

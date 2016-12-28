@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
@@ -43,7 +42,10 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	}
 	builder := func(g games.Game, name string) games.Actor {
 		i++
-		return newSocketActor(name, actors[i].msg, errc, actors[i].isBot, g.AI)
+		if actors[i].isBot {
+			return g.AI(g, name)
+		}
+		return newSocketActor(name, actors[i].msg, errc)
 	}
 	game, _ := impl.Get(slug)
 
@@ -67,17 +69,13 @@ func cp(w io.Writer, r io.Reader, errc chan<- error) {
 
 type actor struct {
 	name  string
-	isBot bool
-	ai    games.Actor
 	s     *bufio.Scanner
 	write io.Writer
 }
 
-func newSocketActor(name string, s io.ReadWriteCloser, errc chan<- error, isBot bool, ai games.Actor) *actor {
+func newSocketActor(name string, s io.ReadWriteCloser, errc chan<- error) *actor {
 	a := &actor{
 		name:  name,
-		isBot: isBot,
-		ai:    ai,
 		s:     bufio.NewScanner(s),
 		write: s,
 	}
@@ -89,11 +87,6 @@ func (a *actor) Name() string {
 }
 
 func (a *actor) Act(s games.State) games.Action {
-	if a.isBot {
-		time.Sleep(time.Second)
-		return a.ai.Act(s)
-	}
-
 	actions := s.Actions()
 	a.write.Write(game4client(s, false))
 	var chosen *games.Action

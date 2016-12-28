@@ -1,6 +1,9 @@
-make: install test
+make: install bench
 
 test:
+	go test -race $(shell glide nv)
+
+bench:
 	go test -race -bench=. -benchmem -v $(shell glide nv) | tee test.out
 	gobench -in test.out
 

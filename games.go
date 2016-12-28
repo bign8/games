@@ -35,13 +35,13 @@ type State interface {
 
 // Game is contains all the meta-data surrounding a game so it can be played
 type Game struct {
-	Name    string   // Name of the game
-	Slug    string   // Short name of game
-	Board   string   // SVG of board state
-	Players []string // List of Player names
-	Counts  []uint8  // Possible number of players to play a game (if nil assume == len(Players))
-	Start   Starter  `json:"-"`
-	AI      Actor    `json:"-"`
+	Name    string       // Name of the game
+	Slug    string       // Short name of game
+	Board   string       // SVG of board state
+	Players []string     // List of Player names
+	Counts  []uint8      // Possible number of players to play a game (if nil assume == len(Players))
+	Start   Starter      `json:"-"`
+	AI      ActorBuilder `json:"-"`
 }
 
 // Run is the primary game runner
