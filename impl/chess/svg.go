@@ -11,9 +11,7 @@ func (s State) SVG(bool) string {
 		if chr == ' ' {
 			continue
 		}
-		row := i % 8
-		col := i / 8
-		str := fmt.Sprintf(`<text x="%d" y="%d.75">%c</text>`, row, col, chr)
+		str := fmt.Sprintf(`<text x="%d" y="%d.75">%c</text>`, i%8, i/8, chr)
 		pieces = append(pieces, str)
 	}
 	parts := `<g style="font-size:1px">` + strings.Join(pieces, "") + "</g>"

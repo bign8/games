@@ -53,9 +53,6 @@ var gameHTML = `
       {{ .Board }}
       <div class="board" id="game"></div>
     </div>
-    <div>
-      <ul class="list-group" id="moves"></ul>
-    </div>
   </div>
   <div class="col-md-4 col-md-pull-8">
     <div class="panel panel-default chat">
@@ -64,6 +61,12 @@ var gameHTML = `
       </div>
       <div class="panel-body" id="output"></div>
       <input id="input" class="form-control panel-footer" type="text" placeholder="Type Message Here...">
+    </div>
+    <div class="panel panel-default moves">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moves</h3>
+      </div>
+      <ul class="list-group" id="moves"></ul>
     </div>
   </div>
 </div>

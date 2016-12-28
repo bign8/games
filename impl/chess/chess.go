@@ -165,7 +165,7 @@ func (s State) Terminal() bool {
 var Game = games.Game{
 	Name:    "Chess",
 	Slug:    "chess",
-	Board:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-.05 -.05 8.1 8.1"><rect x="-.5" y="-.5" width="9" height="9" fill="#999"/><path fill="#DDD" d="M0,0H8v1H0zm0,2H8v1H0zm0 2H8v1H0zm0,2H8v1H0zM1,0V8h1V0zm2,0V8h1V0zm2 0V8h1V0zm2,0V8h1V0z"/></svg>`,
+	Board:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-.05 -.05 8.1 8.1"><rect x="-.5" y="-.5" width="9" height="9" fill="#999"/><path fill="#FFF" d="M0,0H8v1H0zm0,2H8v1H0zm0 2H8v1H0zm0,2H8v1H0zM1,0V8h1V0zm2,0V8h1V0zm2 0V8h1V0zm2,0V8h1V0z"/></svg>`,
 	Players: []string{"White", "Black"},
 	Start:   New,
 	AI:      layer.New,
