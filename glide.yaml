@@ -5,3 +5,6 @@ import:
 - package: golang.org/x/net
   subpackages:
   - websocket
+testImport:
+- package: github.com/bign8/gobench
+- package: github.com/codegangsta/gin

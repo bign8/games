@@ -1,5 +1,5 @@
-hash: 502c0468c0576f810b2155688ec7e91ef15a45507f9d1c80087dac6a1ec59590
-updated: 2016-12-26T14:16:08.090787724-07:00
+hash: d7fd33d00cbf4baceb3d197f9a74c34cc8b2632e54b544f787119c8223d87d3e
+updated: 2016-12-27T23:15:32.339306681-07:00
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
@@ -9,4 +9,8 @@ imports:
   version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
   subpackages:
   - websocket
-testImports: []
+testImports:
+- name: github.com/bign8/gobench
+  version: 20a8fe316829b5fbc263e90fe38bfc9a2a4105a8
+- name: github.com/codegangsta/gin
+  version: b2d0f660ae0db9c0a6e9fbdf0349e138f3802292

@@ -8,13 +8,8 @@ notifications:
     on_success: always
     on_failure: always
     on_start: always
-install:
-  - go get github.com/Masterminds/glide
-  - go get github.com/bign8/gobench
-  - glide install -v
-script:
-  - go test -race -bench=. -benchmem -v $(glide nv) | tee test.out
-  - gobench -in test.out -host http://bench.bign8.info
 cache:
   directories:
   - $HOME/.glide
+env:
+  - GOBENCH_URL=http://bench.bign8.info
