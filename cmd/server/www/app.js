@@ -7,6 +7,7 @@ N8.games = (function(w, d) {
     var p = document.createElement('p');
     p.innerHTML = m;
     output.appendChild(p);
+    output.scrollTop = output.scrollHeight;
   }
   systemMessage = userMessage; // TODO: update in future
 
