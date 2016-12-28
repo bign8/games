@@ -140,6 +140,7 @@ var frameHTML = `
   <meta name="author" content="Nate Woods">
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css.css">
+  <link href="/static/img/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body>
   <div class="container container-narrow">
@@ -157,7 +158,7 @@ var frameHTML = `
     {{block "body" .}}{{end}}
 
     <footer class="footer">
-      <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="http://bign8.info/contact">Nate Woods</a></p>
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="https://bign8.info/contact">Nate Woods</a></p>
     </footer>
   </div>
   {{block "code" .}}{{end}}
