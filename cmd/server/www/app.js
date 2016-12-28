@@ -1,15 +1,27 @@
 var N8 = N8 || {};  // bign8 global namespace
 
 N8.games = (function(w, d) {
+  "use strict";
+
   var output, game, moves, newSocket, move_set = [];
 
-  function userMessage(m) {
-    var p = document.createElement('p');
-    p.innerHTML = m;
-    output.appendChild(p);
-    output.scrollTop = output.scrollHeight;
-  }
-  systemMessage = userMessage; // TODO: update in future
+  var Writer = function(name, cls) {
+    this.send = function(m) {
+      var p = document.createElement('p');
+      p.classList.add('list-group-item');
+      if (cls == undefined) {
+        p.innerHTML = '<b>' + name + ': </b>';
+      } else {
+        p.classList.add(cls);
+      }
+      p.innerHTML += m;
+      output.appendChild(p);
+      output.scrollTop = output.scrollHeight;
+    };
+  };
+
+  var systemMessage = new Writer('System', 'list-group-item-info').send;
+  var userMessage = new Writer('Me').send;
 
   function chooseMove(move) {
     newSocket.send('g', move.Name + '\n');
@@ -50,7 +62,7 @@ N8.games = (function(w, d) {
     var loc = document.location.toString().replace("http://", "ws://") + '/socket';
     newSocket = new RoomSocket(loc);
     newSocket.listen('s', systemMessage);
-    newSocket.listen('u', userMessage);
+    newSocket.listen('u', new Writer('Opponent').send);
     newSocket.listen('g', gameMessage);
     input.addEventListener("keyup", function(e) {
       if (e.keyCode == 13) {

@@ -121,10 +121,16 @@ body {
 }
 
 /* Chat box component */
-.chat .panel-body {
+.chat .list-group {
   max-height: 300px;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+.chat .list-group p:last-child {
+  border-bottom: 0;
+}
+.chat .list-group .list-group-item {
+  padding: 3px 7px;
 }
 .chat .form-control {
   outline: none;
@@ -135,9 +141,6 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-top: 1px solid #ddd;
-}
-.chat .panel-body p:last-child {
-  margin-bottom: 0;
 }
 
 /* Moves Component */

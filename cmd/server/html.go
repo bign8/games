@@ -59,7 +59,7 @@ var gameHTML = `
       <div class="panel-heading">
         <h3 class="panel-title">Chat</h3>
       </div>
-      <div class="panel-body" id="output"></div>
+      <div class="list-group" id="output"></div>
       <input id="input" class="form-control panel-footer" type="text" placeholder="Type Message Here...">
     </div>
     <div class="panel panel-default moves">
