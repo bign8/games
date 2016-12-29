@@ -13,7 +13,10 @@ type Starter func(...Actor) State
 type ActorBuilder func(g Game, name string) Actor
 
 // Action is the base type for a game move
-type Action fmt.Stringer
+type Action interface {
+	fmt.Stringer
+	Type() string // allows types of moves to be grouped
+}
 
 // Actor is a method that choose an Action given a particular State
 type Actor interface {

@@ -112,6 +112,7 @@ type gameMSG struct {
 
 type gameMoveMSG struct {
 	Name string
+	Type string
 	SVG  string
 }
 
@@ -121,6 +122,7 @@ func game4client(s games.State, done bool) []byte {
 	for i, a := range s.Actions() {
 		moves[i] = gameMoveMSG{
 			Name: a.String(),
+			Type: a.Type(),
 			SVG:  s.Apply(a).SVG(false),
 		}
 	}

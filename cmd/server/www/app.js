@@ -29,9 +29,9 @@ N8.games = (function(w, d) {
     game.innerHTML = move.SVG;
   }
 
-  function buildMoveButton(move) {
+  function buildMoveButton(move, cls) {
     var li = document.createElement('button');
-    li.className = 'list-group-item';
+    li.className = cls;
     li.innerHTML = move.Name;
     li.addEventListener('mouseover', function() {
       game.innerHTML = move.SVG;
@@ -39,7 +39,7 @@ N8.games = (function(w, d) {
     li.addEventListener('click', function() {
       chooseMove(move);
     });
-    moves.appendChild(li);
+    return li;
   }
 
   function gameMessage(m) {
@@ -48,8 +48,37 @@ N8.games = (function(w, d) {
     game.innerHTML = obj.SVG;
     moves.innerHTML = '';
     move_set = obj.Moves;
+    var byType = {};
     for (var i = 0; i < obj.Moves.length; i++) {
-      buildMoveButton(obj.Moves[i], obj.SVG)
+      var m = obj.Moves[i], t = m.Type;
+      if (byType.hasOwnProperty(t)) {
+        byType[t].push(m);
+      } else {
+        byType[t] = [m];
+      }
+    }
+
+    // State 1: moves are all of the same type
+    if (Object.keys(byType).length == 1)
+      for (var i = 0; i < obj.Moves.length; i++)
+        moves.appendChild(buildMoveButton(obj.Moves[i], 'list-group-item'));
+
+    // State 2: moves all have various types
+    else for (var key in byType) {
+      var group = document.createElement('div');
+      group.className = "list-group-item";
+      var title = document.createElement('h4');
+      title.className = "list-group-item-heading";
+      title.innerHTML = key;
+      group.appendChild(title);
+      var text = document.createElement('div');
+      text.className = "list-group-item-text";
+      for (var i = 0; i < byType[key].length; i++) {
+        text.appendChild(buildMoveButton(byType[key][i], 'btn btn-default'));
+        text.appendChild(document.createTextNode(' '));
+      }
+      group.appendChild(text);
+      moves.appendChild(group);
     }
     moves.addEventListener('mouseout', function() {
       game.innerHTML = obj.SVG;

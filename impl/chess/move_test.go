@@ -116,20 +116,20 @@ func TestRookMoves(t *testing.T) {
 	moves := make([]Move, 0, 14)
 	moves = board.rookMoves(start, moves)
 	golden := []Move{
-		Move{start, Location(33), InvalidLocation, 0, nil, false},
-		Move{start, Location(34), InvalidLocation, 0, nil, false},
-		Move{start, Location(35), InvalidLocation, 0, nil, false},
-		Move{start, Location(36), InvalidLocation, 0, nil, false},
-		Move{start, Location(37), InvalidLocation, 0, nil, false},
-		Move{start, Location(38), InvalidLocation, 0, nil, false},
-		Move{start, Location(39), InvalidLocation, 0, nil, false},
-		Move{start, Location(40), InvalidLocation, 0, nil, false},
-		Move{start, Location(48), InvalidLocation, 0, nil, false},
-		Move{start, Location(56), InvalidLocation, 0, nil, false},
-		Move{start, Location(24), InvalidLocation, 0, nil, false},
-		Move{start, Location(16), InvalidLocation, 0, nil, false},
-		Move{start, Location(8), InvalidLocation, 0, nil, false},
-		Move{start, Location(0), InvalidLocation, 0, nil, false},
+		Move{start, Location(33), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(34), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(35), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(36), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(37), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(38), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(39), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(40), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(48), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(56), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(24), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(16), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(8), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(0), InvalidLocation, 0, nil, false, ""},
 	}
 	if err := movesEqual(golden, moves); err != nil {
 		t.Errorf("Not all rook moves found: %s", err)

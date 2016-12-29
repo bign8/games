@@ -23,6 +23,8 @@ var moveNames = []string{
 	"Bottom Left Corner", "Bottom Middle", "Bottom Right Corner",
 }
 
+func (m tttMove) Type() string { return "" }
+
 // String does something
 func (m tttMove) String() string {
 	if m > 8 {
