@@ -138,7 +138,6 @@ func (s State) clipCheckMoves(moves []*Move) []*Move {
 
 	// Remove moves that place king in check
 	var mine, yours Location
-	numFound := 0
 
 	tail := len(moves)
 	for i := 0; i < tail; i++ {
@@ -151,7 +150,7 @@ func (s State) clipCheckMoves(moves []*Move) []*Move {
 
 		// find each king
 		if !((s.board[mine] == 'K' || s.board[mine] == 'k') && (s.board[yours] == 'K' || s.board[yours] == 'k')) {
-			for i := Location(0); i < 64 && numFound <= 2; i++ {
+			for i, numFound := Location(0), 0; i < 64 && numFound <= 2; i++ {
 				if s.board[i] == 'k' || s.board[i] == 'K' {
 					numFound++
 					if s.black(i) == s.isBlack {

@@ -190,3 +190,17 @@ func BenchmarkStateIsCheck(b *testing.B) {
 		}
 	}
 }
+
+func TestBlackKingCheckRegression(t *testing.T) {
+	board, _ := ParseFEN("R4k2/6p1/4N3/8/8/8/8/8 b kq - 0 1")
+	// t.Log("Regression Board State:\n" + board.String())
+	moves := board.Moves()
+	if len(moves) != 2 {
+		t.Errorf("Invalid number of moves for given state: %d != 2", len(moves))
+	}
+	if !t.Failed() {
+		if moves[0].Type() != "King" || moves[1].Type() != "King" {
+			t.Errorf("Invalid type for moves: %s != %s != King", moves[0].Type(), moves[1].Type())
+		}
+	}
+}
