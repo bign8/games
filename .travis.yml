@@ -1,5 +1,15 @@
 language: go
-go: 1.6.2
+go: 1.7.x
 notifications:
   email: false
-script: go test -race -bench=. -benchmem -v ./...
+  webhooks:
+    urls:
+      - http://status.bign8.info/api/ci/travis
+    on_success: always
+    on_failure: always
+    on_start: always
+cache:
+  directories:
+  - $HOME/.glide
+env:
+  - GOBENCH_URL=http://bench.bign8.info

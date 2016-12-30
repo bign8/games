@@ -6,17 +6,27 @@ import (
 	"github.com/bign8/games"
 )
 
+var _ games.Actor = (*badActor)(nil)
+
+type badActor string
+
+func (ba badActor) Name() string                   { return string(ba) }
+func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
+
 func BenchmarkStateString(b *testing.B) {
 	game := New()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.String()
 	}
+
 }
 
 func BenchmarkNewState(b *testing.B) {
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
 	for i := 0; i < b.N; i++ {
-		New()
+		New(&p1, &p2)
 	}
 }
 
@@ -38,10 +48,11 @@ func BenchmarkTerminal(b *testing.B) {
 }
 
 func BenchmarkUtility(b *testing.B) {
-	game := New()
+	game := newGame()
+	a := game.Player()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.Utility()
+		game.Utility(a)
 	}
 }
 
@@ -57,12 +68,9 @@ func BenchmarkSVG(b *testing.B) {
 }
 
 func newGame() games.State {
-	p1 := games.PlayerConfig{Name: "asdf", Type: games.MinPlayer}
-	p2 := games.PlayerConfig{Name: "qwer", Type: games.MaxPlayer}
-	return New(
-		games.NewPlayer(&dumb{}, p1),
-		games.NewPlayer(&dumb{}, p2),
-	)
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
+	return New(&p1, &p2)
 }
 
 type dumb struct{}

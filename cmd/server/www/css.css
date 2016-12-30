@@ -4,6 +4,10 @@ body {
   padding-bottom: 20px;
 }
 
+.thumbnail img {
+  height: 165px;
+}
+
 /*body::after {
     background-image: url('/static/img/cover.jpg');
     background-size: cover;
@@ -104,10 +108,44 @@ body {
 .board-wrapper {
   position: relative;
 }
+.board-wrapper svg {
+  height: 100%;
+  width: 100%;
+}
 .board-wrapper .board {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+/* Chat box component */
+.chat .list-group {
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.chat .list-group p:last-child {
+  border-bottom: 0;
+}
+.chat .list-group .list-group-item {
+  padding: 3px 7px;
+}
+.chat .form-control {
+  outline: none;
+  border: none;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 1px solid #ddd;
+}
+
+/* Moves Component */
+.moves .list-group {
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }

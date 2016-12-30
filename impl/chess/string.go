@@ -1,10 +1,8 @@
 package chess
 
-import "strings"
-
-var chrLookup = map[uint8]string{
-	'p': "♟", 'r': "♜", 'n': "♞", 'b': "♝", 'q': "♛", 'k': "♚",
-	'P': "♙", 'R': "♖", 'N': "♘", 'B': "♗", 'Q': "♕", 'K': "♔",
+var chrLookup = map[uint8]rune{
+	'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
+	'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔',
 }
 
 var numLookup = map[uint8]int{
@@ -16,11 +14,11 @@ const top = "╔═══╦═══╦═══╦═══╦═══╦═�
 const sep = "\n╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣\n"
 const bot = "\n╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝\n  A   B   C   D   E   F   G   H"
 
-// String is to implement the fmt.Stringer interface
-func (s State) String() string {
-	bits := make([]string, 64)
+// toGrid converts the current state to 64 length string that represents a board
+func (s State) toGrid() []rune {
+	bits := make([]rune, 64)
 	for i := 0; i < 64; i++ {
-		bits[i] = " "
+		bits[i] = ' '
 	}
 	for i, scanner := 0, 0; i < 64; i++ {
 		in := s.board[scanner]
@@ -31,17 +29,32 @@ func (s State) String() string {
 		}
 		i += numLookup[in]
 	}
+	return bits
+}
 
-	rows := []string{
-		"║ " + strings.Join(bits[0:8], col) + " ║  8",
-		"║ " + strings.Join(bits[8:16], col) + " ║  7",
-		"║ " + strings.Join(bits[16:24], col) + " ║  6",
-		"║ " + strings.Join(bits[24:32], col) + " ║  5",
-		"║ " + strings.Join(bits[32:40], col) + " ║  4",
-		"║ " + strings.Join(bits[40:48], col) + " ║  3",
-		"║ " + strings.Join(bits[48:56], col) + " ║  2",
-		"║ " + strings.Join(bits[56:64], col) + " ║  1",
+// String is to implement the fmt.Stringer interface
+func (s State) String() string {
+	bits := s.toGrid()
+
+	join := func(i int) string {
+		return string(bits[i]) + col +
+			string(bits[i+1]) + col +
+			string(bits[i+2]) + col +
+			string(bits[i+3]) + col +
+			string(bits[i+4]) + col +
+			string(bits[i+5]) + col +
+			string(bits[i+6]) + col +
+			string(bits[i+7])
 	}
+
+	rows := "║ " + join(0) + " ║  8" + sep +
+		"║ " + join(8) + " ║  7" + sep +
+		"║ " + join(16) + " ║  6" + sep +
+		"║ " + join(24) + " ║  5" + sep +
+		"║ " + join(32) + " ║  4" + sep +
+		"║ " + join(40) + " ║  3" + sep +
+		"║ " + join(48) + " ║  2" + sep +
+		"║ " + join(56) + " ║  1"
 
 	// Parse out player
 	player := "White"
@@ -53,5 +66,5 @@ func (s State) String() string {
 		debug = "Player is in check!"
 	}
 	// debug = s.FEN() + "\n" + string(s.board[:])
-	return top + strings.Join(rows, sep) + bot + "\n" + debug + "\n" + player + "'s Turn"
+	return top + rows + bot + "\n" + debug + "\n" + player + "'s Turn"
 }

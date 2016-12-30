@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkMoves(b *testing.B) {
-	game := New()
+	game := New().(*State)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.moves = nil
@@ -15,7 +15,7 @@ func BenchmarkMoves(b *testing.B) {
 }
 
 func BenchmarkMovesClip(b *testing.B) {
-	game := New()
+	game := New().(*State)
 	moves := game.Moves()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -116,20 +116,20 @@ func TestRookMoves(t *testing.T) {
 	moves := make([]Move, 0, 14)
 	moves = board.rookMoves(start, moves)
 	golden := []Move{
-		Move{start, Location(33), InvalidLocation, 0, nil, false},
-		Move{start, Location(34), InvalidLocation, 0, nil, false},
-		Move{start, Location(35), InvalidLocation, 0, nil, false},
-		Move{start, Location(36), InvalidLocation, 0, nil, false},
-		Move{start, Location(37), InvalidLocation, 0, nil, false},
-		Move{start, Location(38), InvalidLocation, 0, nil, false},
-		Move{start, Location(39), InvalidLocation, 0, nil, false},
-		Move{start, Location(40), InvalidLocation, 0, nil, false},
-		Move{start, Location(48), InvalidLocation, 0, nil, false},
-		Move{start, Location(56), InvalidLocation, 0, nil, false},
-		Move{start, Location(24), InvalidLocation, 0, nil, false},
-		Move{start, Location(16), InvalidLocation, 0, nil, false},
-		Move{start, Location(8), InvalidLocation, 0, nil, false},
-		Move{start, Location(0), InvalidLocation, 0, nil, false},
+		Move{start, Location(33), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(34), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(35), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(36), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(37), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(38), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(39), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(40), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(48), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(56), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(24), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(16), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(8), InvalidLocation, 0, nil, false, ""},
+		Move{start, Location(0), InvalidLocation, 0, nil, false, ""},
 	}
 	if err := movesEqual(golden, moves); err != nil {
 		t.Errorf("Not all rook moves found: %s", err)
@@ -187,6 +187,20 @@ func BenchmarkStateIsCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		if board.isCheck(start, false) {
 			b.Error("Should never be in check here")
+		}
+	}
+}
+
+func TestBlackKingCheckRegression(t *testing.T) {
+	board, _ := ParseFEN("R4k2/6p1/4N3/8/8/8/8/8 b kq - 0 1")
+	// t.Log("Regression Board State:\n" + board.String())
+	moves := board.Moves()
+	if len(moves) != 2 {
+		t.Errorf("Invalid number of moves for given state: %d != 2", len(moves))
+	}
+	if !t.Failed() {
+		if moves[0].Type() != "King" || moves[1].Type() != "King" {
+			t.Errorf("Invalid type for moves: %s != %s != King", moves[0].Type(), moves[1].Type())
 		}
 	}
 }

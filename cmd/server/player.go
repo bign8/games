@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/bign8/games"
+	"github.com/bign8/games/impl"
 )
 
+// TODO: allow this to support 3+ player games
 func play(slug string, x, y io.ReadWriteCloser) {
 	fmt.Fprintln(x, "sFound one! Say hi.")
 	fmt.Fprintln(y, "sFound one! Say hi.")
@@ -30,14 +31,26 @@ func play(slug string, x, y io.ReadWriteCloser) {
 	go cp(yChat, xChat, errc)
 
 	// Convert actors to real players
-	game := registry[slug]
-	players := make([]games.Player, len(game.Players))
-	players[0] = games.NewPlayer(newSocketActor(xGame, errc, false, game.AI), game.Players[0])
-	players[1] = games.NewPlayer(newSocketActor(yGame, errc, isBot, game.AI), game.Players[1])
+	// TODO: support this for 3+ game players
+	i := -1
+	actors := []struct {
+		msg   io.ReadWriteCloser
+		isBot bool
+	}{
+		{xGame, false},
+		{yGame, isBot},
+	}
+	builder := func(g games.Game, name string) games.Actor {
+		i++
+		if actors[i].isBot {
+			return g.AI(g, name)
+		}
+		return newSocketActor(name, actors[i].msg, errc)
+	}
+	game, _ := impl.Get(slug)
 
 	// Play the game
-	state := game.Start(players...)
-	data := game4client(games.Run(state))
+	data := game4client(games.Run(game, builder), true)
 	xGame.Write(data) // Broadcast final game state
 	yGame.Write(data)
 
@@ -55,30 +68,27 @@ func cp(w io.Writer, r io.Reader, errc chan<- error) {
 }
 
 type actor struct {
-	isBot bool
-	ai    games.Actor
+	name  string
 	s     *bufio.Scanner
 	write io.Writer
 }
 
-func newSocketActor(s io.ReadWriteCloser, errc chan<- error, isBot bool, ai games.Actor) *actor {
+func newSocketActor(name string, s io.ReadWriteCloser, errc chan<- error) *actor {
 	a := &actor{
-		isBot: isBot,
-		ai:    ai,
+		name:  name,
 		s:     bufio.NewScanner(s),
 		write: s,
 	}
 	return a
 }
 
-func (a *actor) Act(s games.State) games.Action {
-	if a.isBot {
-		time.Sleep(time.Second)
-		return a.ai.Act(s)
-	}
+func (a *actor) Name() string {
+	return a.name
+}
 
+func (a *actor) Act(s games.State) games.Action {
 	actions := s.Actions()
-	a.write.Write(game4client(s))
+	a.write.Write(game4client(s, false))
 	var chosen *games.Action
 	for chosen == nil && a.s.Scan() {
 		move := a.s.Text()
@@ -102,21 +112,23 @@ type gameMSG struct {
 
 type gameMoveMSG struct {
 	Name string
+	Type string
 	SVG  string
 }
 
-func game4client(s games.State) []byte {
+func game4client(s games.State, done bool) []byte {
 	moves := make([]gameMoveMSG, len(s.Actions()))
 
 	for i, a := range s.Actions() {
 		moves[i] = gameMoveMSG{
 			Name: a.String(),
+			Type: a.Type(),
 			SVG:  s.Apply(a).SVG(false),
 		}
 	}
 
 	data := gameMSG{
-		SVG:   s.SVG(true),
+		SVG:   s.SVG(!done),
 		Moves: moves,
 	}
 	js, _ := json.Marshal(data)

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/bign8/games/impl"
 	"github.com/gorilla/mux"
 )
 
@@ -21,12 +22,12 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	rootTemplate.Execute(w, struct {
 		Games interface{}
 	}{
-		Games: registry,
+		Games: impl.Map(),
 	})
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	game, ok := registry[mux.Vars(r)["slug"]]
+	game, ok := impl.Get(mux.Vars(r)["slug"])
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
@@ -52,13 +53,21 @@ var gameHTML = `
       {{ .Board }}
       <div class="board" id="game"></div>
     </div>
-    <div>
-      <ul class="list-group" id="moves"></ul>
-    </div>
   </div>
   <div class="col-md-4 col-md-pull-8">
-    <input id="input" class="form-control" type="text">
-    <div id="output"></div>
+    <div class="panel panel-default chat">
+      <div class="panel-heading">
+        <h3 class="panel-title">Chat</h3>
+      </div>
+      <div class="list-group" id="output"></div>
+      <input id="input" class="form-control panel-footer" type="text" placeholder="Type Message Here...">
+    </div>
+    <div class="panel panel-default moves">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moves</h3>
+      </div>
+      <ul class="list-group" id="moves"></ul>
+    </div>
   </div>
 </div>
 {{end}}
@@ -118,7 +127,7 @@ var rootHTML = `
 <div class="row">
   {{range .Games}}
   <div class="col-xs-6 col-md-4">
-    <a href="/play/{{ .Slug }}" class="thumbnail">
+    <a href="/play/{{ .Slug }}" class="thumbnail" title="{{ .Name }}">
       <img src="/static/img/{{ .Slug }}.png" alt="{{ .Name }}">
     </a>
   </div>
@@ -139,24 +148,25 @@ var frameHTML = `
   <meta name="author" content="Nate Woods">
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css.css">
+  <link href="/static/img/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body>
   <div class="container container-narrow">
     <div class="header clearfix">
-      <nav>
+      <!--<nav>
         <ul class="nav nav-pills pull-right">
           <li role="presentation">
             <a href="/about">About</a>
           </li>
         </ul>
-      </nav>
+      </nav>-->
       <h3 id="top"><a href="/" class="text-muted">Game Roulette</a></h3>
     </div>
 
     {{block "body" .}}{{end}}
 
     <footer class="footer">
-      <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="http://bign8.info/contact">Nate Woods</a></p>
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="https://bign8.info/contact">Nate Woods</a></p>
     </footer>
   </div>
   {{block "code" .}}{{end}}

@@ -9,13 +9,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bign8/games/impl"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
-)
 
-// This stupid line of code allows all the implementation to run init
-var registry = impl.Registry
+	"github.com/bign8/games/impl"
+)
 
 func main() {
 	// Setup routes
@@ -45,22 +43,19 @@ func gamesHandler(w http.ResponseWriter, r *http.Request) {
 	data := response{
 		Code: 200,
 		Msg:  "Success",
-		Data: registry,
+		Data: impl.Map,
 	}
 	js, err := json.Marshal(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Numer of games: %d", len(registry))
+	log.Printf("Numer of games: %d", impl.Len())
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }
 
 func randomHandler(w http.ResponseWriter, r *http.Request) {
-	for _, game := range registry { // TODO: verify this is random iteration
-		urlStr := fmt.Sprintf("/play/%s", game.Slug)
-		http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
-		return
-	}
+	urlStr := fmt.Sprintf("/play/%s", impl.Rand())
+	http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
 }
