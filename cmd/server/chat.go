@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -32,15 +33,35 @@ func socketHandler(ws *websocket.Conn) {
 	<-s.done
 }
 
-var partner = make(chan io.ReadWriteCloser)
+type roomManager struct {
+	rooms map[string]chan io.ReadWriteCloser
+	mu    sync.Mutex
+}
+
+func (rm *roomManager) Get(slug string) chan io.ReadWriteCloser {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	if rm.rooms == nil {
+		rm.rooms = make(map[string]chan io.ReadWriteCloser)
+	}
+	cha, ok := rm.rooms[slug]
+	if !ok {
+		cha = make(chan io.ReadWriteCloser)
+		rm.rooms[slug] = cha
+	}
+	return cha
+}
+
+var partner = &roomManager{}
 
 // TODO: allow this to handle games with more than 2 players
 func match(c io.ReadWriteCloser, slug string) {
 	fmt.Fprint(c, "sWaiting for a partner...")
+	cha := partner.Get(slug)
 	select {
-	case partner <- c:
+	case cha <- c:
 		// now handled by the other goroutine
-	case p := <-partner:
+	case p := <-cha:
 		play(slug, p, c)
 	case <-time.After(5 * time.Second):
 		play(slug, c, Bot())
