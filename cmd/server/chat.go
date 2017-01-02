@@ -14,12 +14,12 @@ import (
 )
 
 type socket struct {
-	io.Reader
-	io.Writer
+	io.ReadWriteCloser
 	done chan bool
 }
 
 func (s socket) Close() error {
+	s.ReadWriteCloser.Close()
 	s.done <- true
 	return nil
 }
@@ -28,7 +28,7 @@ var chain = NewChain(2) // 2-word prefixes
 
 func socketHandler(ws *websocket.Conn) {
 	slug := mux.Vars(ws.Request())["slug"] // TODO: verify valid slug
-	s := socket{ws, ws, make(chan bool)}
+	s := socket{ws, make(chan bool)}
 	go match(s, slug)
 	<-s.done
 }
