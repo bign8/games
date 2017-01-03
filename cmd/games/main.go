@@ -1,100 +1,96 @@
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
+// Game server (w/chat) based on the following article
+// https://talks.golang.org/2012/chat.slide
 
-	"github.com/bign8/games"
+import (
+	"flag"
+	"fmt"
+	"html/template"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/gorilla/mux"
+	"golang.org/x/net/websocket"
+
 	"github.com/bign8/games/impl"
-	"github.com/bign8/games/player/cli"
-	"github.com/bign8/games/player/minimax"
 )
 
-func getImpl(in *bufio.Reader) games.Game {
-	fmt.Println("Choosing game to play")
-	slugs := make([]string, 0, impl.Len())
-	for slug, config := range impl.Map() {
-		fmt.Printf("\t%s: %s\n", slug, config.Name)
-		slugs = append(slugs, slug)
-	}
-	for {
-		fmt.Printf("Choose game (%s) > ", strings.Join(slugs, "|"))
-		str, err := in.ReadString('\n')
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Problem reading input:", err)
-			continue
-		}
-		str = strings.Trim(str, "\r\n\t ")
-		if config, ok := impl.Get(str); !ok {
-			fmt.Fprintf(os.Stderr, "Input slug not found: %s\n", str)
-		} else {
-			return config
-		}
-	}
-}
+// various HTML templates
+var (
+	p       = func(n string) string { return filepath.Join("cmd", "server", "tpl", n+".gohtml") }
+	rootTpl = template.Must(template.ParseFiles(p("base"), p("root")))
+	gameTpl = template.Must(template.ParseFiles(p("base"), p("game")))
+	infoTpl = template.Must(template.ParseFiles(p("base"), p("info")))
+)
 
-type playerConfig struct {
-	name   string
-	create games.ActorBuilder
-}
-
-func getPlayer(in *bufio.Reader) playerConfig {
-	var player = map[string]playerConfig{
-		"cli": playerConfig{
-			name:   "Human via Command Line",
-			create: cli.New(in),
-		},
-		"mm": playerConfig{
-			name:   "MiniMax Search",
-			create: minimax.New,
-		},
+// Environment parameters + defaults
+var (
+	defaults = map[string]string{
+		"PORT": "4000",
 	}
-
-	slugs := make([]string, 0, len(player))
-	for slug, config := range player {
-		fmt.Printf("\t%s: %s\n", slug, config.name)
-		slugs = append(slugs, slug)
-	}
-	for {
-		fmt.Printf("Choose player (%s) > ", strings.Join(slugs, "|"))
-		str, err := in.ReadString('\n')
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Problem reading input:", err)
-			continue
+	def = func(s string) string {
+		if v := os.Getenv(s); v != "" {
+			return v
 		}
-		str = strings.Trim(str, "\r\n\t ")
-		if config, ok := player[str]; !ok {
-			fmt.Fprintf(os.Stderr, "Input slug not found: %s\n", str)
-		} else {
-			return config
-		}
+		return defaults[s]
 	}
-}
-
-func playerBuilder(in *bufio.Reader) func(games.Game, string) games.Actor {
-	return func(g games.Game, name string) games.Actor {
-		fmt.Printf("=================================================================\nChoosing player %s\n", name)
-		return getPlayer(in).create(g, name)
-	}
-}
+	port = flag.String("port", def("PORT"), "port to serve on")
+)
 
 func main() {
-	// Choose Game
-	in := bufio.NewReader(os.Stdin)
+	flag.Parse()
 
-	// Play Game
-	game := games.Run(getImpl(in), playerBuilder(in))
+	// Setup routes
+	r := mux.NewRouter()
+	r.HandleFunc("/play/random", randomHandler)
+	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
+	r.HandleFunc("/play/{slug}", gameHandler)
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("www"))))
+	r.HandleFunc("/about", aboutHandler)
+	r.PathPrefix("/").HandlerFunc(rootHandler)
 
-	// Print terminal message
-	if game.Terminal() {
-		fmt.Printf("Game Complete\n\n%s\n", game)
+	// Spin up server
+	fmt.Println("Serving on :" + *port)
+	if err := http.ListenAndServe(":"+*port, r); err != nil {
+		log.Fatal(err)
 	}
+}
 
-	// Print error message
-	if game.Error() != nil {
-		fmt.Fprintf(os.Stderr, "Error executing game: %s", game.Error())
-		os.Exit(1)
+func randomHandler(w http.ResponseWriter, r *http.Request) {
+	urlStr := fmt.Sprintf("/play/%s", impl.Rand())
+	http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
 	}
+	rootTpl.Execute(w, struct {
+		Games interface{}
+	}{
+		Games: impl.Map(),
+	})
+}
+
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	game, ok := impl.Get(mux.Vars(r)["slug"])
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	gameTpl.Execute(w, struct {
+		Game  interface{}
+		Board template.HTML
+	}{
+		Game:  game,
+		Board: template.HTML(game.Board),
+	})
+}
+
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	infoTpl.Execute(w, nil)
 }
