@@ -4,10 +4,12 @@ package main
 // https://talks.golang.org/2012/chat.slide
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
@@ -21,9 +23,13 @@ var (
 	rootTpl = template.Must(template.ParseFiles(p("base"), p("root")))
 	gameTpl = template.Must(template.ParseFiles(p("base"), p("game")))
 	infoTpl = template.Must(template.ParseFiles(p("base"), p("info")))
+
+	port = flag.String("port", os.Getenv("PORT"), "port to serve on")
 )
 
 func main() {
+	flag.Parse()
+
 	// Setup routes
 	r := mux.NewRouter()
 	r.HandleFunc("/play/random", randomHandler)
@@ -34,8 +40,8 @@ func main() {
 	r.PathPrefix("/").HandlerFunc(rootHandler)
 
 	// Spin up server
-	err := http.ListenAndServe("localhost:4000", r)
-	if err != nil {
+	fmt.Println("Serving on :" + *port)
+	if err := http.ListenAndServe(":"+*port, r); err != nil {
 		log.Fatal(err)
 	}
 }
