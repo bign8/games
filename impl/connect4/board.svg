@@ -1,0 +1,74 @@
+<svg width="350" height="300" viewBox="1 1 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+  <circle id="z" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" />
+	<use id="o" xlink:href="#z" fill="#d7d7d7" />
+	<use id="a" xlink:href="#z" fill="#e7e700" />
+	<use id="b" xlink:href="#z" fill="#ee0000" />
+
+  <!-- <line id="c" x1=".5" y1="1.05" x2=".5" y2="6.95" stroke-width="0.85" stroke="black"/> -->
+</defs>
+
+<g>
+  <rect x="0" y="0" width="8" height="7" fill="#a08c64" />
+
+  <use xlink:href="#o" x="1" y="1"/>
+  <use xlink:href="#o" x="2" y="1"/>
+  <use xlink:href="#o" x="3" y="1"/>
+  <use xlink:href="#o" x="4" y="1"/>
+  <use xlink:href="#o" x="5" y="1"/>
+  <use xlink:href="#o" x="6" y="1"/>
+  <use xlink:href="#o" x="7" y="1"/>
+
+  <use xlink:href="#o" x="1" y="2"/>
+  <use xlink:href="#o" x="2" y="2"/>
+  <use xlink:href="#b" x="3" y="2"/>
+  <use xlink:href="#a" x="4" y="2"/>
+  <use xlink:href="#o" x="5" y="2"/>
+  <use xlink:href="#o" x="6" y="2"/>
+  <use xlink:href="#o" x="7" y="2"/>
+
+  <use xlink:href="#o" x="1" y="3"/>
+  <use xlink:href="#o" x="2" y="3"/>
+  <use xlink:href="#a" x="3" y="3"/>
+  <use xlink:href="#a" x="4" y="3"/>
+  <use xlink:href="#a" x="5" y="3"/>
+  <use xlink:href="#b" x="6" y="3"/>
+  <use xlink:href="#o" x="7" y="3"/>
+
+  <use xlink:href="#o" x="1" y="4"/>
+  <use xlink:href="#o" x="2" y="4"/>
+  <use xlink:href="#b" x="3" y="4"/>
+  <use xlink:href="#b" x="4" y="4"/>
+  <use xlink:href="#a" x="5" y="4"/>
+  <use xlink:href="#a" x="6" y="4"/>
+  <use xlink:href="#o" x="7" y="4"/>
+
+  <use xlink:href="#o" x="1" y="5"/>
+  <use xlink:href="#o" x="2" y="5"/>
+  <use xlink:href="#b" x="3" y="5"/>
+  <use xlink:href="#a" x="4" y="5"/>
+  <use xlink:href="#b" x="5" y="5"/>
+  <use xlink:href="#a" x="6" y="5"/>
+  <use xlink:href="#o" x="7" y="5"/>
+
+  <use xlink:href="#o" x="1" y="6"/>
+  <use xlink:href="#a" x="2" y="6"/>
+  <use xlink:href="#b" x="3" y="6"/>
+  <use xlink:href="#b" x="4" y="6"/>
+  <use xlink:href="#b" x="5" y="6"/>
+  <use xlink:href="#a" x="6" y="6"/>
+  <use xlink:href="#b" x="7" y="6"/>
+</g>
+
+<!-- hit targets -->
+<g>
+  <use xlink:href="#c" x="1" />
+  <use xlink:href="#c" x="2" />
+  <use xlink:href="#c" x="3" />
+  <use xlink:href="#c" x="4" />
+  <use xlink:href="#c" x="5" />
+  <use xlink:href="#c" x="6" />
+  <use xlink:href="#c" x="7" />
+</g>
+
+</svg>
