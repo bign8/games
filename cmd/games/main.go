@@ -20,7 +20,7 @@ import (
 
 // various HTML templates
 var (
-	p       = func(n string) string { return filepath.Join("cmd", "server", "tpl", n+".gohtml") }
+	p       = func(n string) string { return filepath.Join(".", "cmd", "server", "tpl", n+".gohtml") }
 	rootTpl = template.Must(template.ParseFiles(p("base"), p("root")))
 	gameTpl = template.Must(template.ParseFiles(p("base"), p("game")))
 	infoTpl = template.Must(template.ParseFiles(p("base"), p("info")))
