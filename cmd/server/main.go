@@ -18,13 +18,26 @@ import (
 	"github.com/bign8/games/impl"
 )
 
+// various HTML templates
 var (
 	p       = func(n string) string { return filepath.Join("cmd", "server", "tpl", n+".gohtml") }
 	rootTpl = template.Must(template.ParseFiles(p("base"), p("root")))
 	gameTpl = template.Must(template.ParseFiles(p("base"), p("game")))
 	infoTpl = template.Must(template.ParseFiles(p("base"), p("info")))
+)
 
-	port = flag.String("port", os.Getenv("PORT"), "port to serve on")
+// Environment parameters + defaults
+var (
+	defaults = map[string]string{
+		"PORT": "4000",
+	}
+	def = func(s string) string {
+		if v := os.Getenv(s); v != "" {
+			return v
+		}
+		return defaults[s]
+	}
+	port = flag.String("port", def("PORT"), "port to serve on")
 )
 
 func main() {
