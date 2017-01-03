@@ -11,8 +11,8 @@ import (
 	"golang.org/x/net/websocket"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/cmd/server/socket"
 	"github.com/bign8/games/impl"
+	"github.com/bign8/games/util/socket"
 )
 
 var pool = &poolManager{games: make(map[string]chan<- *socket.Socket)}

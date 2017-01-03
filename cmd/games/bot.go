@@ -4,7 +4,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/bign8/games/cmd/server/markov"
+	"github.com/bign8/games/util/markov"
 )
 
 // https://talks.golang.org/2012/chat.slide
