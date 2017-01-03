@@ -93,7 +93,7 @@ N8.games = (function(w, d) {
   // Window on-load event
   w.addEventListener('load', function() {
     var input = document.getElementById("input");
-    var loc = document.location.toString().replace("http://", "ws://") + '/socket';
+    var loc = document.location.toString().replace("http://", "ws://").replace("https://", "wss://") + '/socket';
     newSocket = new RoomSocket(loc);
     newSocket.listen('s', systemMessage);
     newSocket.listen('u', new Writer('Opponent').send);
