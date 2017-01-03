@@ -48,7 +48,7 @@ func main() {
 	r.HandleFunc("/play/random", randomHandler)
 	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
 	r.HandleFunc("/play/{slug}", gameHandler)
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("www"))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
 	r.HandleFunc("/about", aboutHandler)
 	r.PathPrefix("/").HandlerFunc(rootHandler)
 
