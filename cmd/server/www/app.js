@@ -64,21 +64,26 @@ N8.games = (function(w, d) {
         moves.appendChild(buildMoveButton(obj.Moves[i], 'list-group-item'));
 
     // State 2: moves all have various types
-    else for (var key in byType) {
-      var group = document.createElement('div');
-      group.className = "list-group-item";
-      var title = document.createElement('h4');
-      title.className = "list-group-item-heading";
-      title.innerHTML = key;
-      group.appendChild(title);
-      var text = document.createElement('div');
-      text.className = "list-group-item-text";
-      for (var i = 0; i < byType[key].length; i++) {
-        text.appendChild(buildMoveButton(byType[key][i], 'btn btn-default'));
-        text.appendChild(document.createTextNode(' '));
+    else {
+      var keys = Object.keys(byType);
+      keys.sort();
+      for (var j = 0; j < keys.length; j++) {
+        var key = keys[j],
+          group = document.createElement('div'),
+          title = document.createElement('h4'),
+          text = document.createElement('div');
+        group.className = "list-group-item";
+        title.className = "list-group-item-heading";
+        title.innerHTML = key;
+        text.className = "list-group-item-text";
+        for (var i = 0; i < byType[key].length; i++) {
+          text.appendChild(buildMoveButton(byType[key][i], 'btn btn-default'));
+          text.appendChild(document.createTextNode(' '));
+        }
+        group.appendChild(title);
+        group.appendChild(text);
+        moves.appendChild(group);
       }
-      group.appendChild(text);
-      moves.appendChild(group);
     }
     moves.addEventListener('mouseout', function() {
       game.innerHTML = obj.SVG;
