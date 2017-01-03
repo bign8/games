@@ -1,0 +1,30 @@
+{{define "body"}}
+<div class="row">
+  <div class="col-md-8 col-md-push-4">
+    <div class="board-wrapper">
+      {{ .Board }}
+      <div class="board" id="game"></div>
+    </div>
+  </div>
+  <div class="col-md-4 col-md-pull-8">
+    <div class="panel panel-default chat">
+      <div class="panel-heading">
+        <h3 class="panel-title">Chat</h3>
+      </div>
+      <div class="list-group" id="output"></div>
+      <input id="input" class="form-control panel-footer" type="text" placeholder="Type Message Here...">
+    </div>
+    <div class="panel panel-default moves">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moves</h3>
+      </div>
+      <ul class="list-group" id="moves"></ul>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "code"}}
+<script src="/static/protocol.js"></script>
+<script src="/static/app.js"></script>
+{{end}}
