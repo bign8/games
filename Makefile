@@ -16,4 +16,4 @@ serve:
 	gin -a 4000 -t cmd/server -i
 
 build:
-	go build ./cmd/games
+	go build ./cmd/server
