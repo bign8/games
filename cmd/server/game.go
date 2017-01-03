@@ -61,7 +61,7 @@ func (pm *poolManager) pair(slug string, ch <-chan *socket.Socket) {
 
 	// Start the game and reset queue
 	start := func() {
-		go play2(game, queue...)
+		go play(game, queue...)
 		queue = make([]*socket.Socket, 0, len(game.Players))
 		wait = nil
 	}
@@ -82,7 +82,7 @@ func (pm *poolManager) pair(slug string, ch <-chan *socket.Socket) {
 	}
 }
 
-func play2(game games.Game, players ...*socket.Socket) {
+func play(game games.Game, players ...*socket.Socket) {
 	isBot := padPlayers(game, &players)
 	chats := make([]io.ReadWriteCloser, len(players))
 	gamez := make([]io.ReadWriteCloser, len(players))
@@ -123,7 +123,7 @@ func play2(game games.Game, players ...*socket.Socket) {
 
 	// Log errors if necessary
 	if err := <-errc; err != nil {
-		log.Println("play2", err)
+		log.Println("play", err)
 	}
 
 	// TODO: close down sockets
