@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+// https://talks.golang.org/2012/chat.slide
+// https://talks.golang.org/2012/chat/both/chat.go
+
+var chain = NewChain(2) // 2-word prefixes
+
+func cp(w io.Writer, r io.Reader, errc chan<- error) {
+	_, err := io.Copy(io.MultiWriter(w, chain), r) // copy chats to markov chain
+	errc <- err
+}
+
 // Bot returns an io.ReadWriteCloser that responds to
 // each incoming write with a generated sentence.
 func Bot() io.ReadWriteCloser {
