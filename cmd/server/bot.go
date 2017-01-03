@@ -3,12 +3,14 @@ package main
 import (
 	"io"
 	"time"
+
+	"github.com/bign8/games/cmd/server/markov"
 )
 
 // https://talks.golang.org/2012/chat.slide
 // https://talks.golang.org/2012/chat/both/chat.go
 
-var chain = NewChain(2) // 2-word prefixes
+var chain = markov.NewChain(2) // 2-word prefixes
 
 func cp(w io.Writer, r io.Reader, errc chan<- error) {
 	_, err := io.Copy(io.MultiWriter(w, chain), r) // copy chats to markov chain
