@@ -9,7 +9,7 @@
 </defs>
 
 <g>
-  <rect x="0" y="0" width="8" height="7" fill="#a08c64" />
+  <rect x="0" y="0" width="8" height="7" fill="#0070b9" />
 
   <use xlink:href="#o" x="1" y="1"/>
   <use xlink:href="#o" x="2" y="1"/>
