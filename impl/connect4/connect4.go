@@ -1,7 +1,6 @@
 package connect4
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/bign8/games"
@@ -79,7 +78,7 @@ var (
 func New(actors ...games.Actor) games.State {
 	// FUTURE: can we assume this?
 	if len(actors) != 2 {
-		return &c4{err: errors.New("Invalid number of players")}
+		return games.StateErrInvalidNumberOfActors
 	}
 	return &c4{players: actors}
 }
@@ -88,7 +87,6 @@ type c4 struct {
 	board   [7][]byte
 	ctr     uint8
 	players []games.Actor
-	err     error
 }
 
 func (s *c4) Player() games.Actor { return s.players[s.ctr%2] }
@@ -123,13 +121,12 @@ func (s *c4) String() string {
 func (s *c4) Apply(action games.Action) games.State {
 	a, ok := action.(c4move)
 	if !ok {
-		return &c4{err: errors.New("Invalid Move")}
+		return games.StateErrInvalidMove
 	}
 	idx := int(uint8(a))
 	next := &c4{
 		ctr:     s.ctr + 1,
 		players: s.players,
-		err:     s.err,
 	}
 	copy(next.board[:], s.board[:])
 	next.board[idx] = append(next.board[idx], s.Player().Name()[0])
@@ -147,7 +144,7 @@ func (s *c4) Actions() []games.Action {
 }
 func (s *c4) Terminal() bool          { return false }
 func (s *c4) Utility(games.Actor) int { return 0 }
-func (s *c4) Error() error            { return s.err }
+func (s *c4) Error() error            { return nil }
 func (s *c4) SVG(bool) string         { return "" }
 
 // Which column to drop the players token
