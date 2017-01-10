@@ -89,9 +89,18 @@ type c4 struct {
 	players []games.Actor
 }
 
+func (s *c4) get(p point) byte {
+	if int(p.row) < len(s.board[p.col]) {
+		return s.board[p.col][p.row]
+	}
+	return ' '
+}
+
+func (s *c4) Error() error        { return nil }
 func (s *c4) Player() games.Actor { return s.players[s.ctr%2] }
 
 func (s *c4) String() string {
+	// TODO: improve the performance here
 	out := "+-+-+-+-+-+-+-+\n"
 	for i := 5; i >= 0; i-- {
 		out += "|"
@@ -142,10 +151,84 @@ func (s *c4) Actions() []games.Action {
 	}
 	return acts
 }
-func (s *c4) Terminal() bool          { return false }
-func (s *c4) Utility(games.Actor) int { return 0 }
-func (s *c4) Error() error            { return nil }
-func (s *c4) SVG(bool) string         { return "" }
+
+type point struct {
+	col int8
+	row int8
+}
+
+func (p point) add(dc, dr int8) point {
+	return point{col: p.col + dc, row: p.row + dr}
+}
+
+func (p point) valid() bool {
+	return p.col >= 0 && p.col < 8 && p.row >= 0 && p.row < 7
+}
+
+// provides the 4 points to determin 4-in-a-row
+func offsets(s point, dir int) []point {
+	res := []point{s}
+	switch dir {
+	case 0: // vertical
+		res = append(res, s.add(0, 1), s.add(0, 2), s.add(0, 3))
+	case 1: // horizontal
+		res = append(res, s.add(1, 0), s.add(2, 0), s.add(3, 0))
+	case 2: // /
+		res = append(res, s.add(1, 1), s.add(2, 2), s.add(3, 3))
+	case 3: // \
+		res = append(res, s.add(1, -1), s.add(2, -2), s.add(3, -3))
+	}
+	return res
+}
+
+func (s *c4) Terminal() bool {
+	var set [][]point
+
+	// Build all possible 4-in-a-row's
+	for i := int8(0); i < 7; i++ {
+		for j := int8(0); j < 6; j++ {
+			set = append(set, offsets(point{i, j}, 0))
+			set = append(set, offsets(point{i, j}, 1))
+			set = append(set, offsets(point{i, j}, 2))
+			set = append(set, offsets(point{i, j}, 3))
+		}
+	}
+
+	// Remove invalid array sets
+outer:
+	for i := 0; i < len(set); i++ {
+		for j := 0; j < len(set[i]); j++ {
+			if !set[i][j].valid() {
+				// set = append(set[:i], set[i+1:]...)
+				// i--
+				continue outer
+			}
+		}
+
+		// Check if there exists a 4-in-a-row
+		start := s.get(set[i][0])
+		if start == ' ' {
+			continue outer
+		}
+		for j := 1; j < len(set[i]); j++ {
+			if start != s.get(set[i][j]) {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
+}
+
+func (s *c4) Utility(games.Actor) int {
+	// TODO
+	return 0
+}
+
+func (s *c4) SVG(bool) string {
+	// TODO
+	return ""
+}
 
 // Which column to drop the players token
 type c4move uint8
