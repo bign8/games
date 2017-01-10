@@ -2,6 +2,7 @@ package connect4
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/bign8/games"
 )
@@ -92,9 +93,9 @@ type c4 struct {
 	players []games.Actor
 }
 
-func (s *c4) get(p point) byte {
-	if int(p.row) < len(s.board[p.col]) {
-		return s.board[p.col][p.row]
+func (s *c4) get(p int) byte {
+	if int(master[p].row) < len(s.board[master[p].col]) {
+		return s.board[master[p].col][master[p].row]
 	}
 	return ' '
 }
@@ -103,10 +104,9 @@ func (s *c4) Error() error        { return nil }
 func (s *c4) Player() games.Actor { return s.players[s.ctr%2] }
 
 func (s *c4) String() string {
-	// TODO: improve the performance here
-	out := "+-+-+-+-+-+-+-+\n"
+	rows := make([]string, 0, 6)
 	for i := 5; i >= 0; i-- {
-		out += "|"
+		out := "|"
 		for j := 0; j < 7; j++ {
 			if len(s.board[j]) > i {
 				switch s.board[j][i] {
@@ -122,12 +122,9 @@ func (s *c4) String() string {
 			}
 			out += "|"
 		}
-		out += "\n"
-		if i != 0 {
-			out += "+-+-+-+-+-+-+-+\n"
-		}
+		rows = append(rows, out+"\n")
 	}
-	return out + "+-+-+-+-+-+-+-+"
+	return "+-+-+-+-+-+-+-+\n" + strings.Join(rows, "+-+-+-+-+-+-+-+\n") + "+-+-+-+-+-+-+-+"
 }
 
 func (s *c4) Apply(action games.Action) games.State {
@@ -155,16 +152,13 @@ func (s *c4) Actions() []games.Action {
 	return acts
 }
 
-type point struct {
-	col int8
-	row int8
-}
+type point struct{ col, row int8 }
 
 // returns the value of the inARow array found (-1 if not found)
 func isInARow(s *c4) int {
 	for i := 0; i < len(master); i += 4 {
-		start := s.get(master[i])
-		if start != ' ' && start == s.get(master[i+1]) && start == s.get(master[i+2]) && start == s.get(master[i+3]) {
+		a := s.get(i)
+		if a != ' ' && a == s.get(i+1) && a == s.get(i+2) && a == s.get(i+3) {
 			return i
 		}
 	}
@@ -176,7 +170,7 @@ func (s *c4) Terminal() bool { return isInARow(s) >= 0 }
 func (s *c4) Utility(a games.Actor) int {
 	val := isInARow(s)
 	if val >= 0 {
-		if s.get(master[val]) == a.Name()[0] {
+		if s.get(val) == a.Name()[0] {
 			return 1
 		}
 		return -1

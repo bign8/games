@@ -49,3 +49,35 @@ func TestIsInARow(t *testing.T) {
 		t.Error("Found 4 in a row")
 	}
 }
+
+func BenchmarkString(b *testing.B) {
+	board := &c4{
+		board: [7][]byte{
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+		},
+	}
+	for i := 0; i < b.N; i++ {
+		board.String()
+	}
+}
+
+func TestString(t *testing.T) {
+	board := &c4{
+		board: [7][]byte{
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'Y', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'R', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f'},
+		},
+	}
+	board.String()
+}
