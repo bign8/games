@@ -15,14 +15,20 @@ func BenchmarkIsInARow(b *testing.B) {
 }
 
 func TestIsInARow(t *testing.T) {
-	board := &c4{
+	b := &c4{
 		board: [7][]byte{
 			[]byte{'a'}, []byte{'a'}, []byte{'a'}, []byte{'a'},
 			[]byte{' '}, []byte{' '}, []byte{' '},
 		},
 	}
-	x := isInARow(board)
-	if x < 0 {
+	if isInARow(b) < 0 {
 		t.Error("Did not find 4 in a row")
+	}
+	b.board = [7][]byte{
+		[]byte{'a'}, []byte{'a'}, []byte{'a'},
+		[]byte{' '}, []byte{' '}, []byte{' '}, []byte{' '},
+	}
+	if isInARow(b) >= 0 {
+		t.Error("Found 4 in a row")
 	}
 }

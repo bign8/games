@@ -159,7 +159,7 @@ type point struct {
 
 // returns the value of the inARow array found (-1 if not found)
 func isInARow(s *c4) int {
-	for i := 0; i < len(master); i++ {
+	for i := 0; i < len(master); i += 4 {
 		start := s.get(master[i])
 		if start != ' ' && start == s.get(master[i+1]) && start == s.get(master[i+2]) && start == s.get(master[i+3]) {
 			return i
