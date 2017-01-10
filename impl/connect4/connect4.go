@@ -157,71 +157,39 @@ type point struct {
 	row int8
 }
 
-func (p point) add(dc, dr int8) point {
-	return point{col: p.col + dc, row: p.row + dr}
-}
-
-func (p point) valid() bool {
-	return p.col >= 0 && p.col < 8 && p.row >= 0 && p.row < 7
-}
-
-// provides the 4 points to determin 4-in-a-row
-func offsets(s point, dir int) []point {
-	res := []point{s}
-	switch dir {
-	case 0: // vertical
-		res = append(res, s.add(0, 1), s.add(0, 2), s.add(0, 3))
-	case 1: // horizontal
-		res = append(res, s.add(1, 0), s.add(2, 0), s.add(3, 0))
-	case 2: // /
-		res = append(res, s.add(1, 1), s.add(2, 2), s.add(3, 3))
-	case 3: // \
-		res = append(res, s.add(1, -1), s.add(2, -2), s.add(3, -3))
-	}
-	return res
-}
-
-func (s *c4) Terminal() bool {
-	var set [][]point
-
-	// Build all possible 4-in-a-row's
-	for i := int8(0); i < 7; i++ {
-		for j := int8(0); j < 6; j++ {
-			set = append(set, offsets(point{i, j}, 0))
-			set = append(set, offsets(point{i, j}, 1))
-			set = append(set, offsets(point{i, j}, 2))
-			set = append(set, offsets(point{i, j}, 3))
-		}
-	}
-
-	// Remove invalid array sets
+// returns the value of the inARow array found (-1 if not found)
+func isInARow(s *c4) int {
 outer:
-	for i := 0; i < len(set); i++ {
-		for j := 0; j < len(set[i]); j++ {
-			if !set[i][j].valid() {
-				// set = append(set[:i], set[i+1:]...)
-				// i--
-				continue outer
-			}
-		}
-
-		// Check if there exists a 4-in-a-row
-		start := s.get(set[i][0])
+	for i := 0; i < len(inARow); i++ {
+		start := s.get(inARow[i][0])
 		if start == ' ' {
 			continue outer
 		}
-		for j := 1; j < len(set[i]); j++ {
-			if start != s.get(set[i][j]) {
+		for j := 1; j < len(inARow[i]); j++ {
+			if start != s.get(inARow[i][j]) {
 				continue outer
 			}
 		}
-		return true
+		return i
 	}
-	return false
+	return -1
 }
 
-func (s *c4) Utility(games.Actor) int {
-	// TODO
+// Terminal checks if there exists a 4-in-a-row
+func (s *c4) Terminal() bool {
+	return isInARow(s) >= 0
+}
+
+func (s *c4) Utility(a games.Actor) int {
+	val := isInARow(s)
+	if val >= 0 {
+		pt := inARow[val][0]
+		if s.board[pt.col][pt.row] == a.Name()[0] {
+			return 1
+		} else {
+			return -1
+		}
+	}
 	return 0
 }
 
