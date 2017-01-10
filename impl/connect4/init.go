@@ -1,7 +1,5 @@
 package connect4
 
-var inARow [][]point
-
 var (
 	master []point
 	buffer [4]point

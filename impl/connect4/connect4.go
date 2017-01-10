@@ -159,36 +159,24 @@ type point struct {
 
 // returns the value of the inARow array found (-1 if not found)
 func isInARow(s *c4) int {
-outer:
-	for i := 0; i < len(inARow); i++ {
-		start := s.get(inARow[i][0])
-		if start == ' ' {
-			continue outer
+	for i := 0; i < len(master); i++ {
+		start := s.get(master[i])
+		if start != ' ' && start == s.get(master[i+1]) && start == s.get(master[i+2]) && start == s.get(master[i+3]) {
+			return i
 		}
-		for j := 1; j < len(inARow[i]); j++ {
-			if start != s.get(inARow[i][j]) {
-				continue outer
-			}
-		}
-		return i
 	}
 	return -1
 }
 
 // Terminal checks if there exists a 4-in-a-row
-func (s *c4) Terminal() bool {
-	return isInARow(s) >= 0
-}
-
+func (s *c4) Terminal() bool { return isInARow(s) >= 0 }
 func (s *c4) Utility(a games.Actor) int {
 	val := isInARow(s)
 	if val >= 0 {
-		pt := inARow[val][0]
-		if s.board[pt.col][pt.row] == a.Name()[0] {
+		if s.get(master[val]) == a.Name()[0] {
 			return 1
-		} else {
-			return -1
 		}
+		return -1
 	}
 	return 0
 }
