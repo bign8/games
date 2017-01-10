@@ -14,6 +14,23 @@ func BenchmarkIsInARow(b *testing.B) {
 	}
 }
 
+func BenchmarkIsInARow2(b *testing.B) {
+	board := &c4{
+		board: [7][]byte{
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+			[]byte{'h', 'i', 'j', 'k', 'l', 'm', 'n'},
+			[]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'},
+		},
+	}
+	for i := 0; i < b.N; i++ {
+		isInARow(board)
+	}
+}
+
 func TestIsInARow(t *testing.T) {
 	b := &c4{
 		board: [7][]byte{

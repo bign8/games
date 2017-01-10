@@ -7,9 +7,11 @@ import (
 )
 
 var (
-	_    games.State  = (*c4)(nil)
-	_    games.Action = (*c4move)(nil)
-	Game              = games.Game{
+	_ games.State  = (*c4)(nil)
+	_ games.Action = (*c4move)(nil)
+
+	// Game is the core game object that impl/impl.go works on stuff
+	Game = games.Game{
 		Name: "Connect 4",
 		Slug: "c4",
 		// TODO: https://upload.wikimedia.org/wikipedia/commons/d/dc/Puissance4_01.svg
@@ -75,6 +77,7 @@ var (
 	}
 )
 
+// New constructs a connect4 game
 func New(actors ...games.Actor) games.State {
 	// FUTURE: can we assume this?
 	if len(actors) != 2 {
