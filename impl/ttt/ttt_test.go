@@ -39,20 +39,11 @@ func BenchmarkApply(b *testing.B) {
 	}
 }
 
-func BenchmarkTerminal(b *testing.B) {
-	game := New()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		game.Terminal()
-	}
-}
-
 func BenchmarkUtility(b *testing.B) {
 	game := newGame()
-	a := game.Player()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.Utility(a)
+		game.Utility()
 	}
 }
 

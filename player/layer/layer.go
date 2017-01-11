@@ -8,24 +8,22 @@ import (
 
 type actor string
 
-func New(_ games.Game, name string) games.Actor {
-	return actor(name)
-}
-
-func (a actor) Name() string { return string(a) }
-func (a actor) Act(s games.State) games.Action {
-	player := s.Player()
+// New constructs a new layer player
+func New(_ games.Game, name string) games.Actor { return actor(name) }
+func (a actor) Name() string                    { return string(a) }
+func (actor) Act(s games.State) games.Action {
 	actions := s.Actions()
 	moves := []games.Action{actions[0]}
-	value := s.Apply(actions[0]).Utility(player)
+	val := value(s, actions[0])
 	for _, a := range actions {
-		test := s.Apply(a).Utility(player)
-		if test > value {
+		test := value(s, a)
+		if test > val {
 			moves = []games.Action{a}
-			value = test
-		} else if test == value {
+			val = test
+		} else if test == val {
 			moves = append(moves, a)
 		}
 	}
 	return moves[rand.Intn(len(moves))]
 }
+func value(s games.State, a games.Action) int { return s.Apply(a).Utility()[s.Player()] }

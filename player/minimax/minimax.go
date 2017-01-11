@@ -22,8 +22,8 @@ func (mm *minimax) Act(s games.State) games.Action {
 }
 
 func (mm *minimax) search(s games.State) (games.Action, int) {
-	if s.Terminal() {
-		return nil, s.Utility(s.Player())
+	if util := s.Utility(); util != nil {
+		return nil, util[s.Player()]
 	}
 	a := s.Actions()
 	score := make([]int, len(a))

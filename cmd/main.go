@@ -93,13 +93,7 @@ func main() {
 	game := games.Run(getImpl(in), playerBuilder(in))
 
 	// Print terminal message
-	if game.Terminal() {
+	if nil != game.Utility() {
 		fmt.Printf("Game Complete\n\n%s\n", game)
-	}
-
-	// Print error message
-	if game.Error() != nil {
-		fmt.Fprintf(os.Stderr, "Error executing game: %s", game.Error())
-		os.Exit(1)
 	}
 }

@@ -1,8 +1,6 @@
 package chess
 
 import (
-	"errors"
-
 	"github.com/bign8/games"
 	"github.com/bign8/games/player/layer"
 )
@@ -29,9 +27,6 @@ type State struct {
 
 // New begins a brand new game
 func New(actors ...games.Actor) games.State {
-	if len(actors) != 2 {
-		return &State{err: errors.New("Invalid number of players")}
-	}
 	var board [64]byte
 	copy(board[:], "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR")
 	// copy(board[:], "rnbqkbnr1ppp1ppp11111111p111p11Q11B1P11111111111PPPP1PPPRNB1K1NR")
@@ -46,11 +41,12 @@ func New(actors ...games.Actor) games.State {
 	}
 }
 
-func (s State) Player() games.Actor {
+func (s State) Actors() []games.Actor { return s.actors }
+func (s State) Player() int {
 	if s.isBlack {
-		return s.actors[1]
+		return 1
 	}
-	return s.actors[0]
+	return 0
 }
 
 func (s State) Error() error {
@@ -68,7 +64,7 @@ func (s State) Apply(mo games.Action) games.State {
 		}
 	}
 	if !found {
-		return &State{err: errors.New("chess: move not permitted")}
+		panic("chess: move not permitted")
 	}
 
 	// Should reset halfmove count https://en.wikipedia.org/wiki/Fifty-move_rule
@@ -139,7 +135,7 @@ func (s State) Apply(mo games.Action) games.State {
 	}
 
 	// Generate new board... TODO: fix castling
-	state := &State{
+	return &State{
 		board:     board,
 		isBlack:   !s.isBlack,
 		castling:  castling,
@@ -149,7 +145,6 @@ func (s State) Apply(mo games.Action) games.State {
 		check:     m.check,
 		actors:    s.actors,
 	}
-	return state
 }
 
 // Terminal determines if the active game state is a complete move

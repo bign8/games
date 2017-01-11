@@ -1,13 +1,15 @@
 package chess
 
-import "github.com/bign8/games"
-
-func (s State) Utility(a games.Actor) int {
+func (s State) Utility() []int {
 	val := ValueUtility(s)
-	if "Black" == a.Name() {
-		val *= -1
+	res := make([]int, 2)
+	for i, a := range s.actors {
+		res[i] = val
+		if "Black" == a.Name() {
+			res[i] *= -1
+		}
 	}
-	return val
+	return res
 }
 
 // ValueUtility is a uses the common standard value of pieces to rate a state.

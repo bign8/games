@@ -80,13 +80,7 @@ var (
 )
 
 // New constructs a connect4 game
-func New(actors ...games.Actor) games.State {
-	// FUTURE: can we assume this?
-	if len(actors) != 2 {
-		return games.StateErrInvalidNumberOfActors
-	}
-	return &c4{players: actors}
-}
+func New(actors ...games.Actor) games.State { return &c4{players: actors} }
 
 type c4 struct {
 	board   [7][]byte
@@ -101,8 +95,8 @@ func (s *c4) get(p int) byte {
 	return ' '
 }
 
-func (s *c4) Error() error        { return nil }
-func (s *c4) Player() games.Actor { return s.players[s.ctr%2] }
+func (s *c4) Actors() []games.Actor { return s.players }
+func (s *c4) Player() int           { return int(s.ctr) % 2 }
 
 func (s *c4) String() string {
 	rows := make([]string, 0, 6)
@@ -129,17 +123,14 @@ func (s *c4) String() string {
 }
 
 func (s *c4) Apply(action games.Action) games.State {
-	a, ok := action.(c4move)
-	if !ok {
-		return games.StateErrInvalidMove
-	}
+	a := action.(c4move)
 	idx := int(uint8(a))
 	next := &c4{
 		ctr:     s.ctr + 1,
 		players: s.players,
 	}
 	copy(next.board[:], s.board[:])
-	next.board[idx] = append(next.board[idx], s.Player().Name()[0])
+	next.board[idx] = append(next.board[idx], s.Actors()[s.Player()].Name()[0])
 	return next
 }
 
@@ -176,15 +167,19 @@ func (s *c4) Terminal() bool {
 	}
 	return isInARow(s) >= 0
 }
-func (s *c4) Utility(a games.Actor) int {
+func (s *c4) Utility() []int {
 	val := isInARow(s)
+	res := make([]int, 2)
 	if val >= 0 {
-		if s.get(val) == a.Name()[0] {
-			return 1
+		for i, a := range s.players {
+			if s.get(val) == a.Name()[0] {
+				res[i] = 1
+			} else {
+				res[i] = -1
+			}
 		}
-		return -1
 	}
-	return 0
+	return res
 }
 
 func (s *c4) SVG(bool) string {

@@ -12,7 +12,6 @@ type ttt struct {
 	board   [9]byte
 	ctr     uint8
 	players []games.Actor
-	err     error
 }
 
 type tttMove uint8
@@ -32,32 +31,21 @@ func (m tttMove) String() string {
 	}
 	return moveNames[m]
 }
-
-// Error tells if there is a problem with regular game play
-func (g ttt) Error() error {
-	return g.err
-}
-
-// Player returns the active player given a state
-func (g ttt) Player() games.Actor {
-	return g.players[g.ctr%2]
-}
+func (g ttt) Actors() []games.Actor { return g.players }
+func (g ttt) Player() int           { return int(g.ctr) % 2 }
 
 // New takes creates a new game of ttt
 func New(players ...games.Actor) games.State {
 	if len(players) != 2 {
-		return &ttt{err: fmt.Errorf("invalid number of players: %d", len(players))}
+		panic(fmt.Sprintf("invalid number of players: %d", len(players)))
 	}
 	var board [9]byte
 	copy(board[:], "         ")
-	return &ttt{board, 0, players, nil}
+	return &ttt{board, 0, players}
 }
 
 // Apply applies a given move to a state
 func (g ttt) Apply(a games.Action) games.State {
-	if g.Error() != nil {
-		return g
-	}
 	// TODO: check for legal move
 	m := a.(tttMove)
 	var board [9]byte
@@ -67,7 +55,7 @@ func (g ttt) Apply(a games.Action) games.State {
 	} else {
 		board[m] = 'O'
 	}
-	return &ttt{board, g.ctr + 1, g.players, nil}
+	return &ttt{board, g.ctr + 1, g.players}
 }
 
 func (g ttt) String() string {
@@ -97,7 +85,7 @@ func (g ttt) Actions() (moves []games.Action) {
 // Terminal determines if we are currently in a winning state
 // TODO: implement with bit masks
 func (g ttt) Terminal() bool {
-	if g.Error() != nil || g.ctr == 9 {
+	if g.ctr == 9 {
 		return true
 	}
 	isWin, _ := g.isWin()
@@ -141,13 +129,18 @@ func (g ttt) isWin() (bool, byte) {
 }
 
 // Utility for TTT is simple: 1 for a win, -1 for a loss, 0 if game is in progress
-func (g ttt) Utility(a games.Actor) int {
-	if isWin, chr := g.isWin(); !isWin {
-		return 0
-	} else if chr == a.Name()[0] {
-		return 1
+func (g ttt) Utility() []int {
+	res := make([]int, 2)
+	if isWin, chr := g.isWin(); isWin {
+		for i, a := range g.players {
+			if chr == a.Name()[0] {
+				res[i] = 1
+			} else {
+				res[i] = -1
+			}
+		}
 	}
-	return -1
+	return res
 }
 
 // https://thenounproject.com/term/tic-tac-toe/25029/
@@ -198,7 +191,7 @@ func (g ttt) SVG(active bool) string {
 	if active {
 		suffix := svgXSuffix
 		pos := svgXPos
-		if g.Player().Name() == "O" {
+		if g.Actors()[g.Player()].Name() == "O" {
 			suffix = svgOSuffix
 			pos = svgOPos
 		}
