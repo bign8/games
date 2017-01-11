@@ -9,6 +9,7 @@ import (
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
 	"github.com/bign8/games/player/cli"
+	"github.com/bign8/games/player/layer"
 	"github.com/bign8/games/player/minimax"
 )
 
@@ -49,6 +50,10 @@ func getPlayer(in *bufio.Reader) playerConfig {
 		"mm": playerConfig{
 			name:   "MiniMax Search",
 			create: minimax.New,
+		},
+		"lay": playerConfig{
+			name:   "Layer Search",
+			create: layer.New,
 		},
 	}
 

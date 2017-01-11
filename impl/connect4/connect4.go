@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/bign8/games"
+	"github.com/bign8/games/player/layer"
 )
 
 var (
@@ -74,7 +75,7 @@ var (
 `,
 		Players: []string{"Red", "Yellow"},
 		Start:   New,
-		AI:      nil,
+		AI:      layer.New,
 	}
 )
 
@@ -158,7 +159,10 @@ type point struct{ col, row int8 }
 func isInARow(s *c4) int {
 	for i := 0; i < len(master); i += 4 {
 		a := s.get(i)
-		if a != ' ' && a == s.get(i+1) && a == s.get(i+2) && a == s.get(i+3) {
+		b := s.get(i + 1)
+		c := s.get(i + 2)
+		d := s.get(i + 3)
+		if a != ' ' && a == b && a == c && a == d {
 			return i
 		}
 	}
@@ -166,7 +170,12 @@ func isInARow(s *c4) int {
 }
 
 // Terminal checks if there exists a 4-in-a-row
-func (s *c4) Terminal() bool { return isInARow(s) >= 0 }
+func (s *c4) Terminal() bool {
+	if len(s.Actions()) == 0 {
+		return true
+	}
+	return isInARow(s) >= 0
+}
 func (s *c4) Utility(a games.Actor) int {
 	val := isInARow(s)
 	if val >= 0 {

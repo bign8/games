@@ -1,11 +1,6 @@
 package minimax
 
-import (
-	"fmt"
-	"time"
-
-	"github.com/bign8/games"
-)
+import "github.com/bign8/games"
 
 type minimax struct {
 	name string
@@ -22,37 +17,25 @@ func (mm *minimax) Name() string {
 }
 
 func (mm *minimax) Act(s games.State) games.Action {
-	mm.ctr = 0
-	start := time.Now()
-	a, _ := mm.search(s, s.Player(), 1)
-	fmt.Printf(
-		"%s chose %q after exploring %d games in %s\n",
-		mm.name, a.String(), mm.ctr, time.Since(start),
-	)
+	a, _ := mm.search(s)
 	return a
 }
 
-// MiniMax searches the full game tree until terminal nodes
-func (mm *minimax) search(s games.State, p games.Actor, dist int) (games.Action, float32) {
+func (mm *minimax) search(s games.State) (games.Action, int) {
 	if s.Terminal() {
-		mm.ctr++
-		u := float32(s.Utility(p)) / float32(dist)
-		fmt.Printf("%s - %f for %s\n", s, u, p.Name())
-		return nil, u
+		return nil, s.Utility(s.Player())
 	}
-
-	actions := s.Actions()
-	myBest := actions[0]
-	_, myScore := mm.search(s.Apply(myBest), p, dist+1)
-	bestScore := myScore
-	for _, a := range actions[1:] {
-		_, value := mm.search(s.Apply(a), p, dist+1)
-		myScore += value
-		if value > bestScore {
-			myBest = a
-			bestScore = value
-			fmt.Printf("%d - %s updating to %f for %s\n", dist, a.String(), bestScore, p.Name())
+	a := s.Actions()
+	score := make([]int, len(a))
+	for i := 0; i < len(a); i++ {
+		_, score[i] = mm.search(s.Apply(a[i]))
+		score[i] *= -1 // allows us to always maximize (only works for 2 players)
+	}
+	pos := 0
+	for i := 1; i < len(score); i++ {
+		if score[i] > score[pos] {
+			pos = i
 		}
 	}
-	return myBest, myScore
+	return a[pos], score[pos]
 }

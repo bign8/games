@@ -6,7 +6,7 @@ var (
 )
 
 func add(p point, c, r int8) point { return point{col: p.col + c, row: p.row + r} }
-func valid(p point) bool           { return p.col >= 0 && p.col < 8 && p.row >= 0 && p.row < 7 }
+func valid(p point) bool           { return p.col >= 0 && p.col < 7 && p.row >= 0 && p.row < 6 }
 
 // provides the 4 points to determin 4-in-a-row
 func offsets(s point, dir int8) []point {

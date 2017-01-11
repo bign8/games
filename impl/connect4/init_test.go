@@ -12,7 +12,7 @@ func BenchmarkCreateList(b *testing.B) {
 func TestCreateList(t *testing.T) {
 	master = nil
 	createList()
-	if len(master)/4 != 93 {
-		t.Errorf("Master invalid length: %d != 93 * 4", len(master))
+	if len(master)/4 != 69 {
+		t.Errorf("Master invalid length: %d != 69 * 4", len(master))
 	}
 }
