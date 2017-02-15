@@ -2,7 +2,7 @@
 
 trap 'kill $(jobs -p)' EXIT
 
-gin -a 8000 &
-gopherjs serve -m &
+gopherjs build -w &
+gin -i -a 8000 &
 
 wait

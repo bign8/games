@@ -3,20 +3,20 @@ package sock
 import "github.com/gopherjs/gopherjs/js"
 
 // New constructs a new socket for a given ws url
-func New(addr string) *js.Object {
-	c := &Conn{} //Object: js.Global.Get("Object").New()}
+func New(addr string) *Conn {
+	c := &Conn{Object: js.Global.Get("Object").New()}
 	c.addr = addr
 	c.retryCap = 60 * 1000 // on-minute max retry
 	c.retryBase = 50       // 250ms base retrys
 	c.reconnect()
-	return js.MakeWrapper(c)
+	return c
 }
 
 // Conn is a websocket connection
 type Conn struct {
-	// *js.Object
-	ws   *js.Object // javascript websocket
-	addr string     // address of websocket
+	*js.Object
+	WS   *js.Object `js:"ws"`   // javascript websocket
+	addr string     `js:"addr"` // address of websocket
 
 	// retry parameters
 	retryCap  int // maximum allowed retry (milliseconds)
@@ -33,26 +33,22 @@ func (c *Conn) retryDelay() int {
 		delay = c.retryCap
 	}
 	c.retryAttp++
-	return js.Global.Get("Math").Call("random").Int() * delay
-	// if delay == 0 {
-	// 	return delay
-	// }
-	// return rand.Intn(delay) // TODO: transpile a better random generator here
+	return int(js.Global.Get("Math").Call("random").Float() * float64(delay))
 }
 
 func (c *Conn) reconnect() {
 	print("reconnecting!")
-	c.ws = js.Global.Get("WebSocket").New(c.addr)
-	c.ws.Set("onerror", c.onErr)
-	c.ws.Set("onclose", c.onClose)
-	c.ws.Set("onopen", c.onOpen)
-	c.ws.Set("onmessage", c.onMsg)
+	c.WS = js.Global.Get("WebSocket").New(c.addr)
+	c.WS.Set("onerror", c.onErr)
+	c.WS.Set("onclose", c.onClose)
+	c.WS.Set("onopen", c.onOpen)
+	c.WS.Set("onmessage", c.onMsg)
 }
 
 // onClose is what the js socket will call on close
 func (c *Conn) onClose(e *js.Object) {
 	delay := c.retryDelay()
-	print("setting reconnect timeout", delay, e)
+	print("setting reconnect timeouts", delay, e)
 	js.Global.Call("setTimeout", c.reconnect, delay)
 }
 
@@ -70,9 +66,4 @@ func (c *Conn) onErr(e *js.Object) {
 // onMsg is what the js socket will call on messages
 func (c *Conn) onMsg(e *js.Object) {
 	print("TIME", js.Global.Get("Date").Call("now"), "MSG", e.Get("data"))
-}
-
-// Send broadcasts data to a websocket
-func (c *Conn) Send(data []byte) {
-	c.ws.Call("send", data)
 }
