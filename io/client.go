@@ -14,7 +14,7 @@ func main() {
 	js.Global.Set("games", map[string]interface{}{
 		"sock": sock,
 		"test": func() {
-			sock.WS.Call("send", js.Global.Get("Date").Call("now"))
+			sock.Send(js.Global.Get("Date").Call("now"))
 		},
 		"rand": func() float64 {
 			return js.Global.Get("Math").Call("random").Float()

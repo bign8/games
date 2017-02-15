@@ -67,3 +67,30 @@ func (c *Conn) onErr(e *js.Object) {
 func (c *Conn) onMsg(e *js.Object) {
 	print("TIME", js.Global.Get("Date").Call("now"), "MSG", e.Get("data"))
 }
+
+// See: https://github.com/gopherjs/gopherjs/wiki/JavaScript-Tips-and-Gotchas
+func recov(err *error) {
+	if e := recover(); e == nil {
+		return
+	} else if er, ok := e.(*js.Error); ok {
+		*err = er
+	} else {
+		panic(e)
+	}
+}
+
+// Send sends a message on the WebSocket.
+// See: http://dev.w3.org/html5/websockets/#dom-websocket-send
+func (c *Conn) Send(data interface{}) (err error) {
+	defer recov(&err)
+	c.WS.Call("send", data)
+	return err
+}
+
+// Close closes the underlying WebSocket.
+// See: http://dev.w3.org/html5/websockets/#dom-websocket-close
+func (c *Conn) Close() (err error) {
+	defer recov(&err)
+	c.WS.Call("close")
+	return err
+}
