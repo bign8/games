@@ -14,14 +14,16 @@ import (
 
 // sock is the main websocket handler.
 func sock(ws *websocket.Conn) {
-	ws.Write([]byte("onload: yep"))
+	ws.Write([]byte("server: connected!"))
 	io.Copy(ws, ws)
+	// TODO: http://www.meetspaceapp.com/2016/03/29/tutorial-getting-started-websockets-go.html
 }
 
+// http://buildnewgames.com/real-time-multiplayer/
 func main() {
-	fmt.Println("Running server")
+	fmt.Println("Running server...")
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	http.Handle("/sock", websocket.Handler(sock))
+	http.Handle("/ws", websocket.Handler(sock))
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}

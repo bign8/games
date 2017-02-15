@@ -2,18 +2,19 @@
 
 package main
 
-import "github.com/gopherjs/gopherjs/js"
+import (
+	"github.com/bign8/games/io/client/sock"
+	"github.com/gopherjs/gopherjs/js"
+)
 
 func main() {
 	js.Global.Get("document").Call("write", "Hello world!")
-	var sock = js.Global.Get("WebSocket").New("ws://localhost:8000/sock")
-
-	sock.Set("onmessage", func(e *js.Object) {
-		print(e.Get("data"))
-		print(e)
-	})
+	var sock = sock.New("ws://localhost:8000/ws")
 
 	js.Global.Set("games", map[string]interface{}{
 		"sock": sock,
+		"test": func() {
+			js.Global.Get("games").Get("sock").Call("send", js.Global.Get("Date").Call("now"))
+		},
 	})
 }
