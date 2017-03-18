@@ -21,6 +21,8 @@ func sock(ws *websocket.Conn) {
 
 // http://buildnewgames.com/real-time-multiplayer/
 func main() {
+	// TODO: use http 2.0 to push more assets to the consumer
+	// TODO: use service workers on the client side as necessary
 	fmt.Println("Running server...")
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.Handle("/ws", websocket.Handler(sock))
