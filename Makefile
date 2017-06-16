@@ -19,6 +19,6 @@ build:
 	go build ./cmd/server
 
 docker:
-	GOOS=linux GOARCH=amd64 go build ./cmd/server
+	GOOS=linux GOARCH=amd64 go build -i -v -ldflags "-s -w" -installsuffix cgo ./cmd/server
 	docker build -t bign8/games .
 	docker run --rm -it -p 4000:4000 bign8/games

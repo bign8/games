@@ -1,6 +1,6 @@
 FROM scratch
-ADD server /
-ADD cmd/server/tpl/ /cmd/server/tpl/
 ADD cmd/server/www/ /cmd/server/www/
-CMD ["/server"]
+ADD cmd/server/tpl/ /cmd/server/tpl/
+ADD server /
+ENTRYPOINT ["/server"]
 EXPOSE 4000
