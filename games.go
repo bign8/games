@@ -1,7 +1,10 @@
 // Package games borrows terminology from "AI - A Modern Approach" Chapter 5
 package games
 
-import "fmt"
+// Stringer is a duplicate of fmt.Stringer but duplicated for transpiling reasons.
+type Stringer interface {
+	String() string
+}
 
 // SVGChooseMove is the JS function that needs to be called within a SVG for a move to be chosen
 const SVGChooseMove = `parent.N8.games.chooseMove`
@@ -14,7 +17,7 @@ type ActorBuilder func(g Game, name string) Actor
 
 // Action is the base type for a game move
 type Action interface {
-	fmt.Stringer
+	Stringer
 	Type() string // allows types of moves to be grouped
 }
 
@@ -26,7 +29,7 @@ type Actor interface {
 
 // State is the base type for the state of a game
 type State interface {
-	fmt.Stringer
+	Stringer
 	Actors() []Actor    // List of active actors for a game
 	Player() int        // index of the active player given a State (also index in Utility array)
 	Apply(Action) State // Applying an action to a game

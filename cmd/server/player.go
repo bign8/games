@@ -72,6 +72,9 @@ func game4client(s games.State, done bool) []byte {
 		SVG:   s.SVG(!done),
 		Moves: moves,
 	}
-	js, _ := json.Marshal(data)
+	js, err := json.Marshal(data)
+	if err != nil {
+		// TODO: handle error here
+	}
 	return js
 }
