@@ -17,7 +17,9 @@ func (ba badActor) Name() string                   { return string(ba) }
 func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
 
 func BenchmarkStateString(b *testing.B) {
-	game := New()
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
+	game := New(&p1, &p2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		bs = game.String()

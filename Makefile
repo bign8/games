@@ -1,3 +1,5 @@
+SHELL:=${SHELL} -o pipefail
+
 make: install bench
 
 test:
