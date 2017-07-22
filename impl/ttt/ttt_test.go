@@ -6,7 +6,10 @@ import (
 	"github.com/bign8/games"
 )
 
-var _ games.Actor = (*badActor)(nil)
+var (
+	_  games.Actor = (*badActor)(nil)
+	bs string
+)
 
 type badActor string
 
@@ -17,7 +20,7 @@ func BenchmarkStateString(b *testing.B) {
 	game := New()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.String()
+		bs = game.String()
 	}
 
 }

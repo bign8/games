@@ -18,6 +18,8 @@ serve:
 build:
 	go build ./cmd/server
 
+# CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o games
+
 docker:
 	GOOS=linux GOARCH=amd64 go build -i -v -ldflags "-s -w" -installsuffix cgo ./cmd/server
 	docker build -t bign8/games .

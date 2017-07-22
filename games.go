@@ -36,6 +36,7 @@ type State interface {
 	Actions() []Action  // List of available actions in a State
 	Utility() []int     // If the game is in a terminal state return the utility for each Actor, else nil
 	SVG(bool) string    // Browser representation of a state (bool: editable)
+	Terminal() bool     // Is the game complete
 }
 
 // Game is contains all the meta-data surrounding a game so it can be played
@@ -56,11 +57,22 @@ func Run(g Game, ab ActorBuilder) (final State) {
 		actors[i] = ab(g, name)
 	}
 	game := g.Start(actors...)
-	for game.Utility() == nil {
+	for !game.Terminal() {
 		game = Play(game)
 	}
 	return game
 }
 
 // Play takes the game through the next phase
+//* // This play is for real running (remove a / for fail over to debugging)
 func Play(g State) State { return g.Apply(g.Actors()[g.Player()].Act(g)) }
+
+/*/
+func Play(g State) State {
+	p := g.Player()
+	fmt.Println("Choosing player", p)
+	a := g.Actors()[p].Act(g)
+	fmt.Println("Choosing action", a.String())
+	return g.Apply(a)
+}
+//*/

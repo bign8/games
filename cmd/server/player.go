@@ -43,6 +43,7 @@ func (a *actor) Act(s games.State) games.Action {
 			a.write.Write([]byte("sInvalidMove... Try again!"))
 		}
 	}
+	// TODO: handle scanner error!
 	return *chosen
 }
 
