@@ -5,6 +5,9 @@ import:
 - package: golang.org/x/net
   subpackages:
   - websocket
+- package: github.com/gopherjs/gopherjs
+- package: github.com/gopherjs/websocket
 testImport:
 - package: github.com/bign8/gobench
 - package: github.com/codegangsta/gin
+- package: github.com/neelance/astrewrite # needed by gopherjs

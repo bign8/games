@@ -9,7 +9,10 @@ import (
 
 func main() {
 	js.Global.Get("document").Call("write", "Hello world!")
-	var sock = sock.New("ws://localhost:8000/ws")
+	sock, err := sock.New("ws://localhost:8000/ws")
+	if err != nil {
+		panic(err)
+	}
 
 	js.Global.Set("games", map[string]interface{}{
 		"sock": sock,

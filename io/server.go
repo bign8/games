@@ -14,6 +14,7 @@ import (
 
 // sock is the main websocket handler.
 func sock(ws *websocket.Conn) {
+	fmt.Println("Somebody connected!", ws.RemoteAddr())
 	ws.Write([]byte("server: connected!"))
 	io.Copy(ws, ws)
 	// TODO: http://www.meetspaceapp.com/2016/03/29/tutorial-getting-started-websockets-go.html
