@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 
+	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
 )
 
@@ -70,7 +71,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rootTpl.Execute(w, struct {
-		Games interface{}
+		Games map[string]games.Game
 	}{
 		Games: impl.Map(),
 	})
@@ -83,7 +84,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	gameTpl.Execute(w, struct {
-		Game  interface{}
+		Game  games.Game
 		Board template.HTML
 	}{
 		Game:  game,

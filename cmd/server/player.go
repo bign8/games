@@ -43,6 +43,7 @@ func (a *actor) Act(s games.State) games.Action {
 			a.write.Write([]byte("sInvalidMove... Try again!"))
 		}
 	}
+	// TODO: handle scanner error!
 	return *chosen
 }
 
@@ -72,6 +73,9 @@ func game4client(s games.State, done bool) []byte {
 		SVG:   s.SVG(!done),
 		Moves: moves,
 	}
-	js, _ := json.Marshal(data)
+	js, err := json.Marshal(data)
+	if err != nil {
+		// TODO: handle error here
+	}
 	return js
 }

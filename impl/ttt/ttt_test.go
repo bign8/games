@@ -6,7 +6,10 @@ import (
 	"github.com/bign8/games"
 )
 
-var _ games.Actor = (*badActor)(nil)
+var (
+	_  games.Actor = (*badActor)(nil)
+	bs string
+)
 
 type badActor string
 
@@ -14,10 +17,12 @@ func (ba badActor) Name() string                   { return string(ba) }
 func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
 
 func BenchmarkStateString(b *testing.B) {
-	game := New()
+	p1 := badActor("asdf")
+	p2 := badActor("qwer")
+	game := New(&p1, &p2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.String()
+		bs = game.String()
 	}
 
 }

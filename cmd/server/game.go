@@ -35,7 +35,6 @@ type poolManager struct {
 func (pm *poolManager) Match(s *socket.Socket, slug string) {
 	fmt.Fprint(s.Room('s'), "Waiting for a partner...")
 	pm.mu.Lock()
-	defer pm.mu.Unlock()
 	ch, ok := pm.games[slug]
 	if !ok {
 		cha := make(chan *socket.Socket) // new variable because chan types
@@ -43,6 +42,7 @@ func (pm *poolManager) Match(s *socket.Socket, slug string) {
 		ch = cha
 		go pm.pair(slug, cha)
 	}
+	pm.mu.Unlock()
 	ch <- s
 }
 
