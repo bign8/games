@@ -1,4 +1,4 @@
-SHELL:=${SHELL} -o pipefail
+SHELL:=/bin/bash -o pipefail
 
 make: install bench
 
