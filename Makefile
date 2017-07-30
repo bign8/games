@@ -1,3 +1,5 @@
+SHELL:=/bin/bash -o pipefail
+
 make: install bench
 
 test:
@@ -31,3 +33,10 @@ build:
 #
 # glide.lock: glide.yaml
 # 	glide install --strip-vendor
+
+# CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o games
+
+docker:
+	GOOS=linux GOARCH=amd64 go build -i -v -ldflags "-s -w" -installsuffix cgo ./cmd/server
+	docker build -t bign8/games .
+	docker run --rm -it -p 4000:4000 bign8/games

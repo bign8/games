@@ -21,9 +21,10 @@ func (mm *minimax) Act(s games.State) games.Action {
 	return a
 }
 
+// TODO: fix this to work for more than 2 players
 func (mm *minimax) search(s games.State) (games.Action, int) {
-	if util := s.Utility(); util != nil {
-		return nil, util[s.Player()]
+	if s.Terminal() {
+		return nil, s.Utility()[s.Player()]
 	}
 	a := s.Actions()
 	score := make([]int, len(a))
