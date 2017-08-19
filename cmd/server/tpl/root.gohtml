@@ -1,4 +1,4 @@
-{{define "body"}}
+{{define "body" -}}
 <div class="jumbotron">
   <h1>Game Roulette</h1>
   <p class="lead">Pick a game and be matched with an opponent!</p>
@@ -6,12 +6,13 @@
 </div>
 
 <div class="row">
-  {{range .Games}}
+  {{- range .Games}}
   <div class="col-xs-6 col-md-4">
     <a href="/play/{{ .Slug }}" class="thumbnail" title="{{ .Name }}">
       <img src="/static/img/{{ .Slug }}.png" alt="{{ .Name }}">
+      {{ .Board }}
     </a>
   </div>
-  {{end}}
+  {{- end}}
 </div>
-{{end}}
+{{- end}}

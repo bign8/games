@@ -1,4 +1,5 @@
 SHELL:=/bin/bash -o pipefail
+.PHONY:= make test bench install serve build docker
 
 make: install bench
 

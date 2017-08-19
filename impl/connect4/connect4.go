@@ -17,7 +17,7 @@ var (
 		Name: "Connect 4",
 		Slug: "c4",
 		// TODO: https://upload.wikimedia.org/wikipedia/commons/d/dc/Puissance4_01.svg
-		Board: `<svg width="350" height="300" viewBox="1 1 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		Board: `<svg viewBox="1 1 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<defs>
 		  <circle id="o" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="#d7d7d7" />
 		</defs>

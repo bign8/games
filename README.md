@@ -27,6 +27,7 @@ Bug reports, suggestions and code contributions are welcome.  Just be sure to fo
   - [Effective GO](https://golang.org/doc/effective_go.html)
   - [GO Practices](https://peter.bourgon.org/go-best-practices-2016/)
   - [Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
+	- [GO Proverbs](http://go-proverbs.github.io/) [video](https://www.youtube.com/watch?v=PAAkCSZUG1c)
 - Additional Rules
   - Prefer the `%q` and `%+v` directives over the `%v` directive in errors and logging messages.  Justification: `%v` can result in ambiguous error messages when strings are used because the value is not encapsulated.
   - Be careful when implementing the magic `String()` method.  If one accidentally uses `Printf` the wrong way, the application could crash due to infinite recursion.
