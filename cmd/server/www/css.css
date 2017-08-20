@@ -4,12 +4,13 @@ body {
   padding-bottom: 20px;
 }
 
-.thumbnail img {
-  height: 165px;
+.thumbnail {
+	text-align: center;
 }
 
 .thumbnail svg {
-	max-height: 165px;
+	height: 165px;
+	max-width: 100%;
 }
 
 /*body::after {
