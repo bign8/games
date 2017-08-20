@@ -9,5 +9,13 @@ import:
 - package: github.com/gopherjs/websocket
 testImport:
 - package: github.com/bign8/gobench
-- package: github.com/codegangsta/gin
+# - package: github.com/codegangsta/gin
 - package: github.com/neelance/astrewrite # needed by gopherjs
+- package: github.com/fsnotify/fsnotify # needed by gopherjs
+- package: github.com/neelance/sourcemap # needed by gopherjs
+- package: github.com/spf13/cobra # needed by gopherjs
+- package: github.com/spf13/pflag # needed by gopherjs
+- package: golang.org/x/crypto/ssh/terminal # needed by gopherjs
+- package: golang.org/x/tools/go/types/typeutil # needed by gopherjs
+- package: github.com/kisielk/gotool # needed by gopherjs
+- package: golang.org/x/sys/unix # needed by gopherjs
