@@ -1,22 +1,3 @@
-package cribbage
-
-import "github.com/bign8/games"
-
-// Game is the fully described version of TTT
-var Game = games.Game{
-	Name:    "Cribbage",
-	Slug:    "cribbage",
-	Board:   board,
-	Players: []string{"Red", "Green", "Blue"},
-	Counts:  []uint8{2, 3},
-	Start:   nil,
-	AI:      nil,
-}
-
-// https://commons.wikimedia.org/wiki/File:Cribbage_Board.svg
-// Path Tutorial: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-// TODO: slim down the logic/representation verbosity
-var board = `
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 225">
   <rect id="sr" x="600" y="10" width="40" height="20" style="fill: rgb(100%,0%,0%);stroke: black;stroke-width:0.5px;"></rect>
   <rect id="sg" x="600" y="30" width="40" height="20" style="fill: rgb(0%,100%,0%);stroke: black;stroke-width:0.5px;"></rect>
@@ -24,15 +5,15 @@ var board = `
 
   <path id="br" d="M595 10
                    h-455
-                   C  10  10,   5 215, 140 215
+                   c-135 0,-135 205, 0 205
                    h 455
-                   C 675 215, 675  80, 595  80
+                   c 80 0, 80 -135, 0 -135
                    h-455
                    v  20
                    h 455
-                   C 650 100, 650 195, 595 195
+                   c 55 0, 55 95, 0 95
                    h-455
-                   C  30 195,  30  30, 140  30
+                   c-110 0,-110 -165, 0 -165
                    h 455
                    Z" style="fill: rgb(100%,0%,0%);stroke: black;stroke-width:0.5px;"></path>
   <path id="bg" d="M595 30
@@ -87,4 +68,3 @@ var board = `
                          M140 155 v60
                          M40 113.3858 h60" style="stroke: black; stroke-width: 0.5;"></path>
 </svg>
-`
