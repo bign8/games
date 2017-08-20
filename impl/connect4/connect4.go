@@ -17,59 +17,59 @@ var (
 		Name: "Connect 4",
 		Slug: "c4",
 		// TODO: https://upload.wikimedia.org/wikipedia/commons/d/dc/Puissance4_01.svg
-		Board: `<svg viewBox="1 1 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		Board: `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<defs>
 		  <circle id="o" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="#d7d7d7" />
 		</defs>
 		<g>
-		  <rect x="0" y="0" width="8" height="7" fill="#0070b9" />
+		  <rect x="0" y="0" width="7" height="6" fill="#0070b9" />
+		  <use xlink:href="#o" x="0" y="0"/>
+		  <use xlink:href="#o" x="1" y="0"/>
+		  <use xlink:href="#o" x="2" y="0"/>
+		  <use xlink:href="#o" x="3" y="0"/>
+		  <use xlink:href="#o" x="4" y="0"/>
+		  <use xlink:href="#o" x="5" y="0"/>
+		  <use xlink:href="#o" x="6" y="0"/>
+
+		  <use xlink:href="#o" x="0" y="1"/>
 		  <use xlink:href="#o" x="1" y="1"/>
 		  <use xlink:href="#o" x="2" y="1"/>
 		  <use xlink:href="#o" x="3" y="1"/>
 		  <use xlink:href="#o" x="4" y="1"/>
 		  <use xlink:href="#o" x="5" y="1"/>
 		  <use xlink:href="#o" x="6" y="1"/>
-		  <use xlink:href="#o" x="7" y="1"/>
 
+		  <use xlink:href="#o" x="0" y="2"/>
 		  <use xlink:href="#o" x="1" y="2"/>
 		  <use xlink:href="#o" x="2" y="2"/>
 		  <use xlink:href="#o" x="3" y="2"/>
 		  <use xlink:href="#o" x="4" y="2"/>
 		  <use xlink:href="#o" x="5" y="2"/>
 		  <use xlink:href="#o" x="6" y="2"/>
-		  <use xlink:href="#o" x="7" y="2"/>
 
+		  <use xlink:href="#o" x="0" y="3"/>
 		  <use xlink:href="#o" x="1" y="3"/>
 		  <use xlink:href="#o" x="2" y="3"/>
 		  <use xlink:href="#o" x="3" y="3"/>
 		  <use xlink:href="#o" x="4" y="3"/>
 		  <use xlink:href="#o" x="5" y="3"/>
 		  <use xlink:href="#o" x="6" y="3"/>
-		  <use xlink:href="#o" x="7" y="3"/>
 
+		  <use xlink:href="#o" x="0" y="4"/>
 		  <use xlink:href="#o" x="1" y="4"/>
 		  <use xlink:href="#o" x="2" y="4"/>
 		  <use xlink:href="#o" x="3" y="4"/>
 		  <use xlink:href="#o" x="4" y="4"/>
 		  <use xlink:href="#o" x="5" y="4"/>
 		  <use xlink:href="#o" x="6" y="4"/>
-		  <use xlink:href="#o" x="7" y="4"/>
 
+		  <use xlink:href="#o" x="0" y="5"/>
 		  <use xlink:href="#o" x="1" y="5"/>
 		  <use xlink:href="#o" x="2" y="5"/>
 		  <use xlink:href="#o" x="3" y="5"/>
 		  <use xlink:href="#o" x="4" y="5"/>
 		  <use xlink:href="#o" x="5" y="5"/>
 		  <use xlink:href="#o" x="6" y="5"/>
-		  <use xlink:href="#o" x="7" y="5"/>
-
-		  <use xlink:href="#o" x="1" y="6"/>
-		  <use xlink:href="#o" x="2" y="6"/>
-		  <use xlink:href="#o" x="3" y="6"/>
-		  <use xlink:href="#o" x="4" y="6"/>
-		  <use xlink:href="#o" x="5" y="6"/>
-		  <use xlink:href="#o" x="6" y="6"/>
-		  <use xlink:href="#o" x="7" y="6"/>
 		</g>
 		</svg>
 `,
