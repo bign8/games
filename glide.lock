@@ -1,46 +1,16 @@
-hash: 4b8d02b937b09f17b6801c31d74a5b56c8878409ebf0100a676a6fc5bd7dc609
-updated: 2017-08-20T01:01:05.796081123-06:00
+hash: d7fd33d00cbf4baceb3d197f9a74c34cc8b2632e54b544f787119c8223d87d3e
+updated: 2016-12-27T23:15:32.339306681-07:00
 imports:
-- name: github.com/gopherjs/gopherjs
-  version: 2b1d432c8a82c9bff0b0baffaeb3ec6e92974112
-  subpackages:
-  - js
-- name: github.com/gopherjs/websocket
-  version: 87ee47603f137e7f8419765b3621b3c36e715a08
-  subpackages:
-  - websocketjs
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: bcd8bc72b08df0f70df986b97f95590779502d31
+  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
 - name: golang.org/x/net
-  version: e99677b929f5a4903df369945bb205a61376b53f
+  version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
   subpackages:
   - websocket
 testImports:
 - name: github.com/bign8/gobench
   version: 20a8fe316829b5fbc263e90fe38bfc9a2a4105a8
-- name: github.com/fsnotify/fsnotify
-  version: 4da3e2cfbabc9f751898f250b49f2439785783a1
-- name: github.com/kisielk/gotool
-  version: 0de1eaf82fa3f583ce21fde859f1e7e0c5e9b220
-- name: github.com/neelance/astrewrite
-  version: 99348263ae862cc230986ce88deaddbf7edcc034
-- name: github.com/neelance/sourcemap
-  version: 8c68805598ab8d5637b1a72b5f7d381ea0f39c31
-- name: github.com/spf13/cobra
-  version: 3da102d464b7d49ad9be566635716ac947fb3f99
-- name: github.com/spf13/pflag
-  version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
-- name: golang.org/x/crypto
-  version: 558b6879de74bc843225cde5686419267ff707ca
-  subpackages:
-  - ssh/terminal
-- name: golang.org/x/sys
-  version: 43e60d72a8e2bd92ee98319ba9a384a0e9837c08
-  subpackages:
-  - unix
-- name: golang.org/x/tools
-  version: 3f4088edb48e8a4e3c66a5f8e7b2a78615fcb83f
-  subpackages:
-  - go/types/typeutil
+- name: github.com/codegangsta/gin
+  version: b2d0f660ae0db9c0a6e9fbdf0349e138f3802292
