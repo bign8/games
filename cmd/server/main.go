@@ -71,10 +71,23 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rootTpl.Execute(w, struct {
-		Games map[string]games.Game
+		Games map[string]showGame
 	}{
-		Games: impl.Map(),
+		Games: process(impl.Map()),
 	})
+}
+
+type showGame struct {
+	games.Game
+	Board template.HTML
+}
+
+func process(in map[string]games.Game) map[string]showGame {
+	new := make(map[string]showGame, len(in))
+	for k, v := range in {
+		new[k] = showGame{v, template.HTML(v.Board)}
+	}
+	return new
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
