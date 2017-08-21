@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -115,9 +114,11 @@ func (s *server) lobby(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get users cookie
-	cookie, err := r.Cookie("games-pid")
+	force := true
+	cookie, err := r.Cookie("games-pid-" + game.Slug)
 	if err == http.ErrNoCookie {
-		cookie = &http.Cookie{Name: "games-pid", Expires: time.Now().Add(time.Hour)} // * 24 * 30
+		force = false
+		cookie = &http.Cookie{Name: "games-pid-" + game.Slug, Expires: time.Now().Add(time.Hour)} // * 24 * 30
 		cookie.Value, err = s.s.NewPlayer(game)
 		if err != nil {
 			http.Error(w, "Could Not Create Player", http.StatusInternalServerError)
@@ -127,11 +128,7 @@ func (s *server) lobby(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// attempt to pair user
-	age := cookie.Expires.Add(-time.Hour).Sub(time.Now())
-	if strings.Contains(r.URL.RawQuery, "force") {
-		age = -1
-	}
-	gameID, err := s.s.Pair(game, cookie.Value, age)
+	gameID, err := s.s.Pair(game, cookie.Value, force)
 	if err == nil {
 		url, _ := s.r.Get("game").URL(cookie.Value, gameID) // TODO: handle error
 		http.Redirect(w, r, url.String(), http.StatusSeeOther)

@@ -3,7 +3,6 @@ package store
 import (
 	"crypto/rand"
 	"errors"
-	"time"
 
 	"github.com/bign8/games"
 )
@@ -12,8 +11,8 @@ import (
 type Store interface {
 	NewPlayer(game games.Game) (playerID string, err error)
 
-	// Pairs a player with opponents. Iff age < 0 => force is set, assert AI players
-	Pair(game games.Game, playerID string, age time.Duration) (gameID string, err error)
+	// Pairs a player with opponents. Iff force is set, assert AI players
+	Pair(game games.Game, playerID string, force bool) (gameID string, err error)
 }
 
 // NewMemoryStore creates an in-memory store
@@ -37,10 +36,10 @@ func (mem *memoryStore) NewPlayer(game games.Game) (playerID string, err error) 
 	return pid, nil
 }
 
-const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 func uid() (string, error) {
-	bytes := make([]byte, 100)
+	bytes := make([]byte, 40)
 	_, err := rand.Read(bytes) // TODO: fallback to non-crypto
 	if err == nil {
 		for i, b := range bytes {
@@ -50,6 +49,6 @@ func uid() (string, error) {
 	return string(bytes), err
 }
 
-func (mem *memoryStore) Pair(game games.Game, playerID string, age time.Duration) (gameID string, err error) {
+func (mem *memoryStore) Pair(game games.Game, playerID string, force bool) (gameID string, err error) {
 	return "", errors.New("TODO")
 }
