@@ -1,0 +1,25 @@
+{{define "body" -}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron">
+      <h1>Welcome to {{ .Name }}</h1>
+      <p class="lead">Please wait while we find you an opponent*</p>
+    </div>
+  </div>
+</div>
+<!-- <div class="row">
+  <div class="col-sm-8 col-sm-push-2">
+    <h2>Rules</h2>
+    <p>WIP</p>
+  </div>
+</div> -->
+<div class="row">
+  <div class="col-md-12">
+    <p class="text-right"><small>*I haven't been <a href="/play/{{ .Slug }}?force">assigned a game</a> within 30 seconds</small></p>
+  </div>
+</div>
+{{- end}}
+
+{{define "head" -}}
+<meta http-equiv="refresh" content="10">
+{{- end}}

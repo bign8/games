@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css.css">
   <link href="/static/favicon.ico" rel="icon" type="image/x-icon" />
+  {{block "head" .}}{{end}}
 </head>
 <body>
   <div class="container container-narrow">
@@ -27,7 +28,7 @@
       <h3 id="top"><a href="/" class="text-muted">Game Roulette</a></h3>
     </div>
 
-    {{block "body" .}}{{end}}
+{{block "body" .}}{{end}}
 
     <footer class="footer">
       <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="https://bign8.info/contact">Nate Woods</a></p>
