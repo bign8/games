@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
-	"golang.org/x/net/websocket"
 
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
@@ -39,29 +38,30 @@ var (
 		return defaults[s]
 	}
 	port = flag.String("port", def("PORT"), "port to serve on")
+	rout *mux.Router // TODO: inject this into handlers
 )
 
 func main() {
 	flag.Parse()
 
 	// Setup routes
-	r := mux.NewRouter()
-	r.HandleFunc("/play", randomHandler).Methods(http.MethodGet)                            // Redirects to play/{slug}
-	r.HandleFunc("/play/{slug}", lobbyHandler).Methods(http.MethodGet)                      // Redirects to play/{slug}/{id}
-	r.HandleFunc("/play/{slug}/board.svg", boardHandler).Methods(http.MethodGet)            // Board is same for all players
-	r.HandleFunc("/play/{slug}/{id}", gameHandler).Methods(http.MethodGet, http.MethodPost) // Gives the ability to play game
-	r.HandleFunc("/play/{slug}/{id}/state.svg", stateHandler).Methods(http.MethodGet)       // Returns the given state of the game
+	rout = mux.NewRouter()
+	rout.HandleFunc("/play", randomHandler).Methods(http.MethodGet)                            // Redirects to play/{slug}
+	rout.HandleFunc("/play/{slug}", lobbyHandler).Methods(http.MethodGet)                      // Redirects to play/{slug}/{id}
+	rout.HandleFunc("/play/{slug}/board.svg", boardHandler).Methods(http.MethodGet)            // Board is same for all players
+	rout.HandleFunc("/play/{slug}/{id}", gameHandler).Methods(http.MethodGet, http.MethodPost) // Gives the ability to play game
+	rout.HandleFunc("/play/{slug}/{id}/state.svg", stateHandler).Methods(http.MethodGet)       // Returns the given state of the game
 
 	// TODO: depricate
-	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
+	// r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
-	r.HandleFunc("/about", aboutHandler)
-	r.PathPrefix("/").HandlerFunc(rootHandler)
+	rout.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
+	rout.HandleFunc("/about", aboutHandler)
+	rout.PathPrefix("/").HandlerFunc(rootHandler)
 
 	// Spin up server
 	fmt.Println("Serving on :" + *port)
-	log.Fatal(http.ListenAndServe(":"+*port, r))
+	log.Fatal(http.ListenAndServe(":"+*port, rout))
 }
 
 func randomHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,11 +74,22 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	list := impl.Map()
+
+	// HTTP/2 push out the desired images
+	if pusher, ok := w.(http.Pusher); ok {
+		for slug := range list {
+			url, err := rout.Get("board").URL(slug)
+			if err != nil {
+				pusher.Push(url.String(), nil)
+			}
+		}
+	}
+
+	// Build the HTML to send to the client
 	rootTpl.Execute(w, struct {
 		Games map[string]games.Game
-	}{
-		Games: impl.Map(),
-	})
+	}{Games: list})
 }
 
 func lobbyHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,8 +109,7 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 func gameHandler(w http.ResponseWriter, r *http.Request) {
 	game, ok := impl.Get(mux.Vars(r)["slug"])
 	if !ok {
-		// Game does not exist
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Error(w, "Game Does Not Exist", http.StatusExpectationFailed)
 		return
 	}
 	gameTpl.Execute(w, struct {
