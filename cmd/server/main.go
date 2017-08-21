@@ -46,18 +46,22 @@ func main() {
 
 	// Setup routes
 	r := mux.NewRouter()
-	r.HandleFunc("/play/random", randomHandler)
+	r.HandleFunc("/play", randomHandler).Methods(http.MethodGet)                            // Redirects to play/{slug}
+	r.HandleFunc("/play/{slug}", lobbyHandler).Methods(http.MethodGet)                      // Redirects to play/{slug}/{id}
+	r.HandleFunc("/play/{slug}/board.svg", boardHandler).Methods(http.MethodGet)            // Board is same for all players
+	r.HandleFunc("/play/{slug}/{id}", gameHandler).Methods(http.MethodGet, http.MethodPost) // Gives the ability to play game
+	r.HandleFunc("/play/{slug}/{id}/state.svg", stateHandler).Methods(http.MethodGet)       // Returns the given state of the game
+
+	// TODO: depricate
 	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
-	r.HandleFunc("/play/{slug}", gameHandler)
+
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
 	r.HandleFunc("/about", aboutHandler)
 	r.PathPrefix("/").HandlerFunc(rootHandler)
 
 	// Spin up server
 	fmt.Println("Serving on :" + *port)
-	if err := http.ListenAndServe(":"+*port, r); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(":"+*port, r))
 }
 
 func randomHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,28 +75,30 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rootTpl.Execute(w, struct {
-		Games map[string]showGame
+		Games map[string]games.Game
 	}{
-		Games: process(impl.Map()),
+		Games: impl.Map(),
 	})
 }
 
-type showGame struct {
-	games.Game
-	Board template.HTML
+func lobbyHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "TODO", http.StatusExpectationFailed)
 }
 
-func process(in map[string]games.Game) map[string]showGame {
-	new := make(map[string]showGame, len(in))
-	for k, v := range in {
-		new[k] = showGame{v, template.HTML(v.Board)}
+func boardHandler(w http.ResponseWriter, r *http.Request) {
+	game, ok := impl.Map()[mux.Vars(r)["slug"]]
+	if !ok {
+		http.Error(w, "Game Does Not Exist", http.StatusExpectationFailed)
+		return
 	}
-	return new
+	w.Header().Set("Content-Type", "image/svg+xml")
+	fmt.Fprint(w, game.Board)
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
 	game, ok := impl.Get(mux.Vars(r)["slug"])
 	if !ok {
+		// Game does not exist
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -103,6 +109,10 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 		Game:  game,
 		Board: template.HTML(game.Board),
 	})
+}
+
+func stateHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "TODO", http.StatusExpectationFailed)
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {

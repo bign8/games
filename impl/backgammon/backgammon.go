@@ -15,7 +15,7 @@ var Game = games.Game{
 // Source: https://commons.wikimedia.org/wiki/File:BackgammonBoard.svg
 // TODO: slim down the logic/representation verbosity
 var board = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="-1 -1 282 242" version="1.1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-1 -1 282 242">
   <g>
     <rect id="felt" style="fill:#164623" width="260" height="220" x="10" y="10" />
     <path id="board" style="fill:#906739" d="M 0,0 0,240 280,240 280,0 0,0 z m 10,10 120,0 0,220 -120,0 0,-220 z m 140,0 120,0 0,220 -120,0 0,-220 z" />

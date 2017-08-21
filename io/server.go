@@ -44,7 +44,7 @@ func test(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write([]byte(htmlTest)) // err
 	} else {
-		w.Write([]byte(`static`)) // err
+		w.Write([]byte(`/* static */`)) // err
 	}
 }
 

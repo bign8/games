@@ -9,7 +9,8 @@
   {{- range .Games}}
   <div class="col-xs-6 col-md-4">
     <a href="/play/{{ .Slug }}" class="thumbnail" title="{{ .Name }}">
-      {{ .Board }}
+      <img src="/play/{{ .Slug }}/board.svg" title="{{ .Name }}">
+      <!-- {{ .Board }} -->
     </a>
   </div>
   {{- end}}

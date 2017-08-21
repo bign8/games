@@ -40,3 +40,11 @@ I develop GO in an [Atom](https://atom.io/) editor in conjunction with the [Delv
 - [go-debug](https://atom.io/packages/go-debug)
 - [go-config](https://atom.io/packages/go-config)
 - [go-plus](https://atom.io/packages/go-plus)
+
+## Roadmap
+- Users / Friends / Rooms
+- horizontal scaling
+- game state serializers
+- redis cache + long-term persistance
+- Chat history?
+- Move websockets -> REST
