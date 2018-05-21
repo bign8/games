@@ -18,12 +18,23 @@ func (ba badActor) Name() string                   { return string(ba) }
 func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
 
 func Test(t *testing.T) {
-	p1 := badActor("asdf")
-	p2 := badActor("qwer")
+	p1 := badActor(Game.Players[0])
+	p2 := badActor(Game.Players[1])
 	game := New(&p1, &p2)
 	assert.Equal(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
 		"║   ║   ║   ║\n╠═══╬═══╬═══╣\n║   ║   ║   ║\n╚═══╩═══╩═══╝", "default string")
-	game.Apply(game.Actions()[0])
+	assert.Equal(t, game.SVG(false), `<svg viewBox="0 0 100 100"><g></g></svg>`, "svg")
+	game.Utility()
+
+	// First move
+	game = game.Apply(game.Actions()[0])
+	game.SVG(true)
+	game.Utility()
+
+	// Second move
+	game = game.Apply(game.Actions()[0])
+	game.SVG(true)
+	game.Utility()
 }
 
 func TestIsWin(t *testing.T) {

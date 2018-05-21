@@ -187,11 +187,11 @@ func (g ttt) SVG(active bool) string {
 	// Clickable targets
 	var groups string
 	if active {
-		suffix := svgXSuffix
-		pos := svgXPos
-		if g.Actors()[g.Player()].Name() == "O" {
-			suffix = svgOSuffix
-			pos = svgOPos
+		suffix := svgOSuffix
+		pos := svgOPos
+		if int(g.ctr)%2 == 0 {
+			suffix = svgXSuffix
+			pos = svgXPos
 		}
 		ctr = 0
 		hover, target := make([]string, 9), make([]string, 9)
