@@ -21,7 +21,7 @@ func Test(t *testing.T) {
 	p1 := badActor("asdf")
 	p2 := badActor("qwer")
 	game := New(&p1, &p2)
-	assert.String(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
+	assert.Equal(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
 		"║   ║   ║   ║\n╠═══╬═══╬═══╣\n║   ║   ║   ║\n╚═══╩═══╩═══╝", "default string")
 	game.Apply(game.Actions()[0])
 }
@@ -34,8 +34,8 @@ func TestIsWin(t *testing.T) {
 		var b [9]byte
 		copy(b[:], board)
 		win, er := isWin(b)
-		assert.Bool(t, done, win, msg)
-		assert.Byte(t, winner, er, msg)
+		assert.Equal(t, done, win, msg)
+		assert.Equal(t, winner, er, msg)
 	}
 	check("         ", false, ' ', "empty")
 	check("xxx      ", true, 'x', "top horz")

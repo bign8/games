@@ -1,44 +1,25 @@
-package assert
+package assert_test
 
-import "testing"
+import (
+	"fmt"
+	"testing"
 
-type checker struct {
-	msg [][]interface{}
+	"github.com/bign8/games/util/assert"
+)
+
+type chk struct {
+	t *testing.T
+	m string
 }
 
-func (c *checker) Error(args ...interface{}) {
-	c.msg = append(c.msg, args)
-}
-
-func (c *checker) check(t *testing.T, msgs ...string) {
-	if len(msgs) != len(c.msg) {
-		t.Errorf("check missmatched error lengths: %d != %d", len(msgs), len(c.msg))
-	}
-	for i, msg := range msgs {
-		if len(c.msg[i]) != 1 {
-			t.Errorf("check did not receive a singular error: %q", c.msg[i])
-		} else if core, ok := c.msg[i][0].(string); !ok {
-			t.Errorf("first arg was not a string")
-		} else if core != msg {
-			t.Errorf("string did not match %q != %q", core, msg)
-		}
+func (c chk) Errorf(format string, args ...interface{}) {
+	if msg := fmt.Sprintf(format, args...); c.m != msg {
+		c.t.Errorf("string did not match %q != %q", msg, c.m)
 	}
 }
 
-func TestString(t *testing.T) {
-	c := &checker{}
-	String(c, "asdf", "jkl;", "whuhh???")
-	c.check(t, "string: whuhh???: 'asdf' != 'jkl;'")
-}
-
-func TestBool(t *testing.T) {
-	c := &checker{}
-	Bool(c, true, false, "whuhh???")
-	c.check(t, "bool: whuhh???: 'true' != 'false'")
-}
-
-func TestByte(t *testing.T) {
-	c := &checker{}
-	Byte(c, 'a', 'b', "whuhh???")
-	c.check(t, "byte: whuhh???: 'a' != 'b'")
+func Test(t *testing.T) {
+	assert.Equal(chk{t, "string: asdf != jkl;"}, "asdf", "jkl;", "string")
+	assert.Equal(chk{t, "bool: true != false"}, true, false, "bool")
+	assert.Equal(chk{t, "byte: 97 != 98"}, 'a', 'b', "byte")
 }
