@@ -1,3 +1,4 @@
+// Package impl provides a registry for all loaded game types.
 package impl
 
 import (
@@ -20,6 +21,7 @@ var (
 	mux sync.RWMutex
 )
 
+// Get returns a registered name via it's short slug.
 func Get(slug string) (g games.Game, ok bool) {
 	mux.RLock()
 	defer mux.RUnlock()
@@ -27,12 +29,14 @@ func Get(slug string) (g games.Game, ok bool) {
 	return
 }
 
+// Len gives the number of registered games.
 func Len() int {
 	mux.RLock()
 	defer mux.RUnlock()
 	return len(reg)
 }
 
+// Rand provides a random registerd game from the registry.
 func Rand() string {
 	mux.RLock()
 	defer mux.RUnlock()
@@ -42,6 +46,7 @@ func Rand() string {
 	return ""
 }
 
+// Map provides a duplicate of the internal game registry.
 func Map() map[string]games.Game {
 	mux.RLock()
 	defer mux.RUnlock()

@@ -88,13 +88,11 @@ func (g ttt) Terminal() bool {
 	if g.ctr == 9 {
 		return true
 	}
-	isWin, _ := g.isWin()
+	isWin, _ := isWin(g.board)
 	return isWin
 }
 
-func (g ttt) isWin() (bool, byte) {
-	// TODO: make this smarter
-	chrs := g.board
+func isWin(chrs [9]byte) (bool, byte) {
 	if chrs[0] != ' ' {
 		if chrs[0] == chrs[1] && chrs[1] == chrs[2] { // top horiz
 			return true, chrs[0]
@@ -131,7 +129,7 @@ func (g ttt) isWin() (bool, byte) {
 // Utility for TTT is simple: 1 for a win, -1 for a loss, 0 if game is in progress
 func (g ttt) Utility() []int {
 	res := make([]int, 2)
-	if isWin, chr := g.isWin(); isWin {
+	if isWin, chr := isWin(g.board); isWin {
 		for i, a := range g.players {
 			if chr == a.Name()[0] {
 				res[i] = 1
