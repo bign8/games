@@ -113,7 +113,7 @@ N8.games = (function(w, d) {
   }, false);
 
   return {
-    chooseMove : function(move_string) {
+    choose : function(move_string) {
       for (var i = 0; i < move_set.length; i++) {
         if (move_set[i].Name == move_string) {
           return chooseMove(move_set[i]);

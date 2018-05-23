@@ -6,8 +6,8 @@ type Stringer interface {
 	String() string
 }
 
-// SVGChooseMove is the JS function that needs to be called within a SVG for a move to be chosen
-const SVGChooseMove = `parent.N8.games.chooseMove`
+// SVGChoose is the JS function that needs to be called within a SVG for a move to be chosen
+const SVGChoose = `parent.N8.games.choose`
 
 // Starter is a function used to create a game's initial state
 type Starter func(...Actor) State
