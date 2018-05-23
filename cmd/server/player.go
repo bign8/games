@@ -34,7 +34,7 @@ func (a *actor) Act(s games.State) games.Action {
 	for chosen == nil && a.s.Scan() {
 		move := a.s.Text()
 		for _, a := range actions {
-			if a.String() == move {
+			if a.Slug() == move {
 				chosen = &a
 				break
 			}
@@ -48,14 +48,14 @@ func (a *actor) Act(s games.State) games.Action {
 }
 
 type gameMSG struct {
-	SVG   string
-	Moves []gameMoveMSG
+	SVG   string        `json:"SVG"`
+	Moves []gameMoveMSG `json:"Moves,omitempty"`
 }
 
 type gameMoveMSG struct {
-	Name string
-	Type string
-	SVG  string
+	Name string `json:"Name"`
+	Type string `json:"Type"`
+	Slug string `json:"Slug"`
 }
 
 func game4client(s games.State, done bool) []byte {
@@ -65,7 +65,7 @@ func game4client(s games.State, done bool) []byte {
 		moves[i] = gameMoveMSG{
 			Name: a.String(),
 			Type: a.Type(),
-			SVG:  s.Apply(a).SVG(false),
+			Slug: a.Slug(),
 		}
 	}
 

@@ -19,6 +19,7 @@ type ActorBuilder func(g Game, name string) Actor
 type Action interface {
 	Stringer
 	Type() string // allows types of moves to be grouped
+	Slug() string // computer parsable ID of an action
 }
 
 // Actor is a method that choose an Action given a particular State

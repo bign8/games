@@ -191,4 +191,5 @@ func (s *c4) SVG(bool) string {
 type c4move uint8
 
 func (move c4move) String() string { return "Column " + strconv.Itoa(int(move)+1) }
+func (move c4move) Slug() string   { return "m" + strconv.Itoa(int(move)+1) }
 func (move c4move) Type() string   { return "" }

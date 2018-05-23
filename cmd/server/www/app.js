@@ -24,9 +24,9 @@ N8.games = (function(w, d) {
   var userMessage = new Writer('Me').send;
 
   function chooseMove(move) {
-    newSocket.send('g', move.Name + '\n');
+    newSocket.send('g', move.Slug + '\n');
     moves.innerHTML = '';
-    game.innerHTML = move.SVG;
+    // game.innerHTML = move.SVG;
   }
 
   function buildMoveButton(move, cls) {
@@ -34,7 +34,8 @@ N8.games = (function(w, d) {
     li.className = cls;
     li.innerHTML = move.Name;
     li.addEventListener('mouseover', function() {
-      game.innerHTML = move.SVG;
+      // game.innerHTML = move.SVG;
+      // TODO!!!
     }, false);
     li.addEventListener('click', function() {
       chooseMove(move);

@@ -63,7 +63,7 @@ func BenchmarkString(b *testing.B) {
 		},
 	}
 	for i := 0; i < b.N; i++ {
-		board.String()
+		_ = board.String()
 	}
 }
 
@@ -79,5 +79,5 @@ func TestString(t *testing.T) {
 			[]byte{'a', 'b', 'c', 'd', 'e', 'f'},
 		},
 	}
-	board.String()
+	_ = board.String()
 }

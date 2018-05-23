@@ -23,8 +23,7 @@ var moveNames = []string{
 }
 
 func (m tttMove) Type() string { return "" }
-
-// String does something
+func (m tttMove) Slug() string { return svgName[m] }
 func (m tttMove) String() string {
 	if m > 8 {
 		return fmt.Sprintf("Undefined Move: %d", m)

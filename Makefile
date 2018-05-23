@@ -1,6 +1,6 @@
 SHELL:=/bin/bash -o pipefail
 
-make: install bench
+make: vendor bench
 
 test:
 	go test -race $(shell glide nv)
@@ -9,7 +9,7 @@ bench:
 	go test -race -bench=. -benchmem -v $(shell glide nv) | tee test.out
 	gobench -in test.out
 
-install:
+vendor: glide.lock
 	go get github.com/Masterminds/glide
 	glide install -v
 	go install ./vendor/github.com/bign8/gobench

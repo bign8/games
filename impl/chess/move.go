@@ -74,6 +74,10 @@ func (m Move) Type() string {
 	return m.piece
 }
 
+func (m Move) Slug() string {
+	return "todo"
+}
+
 func (s *State) Actions() []games.Action {
 	m := s.Moves()
 	a := make([]games.Action, len(m))
