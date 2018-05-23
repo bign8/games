@@ -141,44 +141,39 @@ func (g ttt) Utility() []int {
 	return res
 }
 
-// https://thenounproject.com/term/tic-tac-toe/25029/
-
-var svgHead = `<svg viewBox="0 0 100 100">`
-var svgTail = `</svg>`
-var svgPrefix = `<path d="m`
-var svgOSuffix = `c0,6.306 5.112,11.418 11.418,11.418c6.306,0 11.418,-5.112 11.418,-11.418c0,-6.306 -5.112,-11.418 -11.418,-11.418c-6.306,0 -11.418,5.112 -11.418,11.418z"/>`
-var svgXSuffix = `c0.823,-0.823 2.159,-0.824 2.983,0l6.687,6.687l6.687,-6.687c0.824,-0.824 2.16,-0.823 2.983,0c0.412,0.412 0.618,0.952 0.618,1.492c-0.001,0.539 -0.206,1.079 -0.618,1.492l-6.687,6.687l6.687,6.687c0.824,0.824 0.823,2.16 0,2.983c-0.412,0.412 -0.952,0.618 -1.492,0.619c-0.539,-0.001 -1.079,-0.206 -1.492,-0.619l-6.687,-6.687l-6.687,6.687c-0.824,0.824 -2.16,0.823 -2.983,0c-0.823,-0.823 -0.824,-2.159 0,-2.983l6.687,-6.687l-6.687,-6.687c-0.824,-0.825 -0.823,-2.161 0.001,-2.984z"/>`
-var svgOPos = []string{
-	`12.728,24.065`, `38.775,24.065`, `64.726,24.065`,
-	`12.728,50.118`, `38.775,50.118`, `64.726,50.118`,
-	`12.728,76.269`, `38.775,76.269`, `64.726,76.269`,
-}
-var svgXPos = []string{
-	`14.476,14.395`, `40.523,14.395`, `66.597,14.395`,
-	`14.476,40.466`, `40.523,40.466`, `66.597,40.466`,
-	`14.476,66.598`, `40.523,66.598`, `66.597,66.598`,
-}
-var svgTargetPos = []string{
-	`x="11" y="11"`, `x="38" y="11"`, `x="64" y="11"`,
-	`x="11" y="38"`, `x="38" y="38"`, `x="64" y="38"`,
-	`x="11" y="64"`, `x="38" y="64"`, `x="64" y="64"`,
-}
-var svgTargetID = []string{`p1`, `p2`, `p3`, `p4`, `p5`, `p6`, `p7`, `p8`, `p9`}
-var svgBoard = `<svg viewBox="0 0 100 100">
-<path d="m62.193,11.333l0,24.785l-24,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333l0,24.785l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24l-24.757,0c-0.367,0 -0.699,0.112 -0.94,0.293c-0.241,0.181 -0.39,0.431 -0.39,0.707c0,0.552 0.596,1 1.33,1l24.757,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24,0l0,24.549c0,0.368 0.112,0.701 0.293,0.943c0.181,0.241 0.431,0.39 0.707,0.39c0.552,0 1,-0.597 1,-1.333l0,-24.549l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24l24.372,0c0.367,0 0.699,-0.112 0.94,-0.293c0.24,-0.181 0.389,-0.431 0.389,-0.707c0,-0.552 -0.595,-1 -1.329,-1l-24.372,0l0,-24.785c0,-0.368 -0.112,-0.701 -0.293,-0.943c-0.181,-0.241 -0.431,-0.39 -0.707,-0.39c-0.552,0 -1,0.597 -1,1.333zm0,50.785l-24,0l0,-24l24,0l0,24z"/>
-<!--<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="115" x="0">Created by TNS</text>
-<text font-family="&#x27;Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif" font-weight="bold" font-size="5px" fill="#000000" y="120" x="0">from the Noun Project</text>-->
+const (
+	svgHead = `<svg viewBox="0 0 90 90" stroke="black" stroke-linecap="round">`
+	svgTail = `</svg>`
+	svgPath = `<path d="M`
+	svgXend = ` m10,10 l-20,-20 m20,0 l-20,20" stroke-width="4" />`
+	svgOend = ` m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" />`
+	svgRect = ` m-12,-12 h24 v24 h-24 z" `
+	svgGame = `<svg viewBox="-1 -1 92 92" stroke-width="2" stroke="black" stroke-linecap="round">
+	<line x1="30" y1="00" x2="30" y2="90" />
+	<line x1="60" y1="00" x2="60" y2="90" />
+	<line x1="00" y1="30" x2="90" y2="30" />
+	<line x1="00" y1="60" x2="90" y2="60" />
 </svg>`
+)
+
+var (
+	svgName = []string{`p1`, `p2`, `p3`, `p4`, `p5`, `p6`, `p7`, `p8`, `p9`}
+	svgSpot = []string{
+		`15,15`, `45,15`, `75,15`,
+		`15,45`, `45,45`, `75,45`,
+		`15,75`, `45,75`, `75,75`,
+	}
+)
 
 func (g ttt) SVG(active bool) string {
 	ctr := 0
 	pieces := make([]string, 9)
 	for i, bit := range g.board {
 		if bit == 'X' {
-			pieces[ctr] = svgPrefix + svgXPos[i] + svgXSuffix
+			pieces[ctr] = svgPath + svgSpot[i] + svgXend
 			ctr++
 		} else if bit == 'O' {
-			pieces[ctr] = svgPrefix + svgOPos[i] + svgOSuffix
+			pieces[ctr] = svgPath + svgSpot[i] + svgOend
 			ctr++
 		}
 	}
@@ -187,18 +182,16 @@ func (g ttt) SVG(active bool) string {
 	// Clickable targets
 	var groups string
 	if active {
-		suffix := svgOSuffix
-		pos := svgOPos
+		suffix := svgOend
 		if int(g.ctr)%2 == 0 {
-			suffix = svgXSuffix
-			pos = svgXPos
+			suffix = svgXend
 		}
 		ctr = 0
 		hover, target := make([]string, 9), make([]string, 9)
 		for i, bit := range g.board {
 			if bit == ' ' {
-				hover[ctr] = `<rect height="25" width="25" ` + svgTargetPos[i] + ` fill="transparent" ontouchend="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onclick="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onmouseover="` + svgTargetID[i] + `.setAttribute('opacity', '0.5')" onmouseout="` + svgTargetID[i] + `.setAttribute('opacity', '0')"/>`
-				target[ctr] = `<path id="` + svgTargetID[i] + `" opacity="0" d="m` + pos[i] + suffix
+				hover[ctr] = svgPath + svgSpot[i] + svgRect + ` stroke="none"  fill="transparent" ontouchend="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onclick="` + games.SVGChooseMove + `('` + moveNames[i] + `')" onmouseover="` + svgName[i] + `.setAttribute('opacity', '0.5')" onmouseout="` + svgName[i] + `.setAttribute('opacity', '0')" />`
+				target[ctr] = `<path id="` + svgName[i] + `" opacity="0" d="m` + svgSpot[i] + suffix
 				ctr++
 			}
 		}
@@ -211,7 +204,7 @@ func (g ttt) SVG(active bool) string {
 var Game = games.Game{
 	Name:    "Tic-Tac-Toe",
 	Slug:    "ttt",
-	Board:   svgBoard,
+	Board:   svgGame,
 	Players: []string{"X", "O"},
 	Start:   New,
 	AI:      minimax.New,

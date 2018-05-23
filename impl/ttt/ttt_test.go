@@ -23,7 +23,7 @@ func Test(t *testing.T) {
 	game := New(&p1, &p2)
 	assert.Equal(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
 		"║   ║   ║   ║\n╠═══╬═══╬═══╣\n║   ║   ║   ║\n╚═══╩═══╩═══╝", "default string")
-	assert.Equal(t, game.SVG(false), `<svg viewBox="0 0 100 100"><g></g></svg>`, "svg")
+	assert.Equal(t, game.SVG(false), `<svg viewBox="0 0 90 90" stroke="black" stroke-linecap="round"><g></g></svg>`, "svg")
 	game.Utility()
 
 	// First move
