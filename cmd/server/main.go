@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
@@ -72,8 +73,10 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	rootTpl.Execute(w, struct {
 		Games map[string]showGame
+		Year  int
 	}{
 		Games: process(impl.Map()),
+		Year:  time.Now().Year(),
 	})
 }
 
@@ -99,9 +102,11 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	gameTpl.Execute(w, struct {
 		Game  games.Game
 		Board template.HTML
+		Year  int
 	}{
 		Game:  game,
 		Board: template.HTML(game.Board),
+		Year:  time.Now().Year(),
 	})
 }
 

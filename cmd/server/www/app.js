@@ -7,11 +7,8 @@
     this.send = function(m) {
       var p = document.createElement('p');
       p.classList.add('list-group-item');
-      if (cls == undefined) {
-        p.innerHTML = '<b>' + name + ': </b>';
-      } else {
-        p.classList.add(cls);
-      }
+      if (cls == undefined) p.innerHTML = '<b>' + name + ': </b>';
+      else p.classList.add(cls);
       p.innerHTML += m;
       output.appendChild(p);
       output.scrollTop = output.scrollHeight;
@@ -94,11 +91,8 @@
     // pre-process the svg and add move selection handlers
     setupSVG();
 
-    // moves is unset
-    if (!obj.hasOwnProperty('moves')) {
-      // TODO: disable moves panel
-      return
-    }
+    // moves is unset (TODO: disable moves panel)
+    if (!obj.hasOwnProperty('moves')) return;
 
     // Generate map of moves grouped by move type
     var byType = {};
