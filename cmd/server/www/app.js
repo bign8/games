@@ -1,9 +1,7 @@
-var N8 = N8 || {};  // bign8 global namespace
-
-N8.games = (function(w, d) {
+(function(w, d) {
   "use strict";
 
-  var output, game, moves, newSocket, move_set = [];
+  var output, game, moves, newSocket;
 
   var Writer = function(name, cls) {
     this.send = function(m) {
@@ -23,72 +21,102 @@ N8.games = (function(w, d) {
   var systemMessage = new Writer('System', 'list-group-item-info').send;
   var userMessage = new Writer('Me').send;
 
-  function chooseMove(move) {
-    newSocket.send('g', move.Slug + '\n');
+  function chooseMove(slug) {
+    newSocket.send('g', slug + '\n');
     moves.innerHTML = '';
-    // game.innerHTML = move.SVG;
+    // TODO: hide all other moves
+    // TODO: show this move specifically
   }
 
   function buildMoveButton(move, cls) {
     var li = document.createElement('button');
     li.className = cls;
-    li.innerHTML = move.Name;
-    li.addEventListener('mouseover', function() {
-      // game.innerHTML = move.SVG;
-      // TODO!!!
-    }, false);
+    li.innerHTML = move.name;
+    li.addEventListener('mouseover', shower(move.slug), false);
+    li.addEventListener('mouseout', hideer(move.slug), false);
     li.addEventListener('click', function() {
-      chooseMove(move);
+      chooseMove(move.slug);
     });
     return li;
+  }
+
+  function buildMoveGroup(title, moves) {
+    var group = document.createElement('div'),
+      title = document.createElement('h4'),
+      text = document.createElement('div');
+    group.className = "list-group-item";
+    title.className = "list-group-item-heading";
+    title.innerHTML = title;
+    text.className = "list-group-item-text";
+    for (var move of moves) {
+      text.appendChild(buildMoveButton(move, 'btn btn-default'));
+      text.appendChild(document.createTextNode(' '));
+    }
+    group.appendChild(title);
+    group.appendChild(text);
+    return group
+  }
+
+  function shower(name) {
+    return function() {
+      game.querySelector("[data-slug="+name+"]").style.opacity = '1';
+    }
+  }
+
+  function hideer(name) {
+    return function() {
+      game.querySelector("[data-slug="+name+"]").style.opacity = '0';
+    };
+  }
+
+  function setupSVG() {
+    var slugs = game.querySelectorAll("[data-slug]"),
+      shows = game.querySelectorAll("[data-show]");
+
+    for (var slug of slugs) slug.style.opacity = "0";
+    for (var show of shows) {
+      show.style.opacity = "0";
+      show.style.stroke = "none";
+      show.addEventListener("mouseover", shower(show.dataset.show), false);
+      show.addEventListener("mouseout", hideer(show.dataset.show), false);
+      show.addEventListener("click", function(e) {
+        chooseMove(e.target.dataset.show);
+      }, false);
+    }
   }
 
   function gameMessage(m) {
     var obj = JSON.parse(m);
     console.log(obj);
-    game.innerHTML = obj.SVG;
+    game.innerHTML = obj.svg;
     moves.innerHTML = '';
-    move_set = obj.Moves;
+
+    // pre-process the svg and add move selection handlers
+    setupSVG();
+
+    // moves is unset
+    if (!obj.hasOwnProperty('moves')) {
+      // TODO: disable moves panel
+      return
+    }
+
+    // Generate map of moves grouped by move type
     var byType = {};
-    for (var i = 0; i < obj.Moves.length; i++) {
-      var m = obj.Moves[i], t = m.Type;
-      if (byType.hasOwnProperty(t)) {
-        byType[t].push(m);
-      } else {
-        byType[t] = [m];
-      }
+    for (var m of obj.moves) {
+      if (!byType.hasOwnProperty(m.type)) byType[m.type] = [];
+      byType[m.type].push(m);
     }
 
     // State 1: moves are all of the same type
     if (Object.keys(byType).length == 1)
-      for (var i = 0; i < obj.Moves.length; i++)
-        moves.appendChild(buildMoveButton(obj.Moves[i], 'list-group-item'));
+      for (var m of obj.moves) moves.appendChild(buildMoveButton(m, 'list-group-item'));
 
     // State 2: moves all have various types
     else {
       var keys = Object.keys(byType);
       keys.sort();
-      for (var j = 0; j < keys.length; j++) {
-        var key = keys[j],
-          group = document.createElement('div'),
-          title = document.createElement('h4'),
-          text = document.createElement('div');
-        group.className = "list-group-item";
-        title.className = "list-group-item-heading";
-        title.innerHTML = key;
-        text.className = "list-group-item-text";
-        for (var i = 0; i < byType[key].length; i++) {
-          text.appendChild(buildMoveButton(byType[key][i], 'btn btn-default'));
-          text.appendChild(document.createTextNode(' '));
-        }
-        group.appendChild(title);
-        group.appendChild(text);
-        moves.appendChild(group);
-      }
+      for (var key of keys) moves.appendChild(buildMoveGroup(key, byType[key]));
     }
-    moves.addEventListener('mouseout', function() {
-      game.innerHTML = obj.SVG;
-    }, false);
   }
 
   // Window on-load event
@@ -112,15 +140,4 @@ N8.games = (function(w, d) {
     moves = document.getElementById("moves");
     newSocket.onclose = systemMessage.bind(this, "Connection Closed.");
   }, false);
-
-  return {
-    choose : function(move_string) {
-      for (var i = 0; i < move_set.length; i++) {
-        if (move_set[i].Name == move_string) {
-          return chooseMove(move_set[i]);
-        }
-      }
-      console.log('Move not found:', move_string);
-    },
-  };
 })(window, document);

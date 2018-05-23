@@ -48,14 +48,14 @@ func (a *actor) Act(s games.State) games.Action {
 }
 
 type gameMSG struct {
-	SVG   string        `json:"SVG"`
-	Moves []gameMoveMSG `json:"Moves,omitempty"`
+	SVG   string        `json:"svg"`
+	Moves []gameMoveMSG `json:"moves,omitempty"`
 }
 
 type gameMoveMSG struct {
-	Name string `json:"Name"`
-	Type string `json:"Type"`
-	Slug string `json:"Slug"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Slug string `json:"slug"`
 }
 
 func game4client(s games.State, done bool) []byte {
