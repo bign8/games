@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -17,8 +17,8 @@ import (
 
 var pool = &poolManager{games: make(map[string]chan<- *socket.Socket)}
 
-// socketHandler is called when a client wants to start a game
-func socketHandler(ws *websocket.Conn) {
+// Socket is called when a client wants to start a game
+func Socket(ws *websocket.Conn) {
 	slug := mux.Vars(ws.Request())["slug"] // TODO: verify valid slug
 	s := socket.New(ws)
 	pool.Match(s, slug)

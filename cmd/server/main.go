@@ -17,6 +17,7 @@ import (
 	"golang.org/x/net/websocket"
 
 	"github.com/bign8/games"
+	"github.com/bign8/games/cmd/server/app"
 	"github.com/bign8/games/impl"
 )
 
@@ -48,7 +49,7 @@ func main() {
 	// Setup routes
 	r := mux.NewRouter()
 	r.HandleFunc("/play/random", randomHandler)
-	r.Handle("/play/{slug}/socket", websocket.Handler(socketHandler))
+	r.Handle("/play/{slug}/socket", websocket.Handler(app.Socket))
 	r.HandleFunc("/play/{slug}", gameHandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
 	r.HandleFunc("/about", aboutHandler)
@@ -71,11 +72,22 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// Convert games for rendering
+	games := impl.Map()
+	output := make(map[string]showGame, len(games))
+	for slug, game := range games {
+		output[slug] = showGame{
+			Game:  game,
+			Board: template.HTML(game.Board),
+		}
+	}
+
 	rootTpl.Execute(w, struct {
 		Games map[string]showGame
 		Year  int
 	}{
-		Games: process(impl.Map()),
+		Games: output,
 		Year:  time.Now().Year(),
 	})
 }
@@ -83,14 +95,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 type showGame struct {
 	games.Game
 	Board template.HTML
-}
-
-func process(in map[string]games.Game) map[string]showGame {
-	new := make(map[string]showGame, len(in))
-	for k, v := range in {
-		new[k] = showGame{v, template.HTML(v.Board)}
-	}
-	return new
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {

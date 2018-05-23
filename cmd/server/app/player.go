@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"bufio"
@@ -30,12 +30,12 @@ func (a *actor) Name() string {
 func (a *actor) Act(s games.State) games.Action {
 	actions := s.Actions()
 	a.write.Write(game4client(s, false))
-	var chosen *games.Action
+	var chosen games.Action
 	for chosen == nil && a.s.Scan() {
 		move := a.s.Text()
 		for _, a := range actions {
 			if a.Slug() == move {
-				chosen = &a
+				chosen = a
 				break
 			}
 		}
@@ -44,7 +44,7 @@ func (a *actor) Act(s games.State) games.Action {
 		}
 	}
 	// TODO: handle scanner error!
-	return *chosen
+	return chosen
 }
 
 type gameMSG struct {
