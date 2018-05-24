@@ -9,29 +9,26 @@ import (
 )
 
 // Socket creates a websocket based actor
-func Socket(sock io.ReadWriteCloser, errc chan<- error) games.ActorBuilder {
+func Socket(sock io.ReadWriteCloser, errc chan<- error) games.Actor {
 	scanner := bufio.NewScanner(sock)
-	return func(name string) games.Actor {
-		return func(s games.State) games.Action {
-			actions := s.Actions()
-			sock.Write(ToJSON(s, false))
-			var chosen games.Action
-			for chosen == nil && scanner.Scan() {
-				move := scanner.Text()
-				for _, a := range actions {
-					if a.Slug() == move {
-						chosen = a
-						break
-					}
-				}
-				if chosen == nil {
-					sock.Write([]byte("sInvalidMove... Try again!"))
+	return func(s games.State) games.Action {
+		actions := s.Actions()
+		sock.Write(ToJSON(s, false))
+		var chosen games.Action
+		for chosen == nil && scanner.Scan() {
+			move := scanner.Text()
+			for _, a := range actions {
+				if a.Slug() == move {
+					chosen = a
+					break
 				}
 			}
-			// TODO: handle scanner error!
-			return chosen
+			if chosen == nil {
+				sock.Write([]byte("sInvalidMove... Try again!"))
+			}
 		}
-
+		// TODO: handle scanner error!
+		return chosen
 	}
 }
 
@@ -46,6 +43,7 @@ type gameMoveMSG struct {
 	Slug string `json:"slug"`
 }
 
+// ToJSON is shared between this package and the web API for client data conversion
 func ToJSON(s games.State, done bool) []byte {
 	moves := make([]gameMoveMSG, len(s.Actions()))
 

@@ -11,9 +11,6 @@ type Stringer interface {
 // Starter is a function used to create a game's initial state
 type Starter func(...Actor) State
 
-// ActorBuilder is a builder of actors
-type ActorBuilder func(name string) Actor
-
 // Action is the base type for a game move
 type Action interface {
 	Stringer
@@ -38,13 +35,13 @@ type State interface {
 
 // Game is contains all the meta-data surrounding a game so it can be played
 type Game struct {
-	Name    string       // Name of the game
-	Slug    string       // Short name of game
-	Board   string       // SVG of board state
-	Players []string     // List of Player names
-	Counts  []uint8      // Possible number of players to play a game (if nil assume == len(Players))
-	Start   Starter      `json:"-"`
-	AI      ActorBuilder `json:"-"` // TODO: use smart enough ai that this can be removed
+	Name    string   // Name of the game
+	Slug    string   // Short name of game
+	Board   string   // SVG of board state
+	Players []string // List of Player names
+	Counts  []uint8  // Possible number of players to play a game (if nil assume == len(Players))
+	Start   Starter  `json:"-"`
+	AI      Actor    `json:"-"` // TODO: use smart enough ai that this can be removed
 }
 
 // Valid determines if a game configuration is valid.
@@ -63,7 +60,7 @@ func (g Game) Valid() error {
 
 // Build constructs a game given the set of actor builders.
 // Build uses AI players to buffer insufficient numbers of players.
-func (g Game) Build(actors ...ActorBuilder) State {
+func (g Game) Build(actors ...Actor) State {
 	length := uint8(len(actors))
 	if err := g.Valid(); err != nil {
 		panic(err)
@@ -82,19 +79,20 @@ func (g Game) Build(actors ...ActorBuilder) State {
 	players := make([]Actor, count)
 	for i := uint8(0); i < count; i++ {
 		if i < length {
-			players[i] = actors[i](g.Players[i])
+			players[i] = actors[i]
 		} else {
-			players[i] = g.AI(g.Players[i])
+			players[i] = g.AI
 		}
 	}
 	return g.Start(players...)
 }
 
 // Run is the primary game runner
-func Run(g Game, ab ActorBuilder) (final State) {
+// TODO: kill me!
+func Run(g Game, ab func() Actor) (final State) {
 	actors := make([]Actor, len(g.Players))
-	for i, name := range g.Players {
-		actors[i] = ab(name)
+	for i := range g.Players {
+		actors[i] = ab()
 	}
 	game := g.Start(actors...)
 	for !game.Terminal() {

@@ -3,11 +3,9 @@ package player
 import "github.com/bign8/games"
 
 // Minimax creates a new player that interfaces with a human via Stdin/out/err
-func Minimax(name string) games.Actor {
-	return func(s games.State) games.Action {
-		a, _ := search(s)
-		return a
-	}
+func Minimax(s games.State) games.Action {
+	a, _ := search(s)
+	return a
 }
 
 // TODO: fix this to work for more than 2 players
