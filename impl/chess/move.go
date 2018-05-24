@@ -2,6 +2,7 @@ package chess
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bign8/games"
 )
@@ -55,7 +56,7 @@ func (m Move) Equals(n *Move) bool {
 
 // String prints a human readable move
 func (m Move) String() string {
-	template := "%s -> %s"
+	template := "%s \u2192 %s" // right arrow
 
 	if m.promotion > 0 {
 		template += " (" + promotionLookup[m.promotion] + ")"
@@ -70,14 +71,22 @@ func (m Move) String() string {
 	return fmt.Sprintf(template, m.Start, m.Stop)
 }
 
-func (m Move) Type() string {
-	return m.piece
-}
+// Type gives the move type for grouping
+func (m Move) Type() string { return m.piece }
 
+// Slug returns the machine redable version of the move
 func (m Move) Slug() string {
-	return "todo"
+	base := "m" + m.Start.String() + "-" + m.Stop.String()
+	if m.promotion > 0 {
+		base += "-p" + promotionLookup[m.promotion][0:0] // first character of promotion name
+	}
+	if m.castling != nil {
+		base += "-c"
+	}
+	return strings.ToLower(base)
 }
 
+// Actions returns all the active actions for a given state.
 func (s *State) Actions() []games.Action {
 	m := s.Moves()
 	a := make([]games.Action, len(m))

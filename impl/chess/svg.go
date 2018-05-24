@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-func (s State) SVG(bool) string {
+// SVG shows the game state given the state of the document
+func (s State) SVG(active bool) string {
 	pieces := make([]string, 0, 32)
 	for i, chr := range s.toGrid() {
 		if chr == ' ' {

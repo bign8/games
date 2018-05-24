@@ -1,5 +1,6 @@
 package chess
 
+// Utility generates the game state utility for the game.
 func (s State) Utility() []int {
 	val := ValueUtility(s)
 	res := make([]int, 2)

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -16,6 +17,7 @@ import (
 )
 
 var pool = &poolManager{games: make(map[string]chan<- *socket.Socket)}
+var tout = flag.Duration("tout", 5*time.Second, "matcher timeout")
 
 // Socket is called when a client wants to start a game
 func Socket(ws *websocket.Conn) {
@@ -74,7 +76,7 @@ func (pm *poolManager) pair(slug string, ch <-chan *socket.Socket) {
 			if uint8(len(queue)) == max {
 				start()
 			} else if wait == nil {
-				wait = time.After(5 * time.Second) // Max wait of first to enter a room
+				wait = time.After(*tout) // Max wait of first to enter a room
 			}
 		case <-wait: // first person in queue has been waiting for a while
 			start()

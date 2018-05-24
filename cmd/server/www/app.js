@@ -29,21 +29,21 @@
     var li = document.createElement('button');
     li.className = cls;
     li.innerHTML = move.name;
-    li.addEventListener('mouseover', shower(move.slug), false);
-    li.addEventListener('mouseout', hideer(move.slug), false);
+    li.addEventListener('mouseover', toggler(move.slug, '1'), false);
+    li.addEventListener('mouseout', toggler(move.slug, '0'), false);
     li.addEventListener('click', function() {
       chooseMove(move.slug);
     });
     return li;
   }
 
-  function buildMoveGroup(title, moves) {
+  function buildMoveGroup(name, moves) {
     var group = document.createElement('div'),
       title = document.createElement('h4'),
       text = document.createElement('div');
     group.className = "list-group-item";
     title.className = "list-group-item-heading";
-    title.innerHTML = title;
+    title.innerHTML = name;
     text.className = "list-group-item-text";
     for (var move of moves) {
       text.appendChild(buildMoveButton(move, 'btn btn-default'));
@@ -54,16 +54,14 @@
     return group
   }
 
-  function shower(name) {
-    return function() {
-      game.querySelector("[data-slug="+name+"]").style.opacity = '1';
+  function toggler(name, opacity) {
+    var ele = game.querySelector("[data-slug="+name+"]");
+    if (!ele) {
+      console.log("no toggler created; Unable to find:", name);
+      // NOTE: this should be mitigated with the server
+      return undefined;
     }
-  }
-
-  function hideer(name) {
-    return function() {
-      game.querySelector("[data-slug="+name+"]").style.opacity = '0';
-    };
+    return function(e) { ele.style.opacity = opacity; }
   }
 
   function setupSVG() {
@@ -74,8 +72,8 @@
     for (var show of shows) {
       show.style.opacity = "0";
       show.style.stroke = "none";
-      show.addEventListener("mouseover", shower(show.dataset.show), false);
-      show.addEventListener("mouseout", hideer(show.dataset.show), false);
+      show.addEventListener("mouseover", toggler(show.dataset.show, '1'), false);
+      show.addEventListener("mouseout", toggler(show.dataset.show, '0'), false);
       show.addEventListener("click", function(e) {
         chooseMove(e.target.dataset.show);
       }, false);

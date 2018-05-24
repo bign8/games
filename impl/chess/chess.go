@@ -41,7 +41,10 @@ func New(actors ...games.Actor) games.State {
 	}
 }
 
+// Actors returns the active set of game actors
 func (s State) Actors() []games.Actor { return s.actors }
+
+// Player return the index of the active player
 func (s State) Player() int {
 	if s.isBlack {
 		return 1
@@ -157,6 +160,7 @@ func (s State) Terminal() bool {
 	return len(s.Moves()) == 0
 }
 
+// Game is the fully configured chess game
 var Game = games.Game{
 	Name:    "Chess",
 	Slug:    "chess",
@@ -164,4 +168,5 @@ var Game = games.Game{
 	Players: []string{"White", "Black"},
 	Start:   New,
 	AI:      layer.New,
+	Counts:  []uint8{2},
 }

@@ -1,6 +1,8 @@
 // Package games borrows terminology from "AI - A Modern Approach" Chapter 5
 package games
 
+import "errors"
+
 // Stringer is a duplicate of fmt.Stringer but duplicated for transpiling reasons.
 type Stringer interface {
 	String() string
@@ -46,6 +48,49 @@ type Game struct {
 	Counts  []uint8      // Possible number of players to play a game (if nil assume == len(Players))
 	Start   Starter      `json:"-"`
 	AI      ActorBuilder `json:"-"` // TODO: use smart enough ai that this can be removed
+}
+
+// Valid determines if a game configuration is valid.
+func (g Game) Valid() error {
+	if len(g.Counts) == 0 {
+		return errors.New(g.Name + ": no Counts")
+	}
+	if g.AI == nil {
+		return errors.New(g.Name + ": no AI")
+	}
+	if g.Start == nil {
+		return errors.New(g.Name + ": no Start")
+	}
+	return nil
+}
+
+// Build constructs a game given the set of actor builders.
+// Build uses AI players to buffer insufficient numbers of players.
+func (g Game) Build(actors ...ActorBuilder) State {
+	length := uint8(len(actors))
+	if err := g.Valid(); err != nil {
+		panic(err)
+	}
+
+	// Find the first number of players larger than the current queue size
+	count := g.Counts[0]
+	for _, c := range g.Counts[1:] {
+		count = c
+		if c >= length {
+			break
+		}
+	}
+
+	// Make players or AIs based on the chosen count
+	players := make([]Actor, count)
+	for i := uint8(0); i < count; i++ {
+		if i < length {
+			players[i] = actors[i](g, g.Players[i])
+		} else {
+			players[i] = g.AI(g, g.Players[i])
+		}
+	}
+	return g.Start(players...)
 }
 
 // Run is the primary game runner

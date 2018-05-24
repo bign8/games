@@ -207,4 +207,5 @@ var Game = games.Game{
 	Players: []string{"X", "O"},
 	Start:   New,
 	AI:      minimax.New,
+	Counts:  []uint8{2},
 }

@@ -2,6 +2,7 @@ package checkers
 
 import "github.com/bign8/games"
 
+// Game is a fully configured checkers game.
 var Game = games.Game{
 	Name:    "Checkers",
 	Slug:    "checkers",
@@ -9,4 +10,5 @@ var Game = games.Game{
 	Players: []string{"Red", "Black"},
 	Start:   nil,
 	AI:      nil,
+	Counts:  []uint8{2},
 }

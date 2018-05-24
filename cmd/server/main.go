@@ -77,6 +77,10 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	games := impl.Map()
 	output := make(map[string]showGame, len(games))
 	for slug, game := range games {
+		if err := game.Valid(); err != nil {
+			log.Print("skipping" + err.Error())
+			continue
+		}
 		output[slug] = showGame{
 			Game:  game,
 			Board: template.HTML(game.Board),

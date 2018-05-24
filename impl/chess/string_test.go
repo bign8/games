@@ -10,7 +10,7 @@ func BenchmarkStateString(b *testing.B) {
 	game := New(nil, nil)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		game.String()
+		_ = game.String()
 	}
 }
 
