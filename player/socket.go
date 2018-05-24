@@ -11,7 +11,7 @@ import (
 // Socket creates a websocket based actor
 func Socket(sock io.ReadWriteCloser, errc chan<- error) games.ActorBuilder {
 	scanner := bufio.NewScanner(sock)
-	return func(_ games.Game, name string) games.Actor {
+	return func(name string) games.Actor {
 		return func(s games.State) games.Action {
 			actions := s.Actions()
 			sock.Write(ToJSON(s, false))

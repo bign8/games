@@ -110,12 +110,12 @@ func play(game games.Game, players ...*socket.Socket) {
 
 	// Setup the player builder
 	i := -1
-	builder := func(g games.Game, name string) games.Actor {
+	builder := func(name string) games.Actor {
 		i++
 		if isBot[i] {
-			return g.AI(g, name)
+			return game.AI(name)
 		}
-		return player.Socket(gamez[i], errc)(g, name)
+		return player.Socket(gamez[i], errc)(name)
 	}
 
 	// Play the game (and broadcast final state)

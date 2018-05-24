@@ -7,7 +7,7 @@ import (
 )
 
 // Random creates a new player that interfaces with a human via Stdin/out/err
-func Random(_ games.Game, name string) games.Actor {
+func Random(name string) games.Actor {
 	return func(s games.State) games.Action {
 		acts := s.Actions()
 		idx := rand.Intn(len(acts))

@@ -76,10 +76,10 @@ func getPlayer(in *bufio.Reader) playerConfig {
 	}
 }
 
-func playerBuilder(in *bufio.Reader) func(games.Game, string) games.Actor {
-	return func(g games.Game, name string) games.Actor {
+func playerBuilder(in *bufio.Reader) games.ActorBuilder {
+	return func(name string) games.Actor {
 		fmt.Printf("=================================================================\nChoosing player %s\n", name)
-		return getPlayer(in).create(g, name)
+		return getPlayer(in).create(name)
 	}
 }
 

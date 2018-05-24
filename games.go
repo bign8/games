@@ -12,7 +12,7 @@ type Stringer interface {
 type Starter func(...Actor) State
 
 // ActorBuilder is a builder of actors
-type ActorBuilder func(g Game, name string) Actor
+type ActorBuilder func(name string) Actor
 
 // Action is the base type for a game move
 type Action interface {
@@ -82,9 +82,9 @@ func (g Game) Build(actors ...ActorBuilder) State {
 	players := make([]Actor, count)
 	for i := uint8(0); i < count; i++ {
 		if i < length {
-			players[i] = actors[i](g, g.Players[i])
+			players[i] = actors[i](g.Players[i])
 		} else {
-			players[i] = g.AI(g, g.Players[i])
+			players[i] = g.AI(g.Players[i])
 		}
 	}
 	return g.Start(players...)
@@ -94,7 +94,7 @@ func (g Game) Build(actors ...ActorBuilder) State {
 func Run(g Game, ab ActorBuilder) (final State) {
 	actors := make([]Actor, len(g.Players))
 	for i, name := range g.Players {
-		actors[i] = ab(g, name)
+		actors[i] = ab(name)
 	}
 	game := g.Start(actors...)
 	for !game.Terminal() {

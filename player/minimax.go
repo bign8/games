@@ -3,7 +3,7 @@ package player
 import "github.com/bign8/games"
 
 // Minimax creates a new player that interfaces with a human via Stdin/out/err
-func Minimax(_ games.Game, name string) games.Actor {
+func Minimax(name string) games.Actor {
 	return func(s games.State) games.Action {
 		a, _ := search(s)
 		return a
