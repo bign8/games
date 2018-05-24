@@ -76,7 +76,7 @@ func (m Move) Type() string { return m.piece }
 
 // Slug returns the machine redable version of the move
 func (m Move) Slug() string {
-	base := "m" + m.Start.String() + "-" + m.Stop.String()
+	base := "m" + m.Start.String() + m.Stop.String()
 	if m.promotion > 0 {
 		base += "-p" + promotionLookup[m.promotion][0:0] // first character of promotion name
 	}
@@ -148,6 +148,7 @@ func (s *State) Moves() []*Move {
 
 func (s State) clipCheckMoves(moves []*Move) []*Move {
 	// TODO: improve the performance of this function
+	// BUG(bign8): doesn't verify if king is moving into check by other king
 
 	// Remove moves that place king in check
 	var mine, yours Location

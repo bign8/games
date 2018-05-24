@@ -55,7 +55,7 @@
   }
 
   function toggler(name, opacity) {
-    var ele = game.querySelector("[data-slug="+name+"]");
+    var ele = game.querySelector("[data-slug~="+name+"]");
     if (!ele) {
       console.log("no toggler created; Unable to find:", name);
       // NOTE: this should be mitigated with the server
