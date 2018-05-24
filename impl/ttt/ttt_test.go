@@ -7,20 +7,16 @@ import (
 	"github.com/bign8/games/util/assert"
 )
 
-var (
-	_  games.Actor = (*badActor)(nil)
-	bs string
-)
+func dumb(s games.State) games.Action {
+	return s.Actions()[0]
+}
 
-type badActor string
-
-func (ba badActor) Name() string                   { return string(ba) }
-func (ba badActor) Act(s games.State) games.Action { return s.Actions()[0] }
+func newGame() games.State {
+	return New(dumb, dumb)
+}
 
 func Test(t *testing.T) {
-	p1 := badActor(Game.Players[0])
-	p2 := badActor(Game.Players[1])
-	game := New(&p1, &p2)
+	game := newGame()
 	assert.Equal(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
 		"║   ║   ║   ║\n╠═══╬═══╬═══╣\n║   ║   ║   ║\n╚═══╩═══╩═══╝", "default string")
 	assert.Equal(t, game.SVG(false), `<svg viewBox="0 0 90 90" stroke="black" stroke-linecap="round"><g></g></svg>`, "svg")
@@ -60,20 +56,16 @@ func TestIsWin(t *testing.T) {
 }
 
 func BenchmarkStateString(b *testing.B) {
-	p1 := badActor("asdf")
-	p2 := badActor("qwer")
-	game := New(&p1, &p2)
+	game := newGame()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bs = game.String()
+		_ = game.String()
 	}
 }
 
 func BenchmarkNewState(b *testing.B) {
-	p1 := badActor("asdf")
-	p2 := badActor("qwer")
 	for i := 0; i < b.N; i++ {
-		New(&p1, &p2)
+		newGame()
 	}
 }
 
@@ -103,16 +95,4 @@ func BenchmarkSVG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		game.SVG(false)
 	}
-}
-
-func newGame() games.State {
-	p1 := badActor("asdf")
-	p2 := badActor("qwer")
-	return New(&p1, &p2)
-}
-
-type dumb struct{}
-
-func (p dumb) Act(s games.State) games.Action {
-	return s.Actions()[0]
 }

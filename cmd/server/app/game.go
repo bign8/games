@@ -114,7 +114,7 @@ func play(game games.Game, players ...*socket.Socket) {
 		if isBot[i] {
 			return g.AI(g, name)
 		}
-		return newSocketActor(name, gamez[i], errc)
+		return newSocketActor(gamez[i], errc)
 	}
 
 	// Play the game (and broadcast final state)

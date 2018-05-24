@@ -22,10 +22,7 @@ type Action interface {
 }
 
 // Actor is a method that choose an Action given a particular State
-type Actor interface {
-	Name() string
-	Act(State) Action
-}
+type Actor func(State) Action
 
 // State is the base type for the state of a game
 type State interface {
@@ -108,7 +105,7 @@ func Run(g Game, ab ActorBuilder) (final State) {
 
 // Play takes the game through the next phase
 //* // This play is for real running (remove a / for fail over to debugging)
-func Play(g State) State { return g.Apply(g.Actors()[g.Player()].Act(g)) }
+func Play(g State) State { return g.Apply(g.Actors()[g.Player()](g)) }
 
 /*/
 func Play(g State) State {

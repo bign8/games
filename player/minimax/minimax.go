@@ -2,34 +2,23 @@ package minimax
 
 import "github.com/bign8/games"
 
-type minimax struct {
-	name string
-	ctr  uint
-}
-
 // New creates a new player that interfaces with a human via Stdin/out/err
 func New(_ games.Game, name string) games.Actor {
-	return &minimax{name: name, ctr: 0}
-}
-
-func (mm *minimax) Name() string {
-	return mm.name
-}
-
-func (mm *minimax) Act(s games.State) games.Action {
-	a, _ := mm.search(s)
-	return a
+	return func(s games.State) games.Action {
+		a, _ := search(s)
+		return a
+	}
 }
 
 // TODO: fix this to work for more than 2 players
-func (mm *minimax) search(s games.State) (games.Action, int) {
+func search(s games.State) (games.Action, int) {
 	if s.Terminal() {
 		return nil, s.Utility()[s.Player()]
 	}
 	a := s.Actions()
 	score := make([]int, len(a))
 	for i := 0; i < len(a); i++ {
-		_, score[i] = mm.search(s.Apply(a[i]))
+		_, score[i] = search(s.Apply(a[i]))
 		score[i] *= -1 // allows us to always maximize (only works for 2 players)
 	}
 	pos := 0

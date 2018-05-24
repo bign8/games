@@ -9,22 +9,16 @@ import (
 )
 
 type actor struct {
-	name  string
 	s     *bufio.Scanner
 	write io.Writer
 }
 
-func newSocketActor(name string, s io.ReadWriteCloser, errc chan<- error) *actor {
+func newSocketActor(s io.ReadWriteCloser, errc chan<- error) games.Actor {
 	a := &actor{
-		name:  name,
 		s:     bufio.NewScanner(s),
 		write: s,
 	}
-	return a
-}
-
-func (a *actor) Name() string {
-	return a.name
+	return a.Act
 }
 
 func (a *actor) Act(s games.State) games.Action {

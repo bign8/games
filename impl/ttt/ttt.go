@@ -129,8 +129,8 @@ func isWin(chrs [9]byte) (bool, byte) {
 func (g ttt) Utility() []int {
 	res := make([]int, 2)
 	if isWin, chr := isWin(g.board); isWin {
-		for i, a := range g.players {
-			if chr == a.Name()[0] {
+		for i := range g.players {
+			if chr == Game.Players[i][0] {
 				res[i] = 1
 			} else {
 				res[i] = -1

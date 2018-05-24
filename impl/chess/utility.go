@@ -4,9 +4,9 @@ package chess
 func (s State) Utility() []int {
 	val := ValueUtility(s)
 	res := make([]int, 2)
-	for i, a := range s.actors {
+	for i := range s.actors {
 		res[i] = val
-		if "Black" == a.Name() {
+		if "Black" == Game.Players[i] {
 			res[i] *= -1
 		}
 	}

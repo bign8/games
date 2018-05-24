@@ -12,6 +12,8 @@ var (
 	_ games.State  = (*c4)(nil)
 	_ games.Action = (*c4move)(nil)
 
+	players = []byte{'R', 'Y'}
+
 	// Game is the core game object that impl/impl.go works on stuff
 	Game = games.Game{
 		Name: "Connect 4",
@@ -76,6 +78,7 @@ var (
 		Players: []string{"Red", "Yellow"},
 		Start:   New,
 		AI:      layer.New,
+		// Counts:  []uint8{2},
 	}
 )
 
@@ -130,7 +133,7 @@ func (s *c4) Apply(action games.Action) games.State {
 		players: s.players,
 	}
 	copy(next.board[:], s.board[:])
-	next.board[idx] = append(next.board[idx], s.Actors()[s.Player()].Name()[0])
+	next.board[idx] = append(next.board[idx], players[s.Player()])
 	return next
 }
 
@@ -171,8 +174,8 @@ func (s *c4) Utility() []int {
 	val := isInARow(s)
 	res := make([]int, 2)
 	if val >= 0 {
-		for i, a := range s.players {
-			if s.get(val) == a.Name()[0] {
+		for i := range s.players {
+			if s.get(val) == players[i] {
 				res[i] = 1
 			} else {
 				res[i] = -1
@@ -184,7 +187,7 @@ func (s *c4) Utility() []int {
 
 func (s *c4) SVG(bool) string {
 	// TODO
-	return ""
+	return "<!-- TODO -->"
 }
 
 // Which column to drop the players token
