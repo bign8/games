@@ -19,6 +19,7 @@ import (
 	"github.com/bign8/games"
 	"github.com/bign8/games/cmd/server/app"
 	"github.com/bign8/games/impl"
+	"github.com/bign8/games/player/random"
 )
 
 // various HTML templates
@@ -74,16 +75,20 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert games for rendering
-	games := impl.Map()
-	output := make(map[string]showGame, len(games))
-	for slug, game := range games {
+	list := impl.Map()
+	output := make(map[string]showGame, len(list))
+	for slug, game := range list {
 		if err := game.Valid(); err != nil {
 			log.Print("skipping" + err.Error())
 			continue
 		}
+
+		// show the first 3 moves of a game
+		state := games.Play(games.Play(games.Play(game.Build(random.New))))
 		output[slug] = showGame{
 			Game:  game,
 			Board: template.HTML(game.Board),
+			First: template.HTML(state.SVG(false)),
 		}
 	}
 
@@ -99,6 +104,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 type showGame struct {
 	games.Game
 	Board template.HTML
+	First template.HTML
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {

@@ -9,7 +9,10 @@
   {{- range .Games}}
   <div class="col-xs-6 col-md-4">
     <a href="/play/{{ .Slug }}" class="thumbnail" title="{{ .Name }}">
-      {{ .Board }}
+      <div class="board-wrapper">
+        {{ .Board }}
+        <div class="board">{{ .First }}</div>
+      </div>
     </a>
   </div>
   {{- end}}

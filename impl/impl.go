@@ -60,7 +60,12 @@ func Map() map[string]games.Game {
 func init() {
 	mux.Lock()
 	defer mux.Unlock()
-	register := func(g games.Game) { reg[g.Slug] = g }
+	register := func(g games.Game) {
+		if err := g.Valid(); err == nil {
+			reg[g.Slug] = g
+		}
+		// TODO: log invalid cases
+	}
 	register(cc.Game)
 	register(gos.Game)
 	register(ttt.Game)
