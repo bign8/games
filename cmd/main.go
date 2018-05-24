@@ -8,9 +8,7 @@ import (
 
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
-	"github.com/bign8/games/player/cli"
-	"github.com/bign8/games/player/layer"
-	"github.com/bign8/games/player/minimax"
+	"github.com/bign8/games/player"
 )
 
 func getImpl(in *bufio.Reader) games.Game {
@@ -45,15 +43,15 @@ func getPlayer(in *bufio.Reader) playerConfig {
 	var player = map[string]playerConfig{
 		"cli": playerConfig{
 			name:   "Human via Command Line",
-			create: cli.New(in),
+			create: player.CLI(in),
 		},
 		"mm": playerConfig{
 			name:   "MiniMax Search",
-			create: minimax.New,
+			create: player.Minimax,
 		},
 		"lay": playerConfig{
 			name:   "Layer Search",
-			create: layer.New,
+			create: player.Layer,
 		},
 	}
 

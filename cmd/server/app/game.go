@@ -13,6 +13,7 @@ import (
 
 	"github.com/bign8/games"
 	"github.com/bign8/games/impl"
+	"github.com/bign8/games/player"
 	"github.com/bign8/games/util/socket"
 )
 
@@ -114,11 +115,11 @@ func play(game games.Game, players ...*socket.Socket) {
 		if isBot[i] {
 			return g.AI(g, name)
 		}
-		return newSocketActor(gamez[i], errc)
+		return player.Socket(gamez[i], errc)(g, name)
 	}
 
 	// Play the game (and broadcast final state)
-	data := game4client(games.Run(game, builder), true)
+	data := player.ToJSON(games.Run(game, builder), true)
 	for _, g := range gamez {
 		g.Write(data)
 	}

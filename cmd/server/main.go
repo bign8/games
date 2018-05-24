@@ -19,7 +19,7 @@ import (
 	"github.com/bign8/games"
 	"github.com/bign8/games/cmd/server/app"
 	"github.com/bign8/games/impl"
-	"github.com/bign8/games/player/random"
+	"github.com/bign8/games/player"
 )
 
 // various HTML templates
@@ -84,7 +84,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// show the first 3 moves of a game
-		state := games.Play(games.Play(games.Play(game.Build(random.New))))
+		state := games.Play(games.Play(games.Play(game.Build(player.Random))))
 		output[slug] = showGame{
 			Game:  game,
 			Board: template.HTML(game.Board),

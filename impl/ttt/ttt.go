@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/player/minimax"
+	"github.com/bign8/games/player"
 )
 
 type ttt struct {
@@ -206,6 +206,6 @@ var Game = games.Game{
 	Board:   svgGame,
 	Players: []string{"X", "O"},
 	Start:   New,
-	AI:      minimax.New,
+	AI:      player.Minimax,
 	Counts:  []uint8{2},
 }

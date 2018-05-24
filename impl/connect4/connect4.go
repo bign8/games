@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/player/layer"
+	"github.com/bign8/games/player"
 )
 
 var (
@@ -77,7 +77,7 @@ var (
 `,
 		Players: []string{"Red", "Yellow"},
 		Start:   New,
-		AI:      layer.New,
+		AI:      player.Layer,
 		// Counts:  []uint8{2},
 	}
 )

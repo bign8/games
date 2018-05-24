@@ -1,4 +1,4 @@
-package random
+package player
 
 import (
 	"math/rand"
@@ -6,8 +6,8 @@ import (
 	"github.com/bign8/games"
 )
 
-// New creates a new player that interfaces with a human via Stdin/out/err
-func New(_ games.Game, name string) games.Actor {
+// Random creates a new player that interfaces with a human via Stdin/out/err
+func Random(_ games.Game, name string) games.Actor {
 	return func(s games.State) games.Action {
 		acts := s.Actions()
 		idx := rand.Intn(len(acts))

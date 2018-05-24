@@ -1,4 +1,4 @@
-package layer
+package player
 
 import (
 	"math/rand"
@@ -6,8 +6,8 @@ import (
 	"github.com/bign8/games"
 )
 
-// New constructs a new layer player
-func New(_ games.Game, name string) games.Actor {
+// Layer constructs a new layer player
+func Layer(_ games.Game, name string) games.Actor {
 	return func(s games.State) games.Action {
 		actions := s.Actions()
 		moves := []games.Action{actions[0]}

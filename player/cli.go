@@ -1,4 +1,4 @@
-package cli
+package player
 
 import (
 	"bufio"
@@ -10,13 +10,8 @@ import (
 	"github.com/bign8/games"
 )
 
-type cliPlayer struct {
-	name   string
-	reader *bufio.Reader
-}
-
-// New creates a new player that interfaces with a human via Stdin/out/err
-func New(buf *bufio.Reader) games.ActorBuilder {
+// CLI creates a new player that interfaces with a human via Stdin/out/err
+func CLI(buf *bufio.Reader) games.ActorBuilder {
 	return func(_ games.Game, name string) games.Actor {
 		return func(s games.State) games.Action {
 			moves := s.Actions()
