@@ -75,9 +75,9 @@ var (
 		</g>
 		</svg>
 `,
-		Start: New,
-		AI:    player.Layer,
-		// Counts:  []uint8{2},
+		Start:  New,
+		AI:     player.Layer,
+		Counts: []uint8{2},
 	}
 )
 
@@ -184,9 +184,27 @@ func (s *c4) Utility() []int {
 	return res
 }
 
+var svgPrefix = `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+	<circle id="Y" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="yellow" />
+	<circle id="R" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="red" />
+</defs>
+<g>
+`
+
+var svgSuffix = `
+</g>
+</svg>
+`
+
 func (s *c4) SVG(bool) string {
-	// TODO
-	return "<!-- TODO -->"
+	piece := make([]string, 0, s.ctr)
+	for col, tokens := range s.board {
+		for row, char := range tokens {
+			piece = append(piece, `<use xlink:href="#`+string(char)+`" x="`+strconv.Itoa(6-col)+`" y="`+strconv.Itoa(5-row)+`"/>`)
+		}
+	}
+	return svgPrefix + strings.Join(piece, "\n") + svgSuffix
 }
 
 // Which column to drop the players token
