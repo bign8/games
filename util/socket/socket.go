@@ -51,7 +51,10 @@ func (s *Socket) recv() {
 	close(s.Done)
 }
 
+// Close down a given socket
 func (s *Socket) Close() error { return s.core.Close() }
+
+// Room starts up a new single character prefixed room
 func (s *Socket) Room(name byte) io.ReadWriteCloser {
 	// TODO: detect duplicate room names
 	read, write := io.Pipe()
@@ -88,6 +91,9 @@ type room struct {
 	conn *Socket
 }
 
-func (r *room) Read(b []byte) (int, error)  { return r.read.Read(b) }
-func (r *room) Write(b []byte) (int, error) { return r.conn.roomWrite(r.name, b) }
-func (r *room) Close() error                { return r.conn.roomClose(r.name) }
+func (r *room) Read(b []byte) (int, error) { return r.read.Read(b) }
+func (r *room) Close() error               { return r.conn.roomClose(r.name) }
+func (r *room) Write(b []byte) (int, error) {
+	i, err := r.conn.roomWrite(r.name, b)
+	return i - 1, err // we are clipping the room character
+}
