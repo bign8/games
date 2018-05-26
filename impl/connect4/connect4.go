@@ -136,6 +136,9 @@ func (s *c4) Apply(action games.Action) games.State {
 }
 
 func (s *c4) Actions() []games.Action {
+	if isInARow(s) >= 0 { // if someone has won
+		return nil
+	}
 	acts := make([]games.Action, 0, 7)
 	for i := 0; i < 7; i++ {
 		if len(s.board[i]) < 6 {
@@ -163,11 +166,9 @@ func isInARow(s *c4) int {
 
 // Terminal checks if there exists a 4-in-a-row
 func (s *c4) Terminal() bool {
-	if len(s.Actions()) == 0 {
-		return true
-	}
-	return isInARow(s) >= 0
+	return len(s.Actions()) == 0
 }
+
 func (s *c4) Utility() []int {
 	val := isInARow(s)
 	res := make([]int, 2)
