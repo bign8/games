@@ -8,3 +8,5 @@ import:
 testImport:
 - package: github.com/bign8/gobench
 - package: github.com/codegangsta/gin
+  version: cafe2ce98974a3dcca6b92ce393a91a0b58b8133
+- package: github.com/0xAX/notificator # for gin

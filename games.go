@@ -25,6 +25,10 @@ type State interface {
 	Utility() []int     // If the game is in a terminal state return the utility for each Actor, else nil
 	SVG(bool) string    // Browser representation of a state (bool: editable)
 	Terminal() bool     // Is the game complete
+
+	// // For persistance
+	// MarshalBinary() (data []byte, err error)
+	// UnmarshalBinary(data []byte) error
 }
 
 // Game is contains all the meta-data surrounding a game so it can be played

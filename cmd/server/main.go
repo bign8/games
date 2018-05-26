@@ -5,7 +5,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -20,6 +19,7 @@ import (
 	"github.com/bign8/games/cmd/server/app"
 	"github.com/bign8/games/impl"
 	"github.com/bign8/games/player"
+	httpsvc "github.com/bign8/games/svc/http"
 )
 
 // various HTML templates
@@ -52,19 +52,22 @@ func main() {
 	r.HandleFunc("/play/random", randomHandler)
 	r.Handle("/play/{slug}/socket", websocket.Handler(app.Socket))
 	r.HandleFunc("/play/{slug}", gameHandler)
+
+	r.Handle("/svc/", http.StripPrefix("/svc", httpsvc.New()))
+
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))))
 	r.HandleFunc("/about", aboutHandler)
 	r.PathPrefix("/").HandlerFunc(rootHandler)
 
 	// Spin up server
-	fmt.Println("Serving on :" + *port)
+	log.Print("Serving on :" + *port)
 	if err := http.ListenAndServe(":"+*port, r); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func randomHandler(w http.ResponseWriter, r *http.Request) {
-	urlStr := fmt.Sprintf("/play/%s", impl.Rand())
+	urlStr := "/play/" + impl.Rand()
 	http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
 }
 
@@ -125,5 +128,9 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	infoTpl.Execute(w, nil)
+	infoTpl.Execute(w, struct {
+		Year int
+	}{
+		Year: time.Now().Year(),
+	})
 }

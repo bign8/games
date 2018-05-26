@@ -1,16 +1,18 @@
-hash: d7fd33d00cbf4baceb3d197f9a74c34cc8b2632e54b544f787119c8223d87d3e
-updated: 2016-12-27T23:15:32.339306681-07:00
+hash: 24b63d4f1e3dd2938cde9c47d6e3d585876ca39d77c3928eb39ed04f7977e2bc
+updated: 2018-05-26T14:13:15.773434165-06:00
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
+  version: e3702bed27f0d39777b0b37b664b6280e8ef8fbf
 - name: golang.org/x/net
   version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
   subpackages:
   - websocket
 testImports:
+- name: github.com/0xAX/notificator
+  version: 88d57ee9043ba88d6a62e437fa15dda1ca0d2b59
 - name: github.com/bign8/gobench
   version: 20a8fe316829b5fbc263e90fe38bfc9a2a4105a8
 - name: github.com/codegangsta/gin
-  version: b2d0f660ae0db9c0a6e9fbdf0349e138f3802292
+  version: cafe2ce98974a3dcca6b92ce393a91a0b58b8133

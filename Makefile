@@ -32,3 +32,7 @@ docker:
 	docker build -t bign8/games .
 	docker run --rm -it -p 4000:4000 bign8/games
 .PHONY : docker
+
+watch:
+	go run vendor/github.com/codegangsta/gin/main.go -a 4000 -d cmd/server -i -- -tout 1ms
+.PHONY : watch
