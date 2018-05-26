@@ -53,19 +53,14 @@ func (pm *poolManager) Match(s *socket.Socket, slug string) {
 // TODO: terminate this go-routine if it runs for a long amount of time
 func (pm *poolManager) pair(slug string, ch <-chan *socket.Socket) {
 	game, _ := impl.Get(slug) // TODO: panic if game hasn't been found
-	queue := make([]*socket.Socket, 0, len(game.Players))
-	var wait <-chan time.Time
-
-	// Fix Case where Counts is not set on the registered game object
-	if len(game.Counts) == 0 {
-		game.Counts = append(game.Counts, uint8(len(game.Players)))
-	}
 	max := game.Counts[len(game.Counts)-1]
+	queue := make([]*socket.Socket, 0, max)
+	var wait <-chan time.Time
 
 	// Start the game and reset queue
 	start := func() {
 		go play(game, queue...)
-		queue = make([]*socket.Socket, 0, len(game.Players))
+		queue = make([]*socket.Socket, 0, max)
 		wait = nil
 	}
 

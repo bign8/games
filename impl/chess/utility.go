@@ -5,9 +5,10 @@ func (s State) Utility() []int {
 	val := ValueUtility(s)
 	res := make([]int, 2)
 	for i := range s.actors {
-		res[i] = val
-		if "Black" == Game.Players[i] {
-			res[i] *= -1
+		if s.Player() == 0 {
+			res[i] = -val
+		} else {
+			res[i] = val
 		}
 	}
 	return res

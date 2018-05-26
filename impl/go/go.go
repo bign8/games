@@ -3,12 +3,11 @@ package gos
 import "github.com/bign8/games"
 
 var Game = games.Game{
-	Name:    "Go",
-	Slug:    "go",
-	Board:   board,
-	Players: []string{"Black", "White"},
-	Start:   nil,
-	AI:      nil,
+	Name:  "Go",
+	Slug:  "go",
+	Board: board,
+	Start: nil,
+	AI:    nil,
 }
 
 // https://commons.wikimedia.org/wiki/File:Blank_Go_board.svg

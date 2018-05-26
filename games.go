@@ -35,13 +35,12 @@ type State interface {
 
 // Game is contains all the meta-data surrounding a game so it can be played
 type Game struct {
-	Name    string   // Name of the game
-	Slug    string   // Short name of game
-	Board   string   // SVG of board state
-	Players []string // List of Player names
-	Counts  []uint8  // Possible number of players to play a game (if nil assume == len(Players))
-	Start   Starter  `json:"-"`
-	AI      Actor    `json:"-"` // TODO: use smart enough ai that this can be removed
+	Name   string  // Name of the game
+	Slug   string  // Short name of game
+	Board  string  // SVG of board state
+	Counts []uint8 // Possible number of players to play a game
+	Start  Starter `json:"-"` // Function to build the start state of the game // TODO: just have a state here
+	AI     Actor   `json:"-"` // TODO: use smart enough ai that this can be removed
 }
 
 // Valid determines if a game configuration is valid.
@@ -90,8 +89,9 @@ func (g Game) Build(actors ...Actor) State {
 // Run is the primary game runner
 // TODO: kill me!
 func Run(g Game, ab func() Actor) (final State) {
-	actors := make([]Actor, len(g.Players))
-	for i := range g.Players {
+	last := g.Counts[len(g.Counts)-1]
+	actors := make([]Actor, last)
+	for i := uint8(0); i < last; i++ {
 		actors[i] = ab()
 	}
 	game := g.Start(actors...)

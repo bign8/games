@@ -4,12 +4,11 @@ import "github.com/bign8/games"
 
 // Game is the fully described version of TTT
 var Game = games.Game{
-	Name:    "Backgammon",
-	Slug:    "backgammon",
-	Board:   board,
-	Players: []string{"Black", "White"},
-	Start:   nil,
-	AI:      nil,
+	Name:  "Backgammon",
+	Slug:  "backgammon",
+	Board: board,
+	Start: nil,
+	AI:    nil,
 }
 
 // Source: https://commons.wikimedia.org/wiki/File:BackgammonBoard.svg

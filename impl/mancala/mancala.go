@@ -3,12 +3,11 @@ package mancala
 import "github.com/bign8/games"
 
 var Game = games.Game{
-	Name:    "Mancala",
-	Slug:    "mancala",
-	Board:   board,
-	Players: []string{"Left", "Right"},
-	Start:   nil,
-	AI:      nil,
+	Name:  "Mancala",
+	Slug:  "mancala",
+	Board: board,
+	Start: nil,
+	AI:    nil,
 }
 
 var board = `

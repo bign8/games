@@ -75,9 +75,8 @@ var (
 		</g>
 		</svg>
 `,
-		Players: []string{"Red", "Yellow"},
-		Start:   New,
-		AI:      player.Layer,
+		Start: New,
+		AI:    player.Layer,
 		// Counts:  []uint8{2},
 	}
 )

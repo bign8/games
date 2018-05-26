@@ -22,6 +22,8 @@ var moveNames = []string{
 	"Bottom Left Corner", "Bottom Middle", "Bottom Right Corner",
 }
 
+var players = []byte{'X', 'O'}
+
 func (m tttMove) Type() string { return "" }
 func (m tttMove) Slug() string { return svgName[m] }
 func (m tttMove) String() string {
@@ -130,7 +132,7 @@ func (g ttt) Utility() []int {
 	res := make([]int, 2)
 	if isWin, chr := isWin(g.board); isWin {
 		for i := range g.players {
-			if chr == Game.Players[i][0] {
+			if chr == players[i] {
 				res[i] = 1
 			} else {
 				res[i] = -1
@@ -201,11 +203,10 @@ func (g ttt) SVG(active bool) string {
 
 // Game is the fully described version of TTT
 var Game = games.Game{
-	Name:    "Tic-Tac-Toe",
-	Slug:    "ttt",
-	Board:   svgGame,
-	Players: []string{"X", "O"},
-	Start:   New,
-	AI:      player.Minimax,
-	Counts:  []uint8{2},
+	Name:   "Tic-Tac-Toe",
+	Slug:   "ttt",
+	Board:  svgGame,
+	Start:  New,
+	AI:     player.Minimax,
+	Counts: []uint8{2},
 }
