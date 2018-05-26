@@ -75,7 +75,7 @@ var (
 		</svg>
 `,
 		Start:  New,
-		AI:     player.Layer,
+		AI:     player.Depth(2),
 		Counts: []uint8{2},
 	}
 )
@@ -127,8 +127,7 @@ func (s *c4) String() string {
 }
 
 func (s *c4) Apply(action games.Action) games.State {
-	a := action.(c4move)
-	idx := int(uint8(a))
+	idx := int(action.(c4move))
 	next := &c4{ctr: s.ctr + 1}
 	copy(next.board[:], s.board[:])
 	next.board[idx] = append(next.board[idx], players[s.Player()])
@@ -173,12 +172,12 @@ func (s *c4) Utility() []int {
 	val := isInARow(s)
 	res := make([]int, 2)
 	if val >= 0 {
-		for i := 0; i < 2; i++ {
-			if s.get(val) == players[i] {
-				res[i] = 1
-			} else {
-				res[i] = -1
-			}
+		if s.get(val) == players[0] {
+			res[0] = 1
+			res[1] = -1
+		} else {
+			res[1] = 1
+			res[0] = -1
 		}
 	}
 	return res

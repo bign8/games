@@ -11,7 +11,7 @@ func Layer(s games.State) games.Action {
 	actions := s.Actions()
 	moves := []games.Action{actions[0]}
 	val := value(s, actions[0])
-	for _, a := range actions {
+	for _, a := range actions[1:] {
 		test := value(s, a)
 		if test > val {
 			moves = []games.Action{a}
