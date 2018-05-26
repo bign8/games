@@ -1,7 +1,6 @@
 package connect4
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/bign8/games"
@@ -19,7 +18,7 @@ var (
 		Name: "Connect 4",
 		Slug: "c4",
 		// TODO: https://upload.wikimedia.org/wikipedia/commons/d/dc/Puissance4_01.svg
-		Board: `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		Board: `<svg viewBox="0 -.5 7 7" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<defs>
 		  <circle id="o" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="#d7d7d7" />
 		</defs>
@@ -184,7 +183,7 @@ func (s *c4) Utility() []int {
 	return res
 }
 
-var svgPrefix = `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+var svgPrefix = `<svg viewBox="0 -.5 7 7" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
 	<circle id="Y" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="yellow" />
 	<circle id="R" cx=".5" cy=".5" r=".4" stroke="black" stroke-width=".05" fill="red" />
@@ -192,24 +191,30 @@ var svgPrefix = `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" xmlns
 <g>
 `
 
-var svgSuffix = `
-</g>
-</svg>
-`
+var (
+	colStr = []string{"0", "1", "2", "3", "4", "5", "6"}
+	rowStr = []string{"5", "4", "3", "2", "1", "0"}
+	svgEnd = `</g></svg>`
+)
 
-func (s *c4) SVG(bool) string {
-	piece := make([]string, 0, s.ctr)
+func (s *c4) SVG(active bool) string {
+	piece := make([]string, 0, s.ctr+7)
 	for col, tokens := range s.board {
 		for row, char := range tokens {
-			piece = append(piece, `<use xlink:href="#`+string(char)+`" x="`+strconv.Itoa(6-col)+`" y="`+strconv.Itoa(5-row)+`"/>`)
+			piece = append(piece, `<use xlink:href="#`+string(char)+`" x="`+colStr[col]+`" y="`+rowStr[row]+`"/>`)
+		}
+		if active && len(tokens) < 6 {
+			piece = append(piece, `<use xlink:href="#`+string(players[s.Player()])+`" x="`+colStr[col]+`" y="`+rowStr[len(tokens)]+`" data-slug="m`+moveInt[col]+`"/>`)
 		}
 	}
-	return svgPrefix + strings.Join(piece, "\n") + svgSuffix
+	return svgPrefix + strings.Join(piece, "") + svgEnd
 }
 
 // Which column to drop the players token
 type c4move uint8
 
-func (move c4move) String() string { return "Column " + strconv.Itoa(int(move)+1) }
-func (move c4move) Slug() string   { return "m" + strconv.Itoa(int(move)+1) }
+var moveInt = []string{"1", "2", "3", "4", "5", "6", "7"}
+
+func (move c4move) String() string { return "Column " + moveInt[move] }
+func (move c4move) Slug() string   { return "m" + moveInt[move] }
 func (move c4move) Type() string   { return "" }
