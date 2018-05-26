@@ -3,7 +3,7 @@ package chess
 import "testing"
 
 func BenchmarkStateApply(b *testing.B) {
-	game := New(nil, nil).(*State)
+	game := New(2).(*State)
 	moves := game.Moves() // cache moves
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

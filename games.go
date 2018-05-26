@@ -3,19 +3,14 @@ package games
 
 import "errors"
 
-// Stringer is a duplicate of fmt.Stringer but duplicated for transpiling reasons.
-type Stringer interface {
-	String() string
-}
-
 // Starter is a function used to create a game's initial state
-type Starter func(...Actor) State
+type Starter func(actors uint8) State
 
 // Action is the base type for a game move
 type Action interface {
-	Stringer
-	Type() string // allows types of moves to be grouped
-	Slug() string // computer parsable ID of an action
+	String() string // CLI representation of the action
+	Type() string   // allows types of moves to be grouped
+	Slug() string   // computer parsable ID of an action
 }
 
 // Actor is a method that choose an Action given a particular State
@@ -23,8 +18,7 @@ type Actor func(State) Action
 
 // State is the base type for the state of a game
 type State interface {
-	Stringer
-	Actors() []Actor    // List of active actors for a game
+	String() string     // CLI represetation of the state
 	Player() int        // index of the active player given a State (also index in Utility array)
 	Apply(Action) State // Applying an action to a game
 	Actions() []Action  // List of available actions in a State
@@ -57,9 +51,24 @@ func (g Game) Valid() error {
 	return nil
 }
 
-// Build constructs a game given the set of actor builders.
+// Match is a game that is in progress
+type Match struct {
+	State          // active state of the game
+	Actors []Actor // players engaged in the game
+}
+
+// Advance asks the current player to perform an action
+func (m *Match) Advance() *Match {
+	idx := m.Player()
+	actor := m.Actors[idx]
+	action := actor(m)
+	m.State = m.Apply(action)
+	return m
+}
+
+// Play constructs a match for a game given the set of actors.
 // Build uses AI players to buffer insufficient numbers of players.
-func (g Game) Build(actors ...Actor) State {
+func (g Game) Play(actors ...Actor) *Match {
 	length := uint8(len(actors))
 	if err := g.Valid(); err != nil {
 		panic(err)
@@ -83,34 +92,18 @@ func (g Game) Build(actors ...Actor) State {
 			players[i] = g.AI
 		}
 	}
-	return g.Start(players...)
-}
-
-// Run is the primary game runner
-// TODO: kill me!
-func Run(g Game, ab func() Actor) (final State) {
-	last := g.Counts[len(g.Counts)-1]
-	actors := make([]Actor, last)
-	for i := uint8(0); i < last; i++ {
-		actors[i] = ab()
+	return &Match{
+		State:  g.Start(count),
+		Actors: players,
 	}
-	game := g.Start(actors...)
-	for !game.Terminal() {
-		game = Play(game)
+}
+
+// MakeActors builds a series of actors given a method that can create them
+func (g Game) MakeActors(builder func() Actor) []Actor {
+	max := int(g.Counts[len(g.Counts)-1])
+	actors := make([]Actor, max)
+	for i := 0; i < max; i++ {
+		actors[i] = builder()
 	}
-	return game
+	return actors
 }
-
-// Play takes the game through the next phase
-//* // This play is for real running (remove a / for fail over to debugging)
-func Play(g State) State { return g.Apply(g.Actors()[g.Player()](g)) }
-
-/*/
-func Play(g State) State {
-	p := g.Player()
-	fmt.Println("Choosing player", p)
-	a := g.Actors()[p].Act(g)
-	fmt.Println("Choosing action", a.String())
-	return g.Apply(a)
-}
-//*/

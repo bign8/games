@@ -82,12 +82,16 @@ var (
 )
 
 // New constructs a connect4 game
-func New(actors ...games.Actor) games.State { return &c4{players: actors} }
+func New(actors uint8) games.State {
+	if actors != 2 {
+		panic("invalid number of players")
+	}
+	return &c4{}
+}
 
 type c4 struct {
-	board   [7][]byte
-	ctr     uint8
-	players []games.Actor
+	board [7][]byte
+	ctr   uint8
 }
 
 func (s *c4) get(p int) byte {
@@ -97,8 +101,7 @@ func (s *c4) get(p int) byte {
 	return ' '
 }
 
-func (s *c4) Actors() []games.Actor { return s.players }
-func (s *c4) Player() int           { return int(s.ctr) % 2 }
+func (s *c4) Player() int { return int(s.ctr) % 2 }
 
 func (s *c4) String() string {
 	rows := make([]string, 0, 6)
@@ -127,10 +130,7 @@ func (s *c4) String() string {
 func (s *c4) Apply(action games.Action) games.State {
 	a := action.(c4move)
 	idx := int(uint8(a))
-	next := &c4{
-		ctr:     s.ctr + 1,
-		players: s.players,
-	}
+	next := &c4{ctr: s.ctr + 1}
 	copy(next.board[:], s.board[:])
 	next.board[idx] = append(next.board[idx], players[s.Player()])
 	return next
@@ -173,7 +173,7 @@ func (s *c4) Utility() []int {
 	val := isInARow(s)
 	res := make([]int, 2)
 	if val >= 0 {
-		for i := range s.players {
+		for i := 0; i < 2; i++ {
 			if s.get(val) == players[i] {
 				res[i] = 1
 			} else {

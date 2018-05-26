@@ -4,7 +4,7 @@ package chess
 func (s State) Utility() []int {
 	val := ValueUtility(s)
 	res := make([]int, 2)
-	for i := range s.actors {
+	for i := 0; i < 2; i++ {
 		if s.Player() == 0 {
 			res[i] = -val
 		} else {

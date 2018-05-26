@@ -8,7 +8,7 @@ func TestValidGames(t *testing.T) {
 			t.Error(err)
 			continue
 		}
-		t.Logf("%q: %q", k, v.Build().SVG(true))
+		t.Logf("%q: %q", k, v.Play().SVG(true))
 		// TODO: validate mutable SVG is setup to not cause problems on the client
 		// TODO: validate move slugs are unique
 	}

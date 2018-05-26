@@ -9,9 +9,8 @@ import (
 )
 
 type ttt struct {
-	board   [9]byte
-	ctr     uint8
-	players []games.Actor
+	board [9]byte
+	ctr   uint8
 }
 
 type tttMove uint8
@@ -32,17 +31,16 @@ func (m tttMove) String() string {
 	}
 	return moveNames[m]
 }
-func (g ttt) Actors() []games.Actor { return g.players }
-func (g ttt) Player() int           { return int(g.ctr) % 2 }
+func (g ttt) Player() int { return int(g.ctr) % 2 }
 
 // New takes creates a new game of ttt
-func New(players ...games.Actor) games.State {
-	if len(players) != 2 {
-		panic(fmt.Sprintf("invalid number of players: %d", len(players)))
+func New(actors uint8) games.State {
+	if actors != 2 {
+		panic(fmt.Sprintf("invalid number of players: %d", actors))
 	}
 	var board [9]byte
 	copy(board[:], "         ")
-	return &ttt{board, 0, players}
+	return &ttt{board, 0}
 }
 
 // Apply applies a given move to a state
@@ -56,7 +54,7 @@ func (g ttt) Apply(a games.Action) games.State {
 	} else {
 		board[m] = 'O'
 	}
-	return &ttt{board, g.ctr + 1, g.players}
+	return &ttt{board, g.ctr + 1}
 }
 
 func (g ttt) String() string {
@@ -131,12 +129,12 @@ func isWin(chrs [9]byte) (bool, byte) {
 func (g ttt) Utility() []int {
 	res := make([]int, 2)
 	if isWin, chr := isWin(g.board); isWin {
-		for i := range g.players {
-			if chr == players[i] {
-				res[i] = 1
-			} else {
-				res[i] = -1
-			}
+		if chr == 'X' {
+			res[0] = 1
+			res[1] = -1
+		} else {
+			res[1] = 1
+			res[0] = -1
 		}
 	}
 	return res

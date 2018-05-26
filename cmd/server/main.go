@@ -84,11 +84,11 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// show the first 3 moves of a game
-		state := games.Play(games.Play(games.Play(game.Build(player.Random))))
+		match := game.Play(player.Random).Advance().Advance().Advance()
 		output[slug] = showGame{
 			Game:  game,
 			Board: template.HTML(game.Board),
-			First: template.HTML(state.SVG(false)),
+			First: template.HTML(match.SVG(false)),
 		}
 	}
 

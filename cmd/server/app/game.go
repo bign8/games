@@ -114,7 +114,11 @@ func play(game games.Game, players ...*socket.Socket) {
 	}
 
 	// Play the game (and broadcast final state)
-	data := player.ToJSON(games.Run(game, builder), true)
+	match := game.Play(game.MakeActors(builder)...)
+	for !match.Terminal() {
+		match.Advance()
+	}
+	data := player.ToJSON(match, true)
 	for _, g := range gamez {
 		g.Write(data)
 	}

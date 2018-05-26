@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkMoves(b *testing.B) {
-	game := New().(*State)
+	game := New(2).(*State)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.moves = nil
@@ -15,7 +15,7 @@ func BenchmarkMoves(b *testing.B) {
 }
 
 func BenchmarkMovesClip(b *testing.B) {
-	game := New().(*State)
+	game := New(2).(*State)
 	moves := game.Moves()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

@@ -3,20 +3,11 @@ package ttt
 import (
 	"testing"
 
-	"github.com/bign8/games"
 	"github.com/bign8/games/util/assert"
 )
 
-func dumb(s games.State) games.Action {
-	return s.Actions()[0]
-}
-
-func newGame() games.State {
-	return New(dumb, dumb)
-}
-
 func Test(t *testing.T) {
-	game := newGame()
+	game := New(2)
 	assert.Equal(t, game.String(), "╔═══╦═══╦═══╗\n║   ║   ║   ║\n╠═══╬═══╬═══╣\n"+
 		"║   ║   ║   ║\n╠═══╬═══╬═══╣\n║   ║   ║   ║\n╚═══╩═══╩═══╝", "default string")
 	assert.Equal(t, game.SVG(false), `<svg viewBox="0 0 90 90" stroke="black" stroke-linecap="round"><g></g></svg>`, "svg")
@@ -56,7 +47,7 @@ func TestIsWin(t *testing.T) {
 }
 
 func BenchmarkStateString(b *testing.B) {
-	game := newGame()
+	game := New(2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = game.String()
@@ -65,12 +56,12 @@ func BenchmarkStateString(b *testing.B) {
 
 func BenchmarkNewState(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		newGame()
+		New(2)
 	}
 }
 
 func BenchmarkApply(b *testing.B) {
-	game := newGame()
+	game := New(2)
 	move := game.Actions()[0]
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -79,7 +70,7 @@ func BenchmarkApply(b *testing.B) {
 }
 
 func BenchmarkUtility(b *testing.B) {
-	game := newGame()
+	game := New(2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		game.Utility()
@@ -87,7 +78,7 @@ func BenchmarkUtility(b *testing.B) {
 }
 
 func BenchmarkSVG(b *testing.B) {
-	game := newGame()
+	game := New(2)
 	game = game.Apply(game.Actions()[4])
 	game = game.Apply(game.Actions()[4])
 	game = game.Apply(game.Actions()[3])

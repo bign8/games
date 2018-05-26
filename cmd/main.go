@@ -88,10 +88,15 @@ func main() {
 	in := bufio.NewReader(os.Stdin)
 
 	// Play Game
-	game := games.Run(getImpl(in), playerBuilder(in))
+	game := getImpl(in)
+	players := game.MakeActors(playerBuilder(in))
+	match := game.Play(players...)
+	for !match.Terminal() {
+		match.Advance()
+	}
 
 	// Print terminal message
-	if nil != game.Utility() {
-		fmt.Printf("Game Complete\n\n%s\n", game)
+	if nil != match.Utility() {
+		fmt.Printf("Game Complete\n\n%s\n", match)
 	}
 }

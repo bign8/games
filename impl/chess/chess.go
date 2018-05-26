@@ -21,12 +21,10 @@ type State struct {
 	count     uint32   // max of 4294967295 (limited by type)
 	moves     []*Move  // cache of available moves
 	check     bool
-	actors    []games.Actor
-	err       error
 }
 
 // New begins a brand new game
-func New(actors ...games.Actor) games.State {
+func New(actors uint8) games.State {
 	var board [64]byte
 	copy(board[:], "rnbqkbnrpppppppp11111111111111111111111111111111PPPPPPPPRNBQKBNR")
 	// copy(board[:], "rnbqkbnr1ppp1ppp11111111p111p11Q11B1P11111111111PPPP1PPPRNB1K1NR")
@@ -37,12 +35,8 @@ func New(actors ...games.Actor) games.State {
 		enPassant: InvalidLocation,
 		halfmove:  0,
 		count:     1,
-		actors:    actors,
 	}
 }
-
-// Actors returns the active set of game actors
-func (s State) Actors() []games.Actor { return s.actors }
 
 // Player return the index of the active player
 func (s State) Player() int {
@@ -50,10 +44,6 @@ func (s State) Player() int {
 		return 1
 	}
 	return 0
-}
-
-func (s State) Error() error {
-	return s.err
 }
 
 // Apply executes a move on a given state of the board
@@ -146,7 +136,6 @@ func (s State) Apply(mo games.Action) games.State {
 		halfmove:  halfmove,
 		count:     count,
 		check:     m.check,
-		actors:    s.actors,
 	}
 }
 

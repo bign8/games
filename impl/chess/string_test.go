@@ -7,7 +7,7 @@ import (
 )
 
 func BenchmarkStateString(b *testing.B) {
-	game := New(nil, nil)
+	game := New(2)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = game.String()
@@ -15,7 +15,7 @@ func BenchmarkStateString(b *testing.B) {
 }
 
 func TestNewString(b *testing.T) {
-	x := New(nil, nil).String()
+	x := New(2).String()
 	lines := []string{
 		"╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗",
 		"║ ♜ ║ ♞ ║ ♝ ║ ♛ ║ ♚ ║ ♝ ║ ♞ ║ ♜ ║  8",
