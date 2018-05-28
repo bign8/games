@@ -61,6 +61,9 @@ func init() {
 	mux.Lock()
 	defer mux.Unlock()
 	register := func(g games.Game) {
+		if _, ok := reg[g.Slug]; ok {
+			panic(g.Slug + " already registered")
+		}
 		if err := g.Valid(); err == nil {
 			reg[g.Slug] = g
 		}

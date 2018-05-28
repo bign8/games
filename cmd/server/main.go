@@ -18,6 +18,8 @@ import (
 	"github.com/bign8/games/cmd/server/app"
 	"github.com/bign8/games/impl"
 	"github.com/bign8/games/player"
+	"github.com/bign8/games/svc/memory"
+	"github.com/bign8/games/svc/rest"
 )
 
 // various HTML templates
@@ -36,8 +38,10 @@ var (
 func main() {
 	flag.Parse()
 
+	// Setup API server
+	http.Handle("/api/", http.StripPrefix("/api", rest.New(memory.New(), "/api")))
+
 	// Setup standard gorilla router
-	// r := mux.NewRouter()
 	fs := http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))
 	http.Handle("/static/", http.StripPrefix("/static", fs))
 
@@ -48,7 +52,6 @@ func main() {
 
 	// Bind specific game implementations
 	for slug, game := range impl.Map() {
-		log.Println("Registering", slug)
 		http.Handle("/play/"+slug+"/socket", websocket.Handler(app.Socket(game)))
 		http.Handle("/play/"+slug, wrap(gameTPL, gameHandler(game)))
 	}
