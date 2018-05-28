@@ -205,6 +205,7 @@ func (s *c4) SVG(active bool) string {
 		}
 		if active && len(tokens) < 6 {
 			piece = append(piece, `<use xlink:href="#`+string(players[s.Player()])+`" x="`+colStr[col]+`" y="`+rowStr[len(tokens)]+`" data-slug="m`+moveInt[col]+`"/>`)
+			piece = append(piece, `<rect x="`+colStr[col]+`" y="0" height="6" width="1" data-show="m`+moveInt[col]+`"></rect>`)
 		}
 	}
 	return svgPrefix + strings.Join(piece, "") + svgEnd
