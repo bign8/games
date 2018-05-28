@@ -40,3 +40,16 @@ I develop GO in an [Atom](https://atom.io/) editor in conjunction with the [Delv
 - [go-debug](https://atom.io/packages/go-debug)
 - [go-config](https://atom.io/packages/go-config)
 - [go-plus](https://atom.io/packages/go-plus)
+
+### Running the service
+
+*Aside
+I ran into a few problems getting Docker to start on AWS EC2 instances.
+Needed to add a config that sounds terrible when starting `dockerd`: `--storage-opt dm.override_udev_sync_check=true`
+Thanks to [thomas15v](https://github.com/docker-library/docker/issues/19#issuecomment-298835023) for figuring out a short term solution.
+(Yes, I know this is terrible, but these containers are currently ephemeral until I get stateless persistence, scaling and reconnecting working)*
+
+```
+docker run -d --name games --publish 4000:4000 bign8/games:latest
+docker service create --name games --publish 4000:4000 bign8/games:latest
+```
