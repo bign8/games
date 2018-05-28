@@ -34,5 +34,5 @@ docker:
 .PHONY : docker
 
 watch:
-	go run vendor/github.com/codegangsta/gin/main.go -a 4000 -d cmd/server -i -- -tout 1ms
+	go run vendor/github.com/codegangsta/gin/main.go -a 4000 -d cmd/server -i --all -- -tout 1ms
 .PHONY : watch

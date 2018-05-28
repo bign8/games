@@ -1,14 +1,20 @@
-hash: 19d5a46b4b3c2195499a5f7dfea5c81e3609a6abe096727c95b30906e41e59a9
-updated: 2018-05-28T14:33:20.754133115-06:00
+hash: 9d1749ccd94836d47a531b4f33efc277724182bf4493d3a71f3d642841724736
+updated: 2018-05-28T14:46:28.988198104-06:00
 imports:
 - name: golang.org/x/net
   version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
   subpackages:
   - websocket
 testImports:
-- name: github.com/0xAX/notificator
-  version: 88d57ee9043ba88d6a62e437fa15dda1ca0d2b59
 - name: github.com/bign8/gobench
   version: 20a8fe316829b5fbc263e90fe38bfc9a2a4105a8
+- name: github.com/codegangsta/envy
+  version: 4b78388c8ce4fa412440ca4eaa654e2fdd752e49
+  subpackages:
+  - lib
 - name: github.com/codegangsta/gin
-  version: cafe2ce98974a3dcca6b92ce393a91a0b58b8133
+  version: 9ba699191d209550053612796f2181e6ae352585
+- name: github.com/mattn/go-shellwords
+  version: 39dbbfa24bbc39559b61cae9b20b0e8db0e55525
+- name: gopkg.in/urfave/cli.v1
+  version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
