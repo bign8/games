@@ -2,6 +2,7 @@ package chess
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -48,6 +49,7 @@ func (s State) SVG(active bool) string {
 		// for each group, split the cell into the various move targets
 		hovers := make([]string, 0, len(actions))
 		for spot, group := range groups {
+			sort.Sort(ltr(group)) // sort so overlays appear the same each time
 			fraction := 1 / float64(len(group))
 			row, col := spot.rowCol()
 			for i, move := range group {
@@ -68,4 +70,19 @@ func (s State) SVG(active bool) string {
 		parts += `<g>` + strings.Join(moves, "") + strings.Join(hovers, "") + "</g>"
 	}
 	return svgHead + parts + svgTail
+}
+
+// Sort a list of moves from left to right based on start positiion.
+// Iff they are the same, sort top down.
+type ltr []*Move
+
+func (a ltr) Len() int      { return len(a) }
+func (a ltr) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ltr) Less(i, j int) bool {
+	ir, ic := a[i].Start.rowCol()
+	jr, jc := a[j].Start.rowCol()
+	if ic == jc {
+		return ir < jr
+	}
+	return ic < jc
 }
