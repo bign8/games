@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 
 	"github.com/bign8/games"
@@ -24,8 +23,8 @@ import (
 // various HTML templates
 var (
 	rootTPL = load("root")
-	gameTPL = load("root")
-	infoTPL = load("root")
+	gameTPL = load("game")
+	infoTPL = load("info")
 )
 
 // Environment parameters + defaults
@@ -38,20 +37,25 @@ func main() {
 	flag.Parse()
 
 	// Setup standard gorilla router
-	r := mux.NewRouter()
+	// r := mux.NewRouter()
 	fs := http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", fs))
+	http.Handle("/static/", http.StripPrefix("/static", fs))
 
 	// Setup programatic routes
-	r.Handle("/play/random", http.HandlerFunc(randomHandler))
-	r.Handle("/play/{slug}/socket", websocket.Handler(app.Socket))
-	r.Handle("/play/{slug}", wrap(gameTPL, gameHandler))
-	r.Handle("/about", wrap(infoTPL, aboutHandler))
-	r.Handle("/", wrap(rootTPL, rootHandler))
+	http.Handle("/play/random", http.HandlerFunc(randomHandler))
+	http.Handle("/about", wrap(infoTPL, aboutHandler))
+	http.Handle("/", wrap(rootTPL, rootHandler))
+
+	// Bind specific game implementations
+	for slug, game := range impl.Map() {
+		log.Println("Registering", slug)
+		http.Handle("/play/"+slug+"/socket", websocket.Handler(app.Socket(game)))
+		http.Handle("/play/"+slug, wrap(gameTPL, gameHandler(game)))
+	}
 
 	// Spin up server
 	log.Print("Serving on :" + *port)
-	if err := http.ListenAndServe(*host+":"+*port, r); err != nil {
+	if err := http.ListenAndServe(*host+":"+*port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -139,16 +143,12 @@ type showGame struct {
 	First template.HTML
 }
 
-func gameHandler(r *http.Request) interface{} {
-	slug := mux.Vars(r)["slug"]
-	game, ok := impl.Get(slug)
-	if !ok {
-		log.Printf("Unable to find game: %q", slug)
-		return redirect("/")
-	}
-	return showGame{
-		Game:  game,
-		Board: template.HTML(game.Board),
+func gameHandler(game games.Game) webpage {
+	return func(r *http.Request) interface{} {
+		return showGame{
+			Game:  game,
+			Board: template.HTML(game.Board),
+		}
 	}
 }
 

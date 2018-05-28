@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/mux"
 	"golang.org/x/net/websocket"
 
 	"github.com/bign8/games"
@@ -21,11 +20,12 @@ var pool = &poolManager{games: make(map[string]chan<- *socket.Socket)}
 var tout = flag.Duration("tout", 5*time.Second, "matcher timeout")
 
 // Socket is called when a client wants to start a game
-func Socket(ws *websocket.Conn) {
-	slug := mux.Vars(ws.Request())["slug"] // TODO: verify valid slug
-	s := socket.New(ws)
-	pool.Match(s, slug)
-	<-s.Done
+func Socket(game games.Game) websocket.Handler {
+	return func(ws *websocket.Conn) {
+		s := socket.New(ws)
+		pool.Match(s, game.Slug)
+		<-s.Done
+	}
 }
 
 // poolManager is designed to setup games as game requests come in

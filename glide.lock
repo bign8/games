@@ -1,10 +1,6 @@
-hash: 24b63d4f1e3dd2938cde9c47d6e3d585876ca39d77c3928eb39ed04f7977e2bc
-updated: 2018-05-26T14:13:15.773434165-06:00
+hash: 19d5a46b4b3c2195499a5f7dfea5c81e3609a6abe096727c95b30906e41e59a9
+updated: 2018-05-28T14:33:20.754133115-06:00
 imports:
-- name: github.com/gorilla/context
-  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
-- name: github.com/gorilla/mux
-  version: e3702bed27f0d39777b0b37b664b6280e8ef8fbf
 - name: golang.org/x/net
   version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
   subpackages:
