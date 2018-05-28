@@ -23,24 +23,15 @@ import (
 
 // various HTML templates
 var (
-	p       = func(n string) string { return filepath.Join("cmd", "server", "tpl", n+".gohtml") }
-	rootTPL = template.Must(template.ParseFiles(p("base"), p("root"))).Option("missingkey=error")
-	gameTPL = template.Must(template.ParseFiles(p("base"), p("game"))).Option("missingkey=error")
-	infoTPL = template.Must(template.ParseFiles(p("base"), p("info"))).Option("missingkey=error")
+	rootTPL = load("root")
+	gameTPL = load("root")
+	infoTPL = load("root")
 )
 
 // Environment parameters + defaults
 var (
-	defaults = map[string]string{
-		"PORT": "4000",
-	}
-	def = func(s string) string {
-		if v := os.Getenv(s); v != "" {
-			return v
-		}
-		return defaults[s]
-	}
-	port = flag.String("port", def("PORT"), "port to serve on")
+	host = flag.String("host", def("HOST", ""), "host to serve on")
+	port = flag.String("port", def("PORT", "4000"), "port to serve on")
 )
 
 func main() {
@@ -60,9 +51,26 @@ func main() {
 
 	// Spin up server
 	log.Print("Serving on :" + *port)
-	if err := http.ListenAndServe(":"+*port, r); err != nil {
+	if err := http.ListenAndServe(*host+":"+*port, r); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// load hydrates a template from persistence
+// TODO: bundle static files in go binary
+func load(name string) *template.Template {
+	p := func(n string) string {
+		return filepath.Join("cmd", "server", "tpl", n+".gohtml")
+	}
+	return template.Must(template.ParseFiles(p("base"), p(name))).Option("missingkey=error")
+}
+
+// def gives the environment variable if present, otherwise it returns def
+func def(env, str string) string {
+	if v := os.Getenv(env); v != "" {
+		return v
+	}
+	return str
 }
 
 // webpage is a simple handler for dealing with standard web-page assets
@@ -138,15 +146,13 @@ func gameHandler(r *http.Request) interface{} {
 		log.Printf("Unable to find game: %q", slug)
 		return redirect("/")
 	}
-	return struct {
-		Game  games.Game
-		Board template.HTML
-	}{
+	return showGame{
 		Game:  game,
 		Board: template.HTML(game.Board),
 	}
 }
 
 func aboutHandler(r *http.Request) interface{} {
+	// TODO: generate CSRF token for contact form (or something)
 	return nil
 }
