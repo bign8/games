@@ -1,5 +1,5 @@
 // Package games borrows terminology from "AI - A Modern Approach" Chapter 5
-package games
+package games // import "github.com/bign8/games"
 
 import "errors"
 
