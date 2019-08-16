@@ -1,2 +1,7 @@
-golang.org/x/net v0.0.0-20150817040848-66f0418ca412 h1:BngWf1y9oCnAFsNhlT5a0OPpJ6bq2sYJLu66IgES4EE=
-golang.org/x/net v0.0.0-20150817040848-66f0418ca412/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
+github.com/bign8/gobench v0.0.0-20160906053847-20a8fe316829 h1:Qlyw4t5I6C1TouU9WENVg9eoovQbUc3QVj+QzeBrdxE=
+github.com/bign8/gobench v0.0.0-20160906053847-20a8fe316829/go.mod h1:xA/jdMLdPNtTff1LTheRY0IoAX28+mDfX5gebkvHGnA=
+golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+golang.org/x/net v0.0.0-20190603091049-60506f45cf65 h1:+rhAzEzT3f4JtomfC371qB+0Ola2caSKcY69NUBZrRQ=
+golang.org/x/net v0.0.0-20190603091049-60506f45cf65/go.mod h1:HSz+uSET+XFnRR8LxR5pz3Of3rY3CfYBVs4xY44aLks=
+golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

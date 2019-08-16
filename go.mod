@@ -1,3 +1,8 @@
 module github.com/bign8/games
 
-require golang.org/x/net v0.0.0-20150817040848-66f0418ca412
+go 1.11
+
+require (
+	github.com/bign8/gobench v0.0.0-20160906053847-20a8fe316829 // indirect
+	golang.org/x/net v0.0.0-20190603091049-60506f45cf65
+)
