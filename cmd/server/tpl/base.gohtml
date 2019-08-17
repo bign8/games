@@ -7,9 +7,9 @@
   <title>Game Roulette</title>
   <meta name="description" content="xxx">
   <meta name="author" content="Nate Woods">
-  <link rel="stylesheet" href="/static/bootstrap.min.css">
-  <link rel="stylesheet" href="/static/css.css">
-  <link href="/static/favicon.ico" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="{{prefix}}/static/bootstrap.min.css">
+  <link rel="stylesheet" href="{{prefix}}/static/css.css">
+  <link href="{{prefix}}/static/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body>
   <div class="container container-narrow">
@@ -21,7 +21,7 @@
           </li>
         </ul>
       </nav>-->
-      <h3 id="top"><a href="/" class="text-muted">Game Roulette</a></h3>
+      <h3 id="top"><a href="{{prefix}}/" class="text-muted">Game Roulette</a></h3>
     </div>
 
     {{block "body" .Data}}{{end}}

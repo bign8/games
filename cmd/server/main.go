@@ -63,13 +63,24 @@ func main() {
 	}
 }
 
+var prefix = os.Getenv("GAMES_PREFIX")
+
+var funcMap = map[string]interface{}{
+	"prefix": func() string {
+		return prefix
+	},
+}
+
 // load hydrates a template from persistence
 // TODO: bundle static files in go binary
 func load(name string) *template.Template {
 	p := func(n string) string {
 		return filepath.Join("cmd", "server", "tpl", n+".gohtml")
 	}
-	return template.Must(template.ParseFiles(p("base"), p(name))).Option("missingkey=error")
+
+	raw := template.New(`base.gohtml`)
+	raw = raw.Funcs(funcMap)
+	return template.Must(raw.ParseFiles(p("base"), p(name))).Option("missingkey=error")
 }
 
 // def gives the environment variable if present, otherwise it returns def
@@ -110,7 +121,7 @@ func wrap(tpl *template.Template, fn webpage) http.HandlerFunc {
 }
 
 func randomHandler(w http.ResponseWriter, r *http.Request) {
-	urlStr := "/play/" + impl.Rand()
+	urlStr := prefix + "/play/" + impl.Rand()
 	http.Redirect(w, r, urlStr, http.StatusTemporaryRedirect)
 }
 
