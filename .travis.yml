@@ -18,3 +18,4 @@ cache:
   - $HOME/.glide
 env:
   - GOBENCH_URL=http://bench.bign8.info
+  - GO111MODULE=on
