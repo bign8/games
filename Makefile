@@ -8,6 +8,7 @@ test:
 .PHONY : test
 
 bench:
+	go get github.com/bign8/gobench
 	go install github.com/bign8/gobench
 	go test -race -bench=. -benchmem -v ./... | tee test.out
 	gobench -in test.out

@@ -11,8 +11,8 @@ notifications:
     on_start: always
 # before_install:
 #   - make vendor
-script:
-  - make
+# script:
+#   - make
 cache:
   directories:
   - $HOME/.glide
