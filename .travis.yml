@@ -1,5 +1,5 @@
 language: go
-go: 1.8.x
+sudo: false
 notifications:
   email: false
   webhooks:
@@ -12,4 +12,6 @@ cache:
   directories:
   - $HOME/.glide
 env:
-  - GOBENCH_URL=http://bench.bign8.info
+  global:
+    - GOBENCH_URL=http://bench.bign8.info
+    - GO111MODULE=on
