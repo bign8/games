@@ -1,5 +1,5 @@
 language: go
-go: 1.8.x
+# go: 1.8.x
 notifications:
   email: false
   webhooks:
@@ -8,8 +8,8 @@ notifications:
     on_success: always
     on_failure: always
     on_start: always
-install:
-  - 'make vendor'
+# before_install:
+#   - make vendor
 cache:
   directories:
   - $HOME/.glide
