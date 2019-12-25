@@ -13,6 +13,7 @@ import (
 	"github.com/bign8/games/impl/cribbage"
 	gos "github.com/bign8/games/impl/go"
 	"github.com/bign8/games/impl/mancala"
+	"github.com/bign8/games/impl/snake"
 	"github.com/bign8/games/impl/ttt"
 )
 
@@ -66,6 +67,8 @@ func init() {
 		}
 		if err := g.Valid(); err == nil {
 			reg[g.Slug] = g
+		} else {
+			println(err.Error())
 		}
 		// TODO: log invalid cases
 	}
@@ -78,4 +81,5 @@ func init() {
 	register(connect4.Game)
 	register(cribbage.Game)
 	register(backgammon.Game)
+	register(snake.Game)
 }
