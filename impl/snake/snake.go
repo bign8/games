@@ -56,17 +56,20 @@ type snake struct {
 	heading move
 	width   uint
 	height  uint
+	dead    bool
 }
 
 func (s *snake) String() string { return "SNAKE!" }
 func (s *snake) Player() int    { return 0 }
 func (s *snake) Utility() []int { return []int{len(s.body)} }
-func (s *snake) Terminal() bool { return s.body[0] < 0 }
+func (s *snake) Terminal() bool { return s.dead }
 
 func (s *snake) Apply(externalMove games.Action) games.State {
 	future := &snake{
 		width:  s.width,
 		height: s.height,
+		food:   s.food, // spawn moves this location
+		dead:   s.dead,
 	}
 
 	// compute next heading
@@ -89,14 +92,33 @@ func (s *snake) Apply(externalMove games.Action) games.State {
 	case right:
 		x++
 	}
-	tip := s.xy2pt(x, y)
 
-	// generate new body
-	future.body = append([]uint{tip}, s.body...) // really not performant, but need to copy base array
-	if tip == s.food {
-		future.spawn()
+	// Derive new tip position
+	var tip uint
+	if x < 0 || y < 0 || x >= s.width || y >= s.height {
+		future.dead = true
 	} else {
-		future.body = future.body[:len(future.body)-1] // didn't hit food, pop tail off
+		tip = s.xy2pt(x, y)
+	}
+
+	// if we didn't die during our last move...
+	if !future.dead {
+
+		// generate new body
+		future.body = append([]uint{tip}, s.body...) // really not performant, but need to copy base array
+		if tip == s.food {
+			future.spawn()
+		} else {
+			future.body = future.body[:len(future.body)-1] // didn't hit food, pop tail off
+		}
+
+		// determine body collision
+		for _, part := range future.body[1:] {
+			if part == tip {
+				future.dead = true
+				break
+			}
+		}
 	}
 	return future
 }
