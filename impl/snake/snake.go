@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/bign8/games"
-	"github.com/bign8/games/player"
+	//"github.com/bign8/games/player"
 )
 
 // Game ...
@@ -19,7 +19,7 @@ var Game = games.Game{
 	Board:  board,
 	Counts: []uint8{1},
 	Start:  New,
-	AI:     player.Random, // TODO: custom planner here
+	//AI:     player.Random, // TODO: custom planner here
 }
 
 const (

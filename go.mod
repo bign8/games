@@ -1,6 +1,6 @@
 module github.com/bign8/games
 
-go 1.11
+go 1.16
 
 require (
 	github.com/bign8/gobench v0.0.0-20160906053847-20a8fe316829 // indirect

@@ -1,4 +1,4 @@
-FROM golang:1.11-alpine AS builder
+FROM golang:1.16-alpine AS builder
 
 # Build Environment (Cache go assets)
 RUN apk add --no-cache upx git
@@ -10,6 +10,7 @@ ENV GO111MODULE=on
 # Pull and pre-build dependencies
 ADD go.* ./
 RUN go mod download
+RUN go build -v -installsuffix 'static' -ldflags="-s -w" net/http
 
 # Actually pull in and build the application
 ADD . ./
@@ -21,8 +22,6 @@ RUN if [ "$COMPRESS" != "false" ]; then upx --ultra-brute router; fi
 
 # The Actual Container
 FROM scratch
-ADD cmd/server/www/ /cmd/server/www/
-ADD cmd/server/tpl/ /cmd/server/tpl/
 COPY --from=builder /app/server /
 ENTRYPOINT ["/server"]
 EXPOSE 4000

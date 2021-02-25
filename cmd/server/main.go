@@ -4,8 +4,10 @@ package main
 // https://talks.golang.org/2012/chat.slide
 
 import (
+	"embed"
 	"flag"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -22,6 +24,9 @@ import (
 	"github.com/bign8/games/svc/rest"
 )
 
+//go:embed tpl www
+var files embed.FS
+
 // various HTML templates
 var (
 	rootTPL = load("root")
@@ -37,12 +42,16 @@ var (
 
 func main() {
 	flag.Parse()
+	static, err := fs.Sub(files, "www")
+	if err != nil {
+	  log.Fatal(err)
+	}
 
 	// Setup API server
 	http.Handle("/api/", http.StripPrefix("/api", rest.New(memory.New(), "/api")))
 
 	// Setup standard gorilla router
-	fs := http.FileServer(http.Dir(filepath.Join("cmd", "server", "www")))
+	fs := http.FileServer(http.FS(static))
 	http.Handle("/static/", http.StripPrefix("/static", fs))
 
 	// Setup programatic routes
@@ -75,12 +84,12 @@ var funcMap = map[string]interface{}{
 // TODO: bundle static files in go binary
 func load(name string) *template.Template {
 	p := func(n string) string {
-		return filepath.Join("cmd", "server", "tpl", n+".gohtml")
+		return filepath.Join("tpl", n+".gohtml")
 	}
 
 	raw := template.New(`base.gohtml`)
 	raw = raw.Funcs(funcMap)
-	return template.Must(raw.ParseFiles(p("base"), p(name))).Option("missingkey=error")
+	return template.Must(raw.ParseFS(files, p("base"), p(name))).Option("missingkey=error")
 }
 
 // def gives the environment variable if present, otherwise it returns def
