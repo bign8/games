@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	svgPieceTPL = `<text x="%d" y="%d.75">%c</text>`
+	svgPieceTPL = `<text x="%d" y="%d">%c</text>`
 	svgHoverTPL = `<rect x="%.2f" y="%d" height="1" width="%.2f" data-show="%s"/>`
 	svgShownTPL = `<g data-slug="%s">
-	<text x="%d" y="%d.75">%c</text>
+	<text x="%d" y="%d">%c</text>
 	<line x1="%d.5" y1="%d.5" x2="%d.5" y2="%d.5" stroke-linecap="round" stroke="rgba(255, 0, 0, 0.1)" stroke-width="0.1"/>
 </g>`
 	svgHead = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-.05 -.05 8.1 8.1" style="font-size:1px">`
@@ -69,7 +69,7 @@ func (s State) SVG(active bool) string {
 		}
 		parts += `<g>` + strings.Join(moves, "") + strings.Join(hovers, "") + "</g>"
 	}
-	return svgHead + parts + svgTail
+	return svgHead + `<style>text{text-anchor:middle;transform:translate(.5px,.5px);dominant-baseline:middle}</style>` + parts + svgTail
 }
 
 // Sort a list of moves from left to right based on start positiion.
